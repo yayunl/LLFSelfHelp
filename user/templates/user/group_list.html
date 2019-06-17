@@ -1,0 +1,16 @@
+{% extends parent_template|default:"user/base_user.html" %}
+
+{% block content %}
+  <h1>Group List</h1>
+  {% if group_list %}
+  <ul>
+    {% for group in group_list %}
+      <li>
+        <a href="{% url 'group_detail' group.slug %}">{{ group.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no groups in the library.</p>
+  {% endif %}
+{% endblock %}

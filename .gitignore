@@ -1,0 +1,6 @@
+*.sqlite3
+*.csv
+test.py
+test_csv.py
+venv
+.idea

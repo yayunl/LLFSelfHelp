@@ -1,0 +1,9 @@
+{% extends parent_template|default:"user/base_user.html" %}
+
+{% block content %}
+    <h1>Members: </h1>
+    {% for member in group.members.all %}
+        <a href="{% url 'member_detail' member.slug %}">{{ member.name }}</a>
+    {% endfor %}
+
+{% endblock %}}
