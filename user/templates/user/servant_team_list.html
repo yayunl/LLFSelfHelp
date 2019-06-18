@@ -1,0 +1,16 @@
+{% extends parent_template|default:"user/base_user.html" %}
+
+{% block content %}
+  <h1>Servant Team List</h1>
+  {% if servant_team_list %}
+  <ul>
+    {% for team in servant_team_list %}
+      <li>
+        <a href="{% url 'servant_team_detail' team.slug %}">{{ team.name }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+    <p>There are no teams in the library.</p>
+  {% endif %}
+{% endblock %}

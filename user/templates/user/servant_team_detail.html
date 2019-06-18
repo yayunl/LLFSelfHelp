@@ -1,0 +1,10 @@
+{% extends parent_template|default:"user/base_user.html" %}
+
+{% block content %}
+    <h1>Team name: {{ servant_team.name }}</h1>
+    <p>Serve date: {{ servant_team.service_date|date:'m/d/Y'}}</p>
+    <p>Servant(s):</p>
+    {% for server in servant_team.servants.all %}
+    {{ server.name}}
+    {% endfor %}
+{% endblock %}

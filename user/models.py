@@ -44,8 +44,6 @@ class Member(models.Model):
     active = models.BooleanField(default=True)
 
     # username
-    username = models.CharField(max_length=50, null=True, blank=True)
-    password = models.CharField(max_length=50, null=True, blank=True)
 
     slug = models.SlugField(max_length=31)
 
@@ -72,19 +70,31 @@ class SocialMediaAccount(models.Model):
 
 
 class Service(models.Model):
-    category = models.CharField(max_length=20, null=True, blank=True, unique=True)
     service_date = models.DateField(null=True)
-    coordinator = models.ManyToManyField(Member)
+    slug = models.SlugField(max_length=63)
+
+    def __str__(self):
+        return f"{self.service_date}"
+
+    class Meta:
+        verbose_name = 'Service'
+        ordering = ['service_date']
+
+
+class ServantTeam(models.Model):
+    name = models.CharField(max_length=20, null=True, blank=True, unique=True)
+    coordinator = models.ManyToManyField(Member, null=True)
     servants = models.ManyToManyField(Member,
-                                      related_name='services')
+                                      related_name='servant_teams',
+                                      null=True)
+    service = models.ForeignKey(Service,
+                                related_name='servant_teams',
+                                on_delete=True)
 
     slug = models.SlugField(max_length=63)
 
     def __str__(self):
-        return f"{self.category}"
+        return f"{self.name}"
 
-    class Meta:
-        verbose_name = 'Service Team'
-        ordering = ['category']
-        get_latest_by = 'service_date'
+
 

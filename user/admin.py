@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export import resources
 # Register your models here.
-from .models import Member,Group, Service
+from .models import Member,Group, Service, ServantTeam
 from import_export.admin import ImportExportModelAdmin,ImportExportMixinBase
 
 
@@ -23,3 +23,5 @@ class MemberAdminImport(ImportExportModelAdmin):
 # register the classes
 admin.site.register(Member, MemberAdminImport)
 admin.site.register(Group)
+admin.site.register(Service)
+admin.site.register(ServantTeam)

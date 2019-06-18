@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DeleteView, DetailView
-from user.models import Group, Member, Service
+from user.models import Group, Member, Service, ServantTeam
 
 
 def index(request):
@@ -49,4 +49,15 @@ class GroupDetailView(DetailView):
 
 
 class ServantTeamListView(ListView):
-    model = Service
+    model = ServantTeam
+
+    context_object_name = 'servant_team_list'
+    queryset = ServantTeam.objects.filter()
+    template_name = 'user/servant_team_list.html'
+
+
+class ServantTeamDetailView(DetailView):
+    model = ServantTeam
+
+    context_object_name = 'servant_team'
+    template_name = 'user/servant_team_detail.html'
