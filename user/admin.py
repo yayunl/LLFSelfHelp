@@ -1,8 +1,8 @@
 from django.contrib import admin
 from import_export import resources
 # Register your models here.
-from .models import Member,Group, Service, ServantTeam
-from import_export.admin import ImportExportModelAdmin,ImportExportMixinBase
+from .models import Member,Group, Service
+from import_export.admin import ImportExportModelAdmin
 
 
 class MemberResource(resources.ModelResource):
@@ -20,8 +20,12 @@ class MemberAdminImport(ImportExportModelAdmin):
     from_encoding = "utf8"
 
 
+class ServiceAdmin(admin.ModelAdmin):
+    prepopulated_fields = {'slug': ('service_category','service_date'), }
+    list_display = ['service_date', 'service_category']
+
+
 # register the classes
 admin.site.register(Member, MemberAdminImport)
 admin.site.register(Group)
-admin.site.register(Service)
-admin.site.register(ServantTeam)
+admin.site.register(Service, ServiceAdmin)

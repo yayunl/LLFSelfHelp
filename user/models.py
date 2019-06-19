@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-
+from django.template.defaultfilters import slugify
 # Create your models here.
 
 
@@ -70,31 +70,37 @@ class SocialMediaAccount(models.Model):
 
 
 class Service(models.Model):
+    service_category = models.CharField(max_length=20, null=True, blank=True)
     service_date = models.DateField(null=True)
+
+    coordinator = models.ManyToManyField(Member, null=True)
+    servants = models.ManyToManyField(Member,
+                                      related_name='services',
+                                      null=True)
+
     slug = models.SlugField(max_length=63)
 
     def __str__(self):
         return f"{self.service_date}"
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            # Newly created object, so set slug
+            self.s = slugify(self.service_category)
+
+        super(Service, self).save(*args, **kwargs)
+
+    # methods
+    def get_absolute_url(self):
+        """
+        Used in urls and details template.
+        :return:
+        """
+        return reverse('service_detail', args=[self.slug])
+
     class Meta:
         verbose_name = 'Service'
-        ordering = ['service_date']
-
-
-class ServantTeam(models.Model):
-    name = models.CharField(max_length=20, null=True, blank=True, unique=True)
-    coordinator = models.ManyToManyField(Member, null=True)
-    servants = models.ManyToManyField(Member,
-                                      related_name='servant_teams',
-                                      null=True)
-    service = models.ForeignKey(Service,
-                                related_name='servant_teams',
-                                on_delete=True)
-
-    slug = models.SlugField(max_length=63)
-
-    def __str__(self):
-        return f"{self.name}"
+        ordering = ['service_date', 'service_category']
 
 
 

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DeleteView, DetailView
-from user.models import Group, Member, Service, ServantTeam
+from user.models import Group, Member, Service
+import datetime as dt
 
 
 def index(request):
@@ -16,9 +17,15 @@ def index(request):
     # The 'all()' is implied by default.
     num_groups = Group.objects.count()
 
+    # service
+    today_full_date = dt.datetime.today()
+    today_str = dt.datetime.strftime(today_full_date, '%Y-%m-%d')
+    today_date = dt.datetime.strptime(today_str, '%Y-%m-%d')
+    services = Service.objects.filter(service_date=today_date)
     context = {
         'num_members': num_members,
         'num_groups': num_groups,
+        'services': services,
     }
 
     # Render the HTML template index.html with the data in the context variable
@@ -48,16 +55,18 @@ class GroupDetailView(DetailView):
     model = Group
 
 
-class ServantTeamListView(ListView):
-    model = ServantTeam
+class ServiceListView(ListView):
+    model = Service
 
-    context_object_name = 'servant_team_list'
-    queryset = ServantTeam.objects.filter()
-    template_name = 'user/servant_team_list.html'
+    context_object_name = 'service_list'
+    queryset = Service.objects.filter()
+    template_name = 'user/service_list.html'
 
 
-class ServantTeamDetailView(DetailView):
-    model = ServantTeam
+class ServiceDetailView(DetailView):
+    model = Service
 
-    context_object_name = 'servant_team'
-    template_name = 'user/servant_team_detail.html'
+    context_object_name = 'service'
+    template_name = 'user/service_detail.html'
+
+    queryset = Service.objects.filter()
