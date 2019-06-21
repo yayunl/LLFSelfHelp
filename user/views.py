@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DeleteView, DetailView
+from django.views.generic import ListView, DeleteView, DetailView, CreateView
 from user.models import Group, Member, Service
+from user.forms import MemberForm
 import datetime as dt
 
 
@@ -30,6 +31,12 @@ def index(request):
 
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'user/index.html', context=context)
+
+
+class MemberCreateView(CreateView):
+    model = Member
+    form_class = MemberForm
+    template_name = 'user/member_create.html'
 
 
 class MemberListView(ListView):

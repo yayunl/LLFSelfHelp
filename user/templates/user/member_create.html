@@ -1,0 +1,12 @@
+{% extends parent_template|default:"user/base_user.html" %}
+
+{% block content %}
+  <form action="" method="post">
+    {% csrf_token %}
+    <table>
+        {{ form.slug.as_hidden }}
+        {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+  </form>
+{% endblock %}
