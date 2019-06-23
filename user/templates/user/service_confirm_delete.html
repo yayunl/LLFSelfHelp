@@ -1,0 +1,14 @@
+{% extends parent_template|default:"user/base_user.html" %}
+
+{% block content %}
+
+<h1>Delete Service</h1>
+
+<p>Are you sure you want to delete the service: {{ service }}?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Yes, delete.">
+</form>
+
+{% endblock %}

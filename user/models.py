@@ -62,6 +62,21 @@ class Member(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+    def _get_unique_slug(self):
+        email = self.email.split('@')[0]
+        slug = slugify(f"{self.english_name}-{email}")
+        unique_slug = slug
+        num = 1
+        while Member.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self._get_unique_slug()
+        super().save(*args, **kwargs)
+
 
 class SocialMediaAccount(models.Model):
     media_name = models.CharField(max_length=20, null=True, blank=True)
@@ -81,14 +96,11 @@ class Service(models.Model):
     slug = models.SlugField(max_length=63)
 
     def __str__(self):
-        return f"{self.service_date}"
+        return f"{self.service_category} of {self.service_date}"
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            # Newly created object, so set slug
-            self.s = slugify(self.service_category)
-
-        super(Service, self).save(*args, **kwargs)
+    class Meta:
+        verbose_name = 'Service'
+        ordering = ['service_date', 'service_category']
 
     # methods
     def get_absolute_url(self):
@@ -98,9 +110,16 @@ class Service(models.Model):
         """
         return reverse('service_detail', args=[self.slug])
 
-    class Meta:
-        verbose_name = 'Service'
-        ordering = ['service_date', 'service_category']
+    def _get_unique_slug(self):
+        slug = slugify(f"{self.service_category}-{self.service_date}")
+        unique_slug = slug
+        num = 1
+        while Service.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
 
-
-
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self._get_unique_slug()
+        super().save(*args, **kwargs)
