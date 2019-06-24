@@ -1,16 +1,49 @@
 {% extends parent_template|default:"user/base_user.html" %}
 
 {% block content %}
-  <h1>Group List</h1>
+  <h1>Groups</h1>
   {% if group_list %}
-  <ul>
     {% for group in group_list %}
-      <li>
-        <a href="{% url 'group_detail' group.slug %}">{{ group.name }}</a>
-      </li>
+      <div class="ui special cards">
+        <div class="card">
+          <div class="blurring dimmable image">
+            <div class="ui dimmer">
+              <div class="content">
+                <div class="center">
+                  <div class="ui inverted button"><a href="{% url 'group_detail' group.slug %}">View Members</a></div>
+                </div>
+              </div>
+            </div>
+            {% load static %}
+            {% if group.slug == 'agape' %}
+            <img src="{% static 'user/img/agape.jpg' %}">
+            {% elif group.slug == 'joylamb' %}
+            <img src="{% static 'user/img/joylamb.jpg' %}">
+            {% elif group.slug == 'pureheart' %}
+            <img src="{% static 'user/img/pureheart.jpg' %}">
+            {% else %}
+            <img src="{% static 'user/img/morningstar.jpg' %}">
+            {% endif %}
+
+          </div>
+          <div class="content">
+            <a class="header">{{ group.slug}}</a>
+            <div class="meta">
+              <span class="date">Created in Sep 2014</span>
+            </div>
+          </div>
+          <div class="extra content">
+            <a>
+              <i class="users icon"></i>
+              {{ group.members.count }}Members
+            </a>
+          </div>
+        </div>
+      </div>
     {% endfor %}
-  </ul>
+
   {% else %}
     <p>There are no groups in the library.</p>
   {% endif %}
 {% endblock %}
+

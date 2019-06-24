@@ -1,9 +1,31 @@
 {% extends parent_template|default:"user/base_user.html" %}
 
 {% block content %}
-    <h1>Members: </h1>
-    {% for member in group.members.all %}
-        <a href="{% url 'member_detail' member.slug %}">{{ member.name }}</a>
-    {% endfor %}
+    <h1>Group Members</h1>
+<!--    {% for member in group.members.all  %}-->
+<!--        <a href="{% url 'member_detail' member.slug%}">{{ member.slug}}</a>-->
+<!--{% endfor %}}-->
+        <div class="ui cards">
+            {% for member in group.members.all  %}
+            <div class="card">
+                <div class="content">
+                    <a class="header" href="#">{{ member.name }}</a>
+                    <div class="meta">{{ member.job }}</div>
+                    <div class="description">
+                        From {{ member.hometown}}
+                    </div>
+                    <div class="extra content">
+                        <div class="ui buttons">
+                            <div class="ui button">
+                                <a href="{% url 'member_detail' member.slug%}">View</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+
+        </div>
 
 {% endblock %}}

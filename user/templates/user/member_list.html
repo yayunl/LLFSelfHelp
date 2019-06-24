@@ -16,9 +16,13 @@
               </div>
                 <div class="extra content">
                   <div class="ui buttons">
-                    <div class="ui delete button">Delete</div>
+                    <div class="ui delete button">
+                      <a href="{% url 'member_delete' member.slug%}">Delete</a>
+                    </div>
                     <div class="or"></div>
-                    <div class="ui primary update button">Update</div>
+                    <div class="ui primary update button">
+                      <a href="{% url 'member_update' member.slug%}">Update</a>
+                    </div>
                   </div>
                 </div>
 
