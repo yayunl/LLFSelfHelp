@@ -16,7 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
-from user import urls as user_urls
+from user.urls import urlpatterns as catalogurls
+from user.urls import user_urlpatterns as userurls
 
 urlpatterns = [
     path('',
@@ -24,5 +25,6 @@ urlpatterns = [
              pattern_name='member_index',
              permanent=False)),
     path('admin/', admin.site.urls),
-    path('catalog/', include(user_urls)),
+    path('catalog/', include(catalogurls)),
+    path('user/', include(userurls)),
 ]

@@ -1,10 +1,17 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DeleteView, DetailView, CreateView, UpdateView
+from django.shortcuts import render, redirect
+from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
+from django.views.decorators.csrf import csrf_protect
 from user.models import Group, Member, Service
 from user.forms import MemberForm, ServiceForm
 from django.urls import reverse_lazy
-import datetime as dt
+from django.utils.decorators import method_decorator
+from django.contrib.messages import error, success
+from django.template.response import TemplateResponse
+from django.views.decorators.debug import sensitive_post_parameters
 
+import datetime as dt
+from .utils import (MailContextViewMixin)
+from .forms import (UserCreationForm)
 
 
 def index(request):
@@ -128,3 +135,39 @@ class ServiceDetailView(DetailView):
     context_object_name = 'service'
     template_name = 'user/service_detail.html'
     queryset = Service.objects.filter()
+
+
+class CreateAccount(MailContextViewMixin, View):
+    form_class = UserCreationForm
+    success_url = reverse_lazy(
+        'create_done')
+    template_name = 'user/user_create.html'
+
+    @method_decorator(csrf_protect)
+    def get(self, request):
+        return TemplateResponse(
+            request,
+            self.template_name,
+            {'form': self.form_class()})
+
+    @method_decorator(csrf_protect)
+    @method_decorator(sensitive_post_parameters(
+        'password1', 'password2'))
+    def post(self, request):
+        bound_form = self.form_class(request.POST)
+        if bound_form.is_valid():
+            # not catching returned user
+            bound_form.save(
+                **self.get_save_kwargs(request))
+            if bound_form.mail_sent:  # mail sent?
+                return redirect(self.success_url)
+            else:
+                errs = (
+                    bound_form.non_field_errors())
+                for err in errs:
+                    error(request, err)
+                return None
+        return TemplateResponse(
+            request,
+            self.template_name,
+            {'form': bound_form})
