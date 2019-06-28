@@ -10,6 +10,7 @@ from django import forms
 from .models import Member, Service
 from .utils import ActivationMailFormMixin
 
+
 class MemberForm(ModelForm):
     class Meta:
         model = Member
@@ -34,6 +35,12 @@ class UserCreationForm(
         max_length=255,
         help_text=(
             "The name displayed on your "
+            "public profile."))
+
+    email = forms.EmailField(
+        max_length=255,
+        help_text=(
+            "The email displayed on your "
             "public profile."))
 
     mail_validation_error = (
@@ -63,6 +70,11 @@ class UserCreationForm(
 
     def save(self, **kwargs):
         user = super().save(commit=False)
+        # valid_member = Member.objects.filter(email=user.email).count()
+
+        # if not valid_member:
+        #     # raise ValidationError("You are not a LLF member. Please contact the LLF admin to add you to the group first.")
+        #
         if not user.pk:
             user.is_active = False
             send_mail = True
@@ -70,12 +82,12 @@ class UserCreationForm(
             send_mail = False
         user.save()
         self.save_m2m()
-        Member.objects.update_or_create(
-            username=user,
-            defaults={
-                'username': self.cleaned_data['username'],
-                'slug': slugify(f"{self.cleaned_data['username']}-{self.cleaned_data['email'].split('@')[0]}"),
-            })
+        # Member.objects.update_or_create(
+        #     username=user,
+        #     defaults={
+        #         'username': self.cleaned_data['username'],
+        #         'slug': slugify(f"{self.cleaned_data['username']}-{self.cleaned_data['email'].split('@')[0]}"),
+        #     })
         if send_mail:
             self.send_mail(user=user, **kwargs)
         return user

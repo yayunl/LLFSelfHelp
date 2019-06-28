@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
-from user.urls import urlpatterns as catalogurls
-from user.urls import user_urlpatterns as userurls
+from catalog.urls import urlpatterns as catalogurls
+from catalog.urls import user_urlpatterns as userurls
 
 urlpatterns = [
     path('',

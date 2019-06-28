@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
 from django.views.decorators.csrf import csrf_protect
-from user.models import Group, Member, Service
-from user.forms import MemberForm, ServiceForm
+from catalog.models import Group, Member, Service
+from catalog.forms import MemberForm, ServiceForm
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.messages import error, success
@@ -62,18 +62,18 @@ def index(request):
     }
 
     # Render the HTML template index.html with the data in the context variable
-    return render(request, 'user/index.html', context=context)
+    return render(request, 'catalog/index.html', context=context)
 
 
 class MemberCreateView(CreateView):
     model = Member
     form_class = MemberForm
-    template_name = 'user/member_form.html'
+    template_name = 'catalog/member_form.html'
 
 
 class MemberUpdateView(UpdateView):
     model = Member
-    template_name = 'user/member_form.html'
+    template_name = 'catalog/member_form.html'
     form_class = MemberForm
 
 
@@ -87,7 +87,7 @@ class MemberListView(ListView):
     model = Member
     context_object_name = 'member_list'
     queryset = Member.objects.filter()
-    template_name = 'user/member_list.html'
+    template_name = 'catalog/member_list.html'
 
 
 class MemberDetailView(DetailView):
@@ -99,7 +99,7 @@ class GroupListView(ListView):
 
     context_object_name = 'group_list'
     queryset = Group.objects.filter()
-    template_name = 'user/group_list.html'
+    template_name = 'catalog/group_list.html'
 
 
 class GroupDetailView(DetailView):
@@ -126,7 +126,7 @@ class ServiceListView(ListView):
     model = Service
     context_object_name = 'service_list'
     queryset = Service.objects.filter()
-    template_name = 'user/service_list.html'
+    template_name = 'catalog/service_list.html'
 
 
 class ServiceDetailView(DetailView):
@@ -141,7 +141,7 @@ class CreateAccount(MailContextViewMixin, View):
     form_class = UserCreationForm
     success_url = reverse_lazy(
         'create_done')
-    template_name = 'user/user_create.html'
+    template_name = 'catalog/user_create.html'
 
     @method_decorator(csrf_protect)
     def get(self, request):
@@ -156,6 +156,10 @@ class CreateAccount(MailContextViewMixin, View):
     def post(self, request):
         bound_form = self.form_class(request.POST)
         if bound_form.is_valid():
+            valid_member = Member.objects.filter(email=bound_form.email).count()
+            if not valid_member:
+                error(request, 'Not a valid member.')
+                return None
             # not catching returned user
             bound_form.save(
                 **self.get_save_kwargs(request))

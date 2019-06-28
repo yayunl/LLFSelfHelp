@@ -1,11 +1,12 @@
 from django.db import models
+from django.conf import settings
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 # Create your models here.
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=20, null=True, blank=True, unique=True)
+    name = models.CharField(max_length=20, default='New Comers')
 
     slug = models.SlugField(max_length=31)
 
@@ -24,6 +25,7 @@ class Member(models.Model):
     # fields
 
     name = models.CharField(max_length=50, null=True, blank=True, unique=True)
+    # name = models.OneToOneField(settings.AUTH_USER_MODEL)
     english_name = models.CharField(max_length=50, null=True, blank=True)
     gender = models.CharField(max_length=10, null=True, blank=True)
     christian = models.BooleanField(default=True)

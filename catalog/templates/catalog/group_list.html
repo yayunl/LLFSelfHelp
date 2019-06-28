@@ -1,4 +1,4 @@
-{% extends parent_template|default:"user/base_user.html" %}
+{% extends parent_template|default:"catalog/base_user.html" %}
 
 {% block content %}
   <h1>Groups</h1>
@@ -16,13 +16,13 @@
             </div>
             {% load static %}
             {% if group.slug == 'agape' %}
-            <img src="{% static 'user/img/agape.jpg' %}">
+            <img src="{% static 'catalog/img/agape.jpg' %}">
             {% elif group.slug == 'joylamb' %}
-            <img src="{% static 'user/img/joylamb.jpg' %}">
+            <img src="{% static 'catalog/img/joylamb.jpg' %}">
             {% elif group.slug == 'pureheart' %}
-            <img src="{% static 'user/img/pureheart.jpg' %}">
+            <img src="{% static 'catalog/img/pureheart.jpg' %}">
             {% else %}
-            <img src="{% static 'user/img/morningstar.jpg' %}">
+            <img src="{% static 'catalog/img/morningstar.jpg' %}">
             {% endif %}
 
           </div>

@@ -153,9 +153,9 @@ class ActivationMailFormMixin:
 
 
 class MailContextViewMixin:
-    email_template_name = 'user/email_create.txt'
+    email_template_name = 'catalog/email_create.txt'
     subject_template_name = (
-        'user/subject_create.txt')
+        'catalog/subject_create.txt')
 
     def get_save_kwargs(self, request):
         return {
