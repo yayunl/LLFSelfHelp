@@ -1,0 +1,23 @@
+{% extends parent_template|default:"catalog/base_user.html" %}
+
+{% block title %}
+{{ block.super }} - Login
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="offset-by-two five columns">
+      {% include "catalog/login_form.html" %}
+    </div>
+    <div class="three columns">
+      <ul class="task-list">
+        <li><a href="{% url 'create' %}">
+          Register New Account</a></li>
+        <li><a href="#">
+          Forgotten password?</a></li>
+        <li><a href="{% url 'resend_activation' %}">
+          Lost Activation E-Mail?</a></li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

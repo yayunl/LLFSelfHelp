@@ -27,6 +27,30 @@ class ServiceForm(ModelForm):
         exclude = ('slug',)
 
 
+class ResendActivationEmailForm(
+        ActivationMailFormMixin, forms.Form):
+
+    email = forms.EmailField()
+
+    mail_validation_error = (
+        'Could not re-send activation email. '
+        'Please try again later. (Sorry!)')
+
+    def save(self, **kwargs):
+        User = get_user_model()
+        try:
+            user = User.objects.get(
+                email=self.cleaned_data['email'])
+        except:
+            # logger.warning(
+            #     'Resend Activation: No user with '
+            #     'email: {} .'.format(
+            #         self.cleaned_data['email']))
+            return None
+        self.send_mail(user=user, **kwargs)
+        return user
+
+
 class UserCreationForm(
         ActivationMailFormMixin,
         BaseUserCreationForm):

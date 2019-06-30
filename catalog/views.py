@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
 from django.views.decorators.csrf import csrf_protect
 from catalog.models import Group, Member, Service
-from catalog.forms import MemberForm, ServiceForm
+from catalog.forms import MemberForm, ServiceForm, ResendActivationEmailForm
 from django.urls import reverse_lazy
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.contrib.messages import error, success
 from django.template.response import TemplateResponse
@@ -156,10 +157,11 @@ class CreateAccount(MailContextViewMixin, View):
     def post(self, request):
         bound_form = self.form_class(request.POST)
         if bound_form.is_valid():
-            valid_member = Member.objects.filter(email=bound_form.email).count()
+            email = bound_form.cleaned_data.get('email')
+            valid_member = Member.objects.filter(email=email).count()
             if not valid_member:
                 error(request, 'Not a valid member.')
-                return None
+                return HttpResponse('<h1>Not a valid member.</h1>')
             # not catching returned user
             bound_form.save(
                 **self.get_save_kwargs(request))
@@ -170,8 +172,48 @@ class CreateAccount(MailContextViewMixin, View):
                     bound_form.non_field_errors())
                 for err in errs:
                     error(request, err)
-                return None
+                return redirect(
+                    'resend_activation')
+
         return TemplateResponse(
             request,
             self.template_name,
             {'form': bound_form})
+
+
+class ResendActivationEmail(
+        MailContextViewMixin, View):
+    form_class = ResendActivationEmailForm
+    success_url = reverse_lazy('dj-auth:login')
+    template_name = 'catalog/resend_activation.html'
+
+    @method_decorator(csrf_protect)
+    def get(self, request):
+        return TemplateResponse(
+            request,
+            self.template_name,
+            {'form': self.form_class()})
+
+    @method_decorator(csrf_protect)
+    def post(self, request):
+        bound_form = self.form_class(request.POST)
+        if bound_form.is_valid():
+            user = bound_form.save(
+                **self.get_save_kwargs(request))
+            if (user is not None
+                    and not bound_form.mail_sent):
+                errs = (
+                    bound_form.non_field_errors())
+                for err in errs:
+                    error(request, err)
+                if errs:
+                    bound_form.errors.pop(
+                        '__all__')
+                return TemplateResponse(
+                    request,
+                    self.template_name,
+                    {'form': bound_form})
+        success(
+            request,
+            'Activation Email Sent!')
+        return redirect(self.success_url)
