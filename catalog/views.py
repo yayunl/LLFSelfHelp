@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-from django.views.decorators.csrf import csrf_protect
 from catalog.models import Group, Member, Service
 from catalog.forms import MemberForm, ServiceForm, ResendActivationEmailForm
 from django.urls import reverse_lazy
@@ -8,6 +7,13 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.contrib.messages import error, success
 from django.template.response import TemplateResponse
+
+from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.contrib.auth import (get_user, get_user_model, logout)
+from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
 import datetime as dt
@@ -134,8 +140,42 @@ class ServiceDetailView(DetailView):
     model = Service
 
     context_object_name = 'service'
-    template_name = 'user/service_detail.html'
+    template_name = 'catalog/service_detail.html'
     queryset = Service.objects.filter()
+
+# User account creation and activation
+
+
+class ActivateAccount(View):
+    success_url = reverse_lazy('login')
+    template_name = 'catalog/user_activate.html'
+
+    @method_decorator(never_cache)
+    def get(self, request, uidb64, token):
+        User = get_user_model()
+        try:
+            # urlsafe_base64_decode()
+            #     -> bytestring in Py3
+            uid = force_text(
+                urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError,
+                OverflowError, User.DoesNotExist):
+            user = None
+        if (user is not None
+                and token_generator
+                .check_token(user, token)):
+            user.is_active = True
+            user.save()
+            success(
+                request,
+                'User Activated! '
+                'You may now login.')
+            return redirect(self.success_url)
+        else:
+            return TemplateResponse(
+                request,
+                self.template_name)
 
 
 class CreateAccount(MailContextViewMixin, View):
@@ -184,7 +224,7 @@ class CreateAccount(MailContextViewMixin, View):
 class ResendActivationEmail(
         MailContextViewMixin, View):
     form_class = ResendActivationEmailForm
-    success_url = reverse_lazy('dj-auth:login')
+    success_url = reverse_lazy('login')
     template_name = 'catalog/resend_activation.html'
 
     @method_decorator(csrf_protect)
