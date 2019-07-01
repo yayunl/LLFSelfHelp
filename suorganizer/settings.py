@@ -147,3 +147,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'no-reply@llfadmin.herokuapp.com'
 EMAIL_SUBJECT_PREFIX = '[LLF Admin]'
 
+
+# Login redirect
+LOGIN_URL = '/user/login'
+LOGIN_REDIRECT_URL = '/user/login'

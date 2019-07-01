@@ -2,9 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% block title %}
-    <title>LLF Admin Portal</title>
-    {% endblock %}
+    <title>
+        {% block title %}
+           LLF Admin Portal
+        {% endblock %}
+    </title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -33,6 +35,10 @@
             <li><a href="{% url 'member_list'%}">Members</a></li>
             <li><a href="{% url 'group_list'%}">Small groups</a></li>
             <li><a href="{% url 'service_list'%}">Services</a></li>
+            {% if user.is_authenticated %}
+                <li></li>
+                <li><a href="{% url 'logout'%}">Logout</a></li>
+            {% endif %}
         </ul>
      {% endblock %}
       </div>

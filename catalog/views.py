@@ -16,11 +16,15 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 
+from django.contrib.auth.decorators import login_required
+from .decorators import class_login_required, require_authenticated_permission
+
 import datetime as dt
 from .utils import (MailContextViewMixin)
 from .forms import (UserCreationForm)
 
 
+@login_required()
 def index(request):
     """View function for home page of site."""
 
@@ -72,24 +76,28 @@ def index(request):
     return render(request, 'catalog/index.html', context=context)
 
 
+@require_authenticated_permission('catalog.member_create')
 class MemberCreateView(CreateView):
     model = Member
     form_class = MemberForm
     template_name = 'catalog/member_form.html'
 
 
+@require_authenticated_permission('catalog.member_update')
 class MemberUpdateView(UpdateView):
     model = Member
     template_name = 'catalog/member_form.html'
     form_class = MemberForm
 
 
+@require_authenticated_permission('catalog.member_delete')
 class MemberDeleteView(DeleteView):
     model = Member
     # template_name = 'user/member_delete.html'
     success_url = reverse_lazy('member_list')
 
 
+@class_login_required
 class MemberListView(ListView):
     model = Member
     context_object_name = 'member_list'
@@ -97,10 +105,12 @@ class MemberListView(ListView):
     template_name = 'catalog/member_list.html'
 
 
+@class_login_required
 class MemberDetailView(DetailView):
     model = Member
 
 
+@class_login_required
 class GroupListView(ListView):
     model = Group
 
@@ -109,26 +119,31 @@ class GroupListView(ListView):
     template_name = 'catalog/group_list.html'
 
 
+@class_login_required
 class GroupDetailView(DetailView):
     model = Group
 
+
 # services
 
-
+@require_authenticated_permission('catalog.service_create')
 class ServiceCreateView(CreateView):
     model = Service
     form_class = ServiceForm
 
 
+@require_authenticated_permission('catalog.service_update')
 class ServiceUpdateView(UpdateView):
     model = Service
     form_class = ServiceForm
 
 
+@require_authenticated_permission('catalog.service_delete')
 class ServiceDeleteView(DeleteView):
     model = Service
 
 
+@class_login_required
 class ServiceListView(ListView):
     model = Service
     context_object_name = 'service_list'
@@ -136,12 +151,14 @@ class ServiceListView(ListView):
     template_name = 'catalog/service_list.html'
 
 
+@class_login_required
 class ServiceDetailView(DetailView):
     model = Service
 
     context_object_name = 'service'
     template_name = 'catalog/service_detail.html'
     queryset = Service.objects.filter()
+
 
 # User account creation and activation
 

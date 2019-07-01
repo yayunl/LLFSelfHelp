@@ -7,7 +7,9 @@ from .views import CreateAccount
 from .views import ResendActivationEmail, ActivateAccount
 from django.views.generic import (RedirectView, TemplateView)
 from django.urls import path
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import AuthenticationForm
+# from django.contrib.auth.decorators import login_required
 
 
 urlpatterns = [
@@ -31,6 +33,7 @@ urlpatterns = [
 
 user_urlpatterns = [
     path('login/', LoginView.as_view(template_name='catalog/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(template_name='catalog/logout.html'),name='logout'),
     # create user
     path('create/', CreateAccount.as_view(), name='create'),
     path('create/done/',
