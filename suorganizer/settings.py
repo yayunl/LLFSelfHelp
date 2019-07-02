@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'catalog',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -150,4 +151,4 @@ EMAIL_SUBJECT_PREFIX = '[LLF Admin]'
 
 # Login redirect
 LOGIN_URL = '/user/login'
-LOGIN_REDIRECT_URL = '/user/login'
+LOGIN_REDIRECT_URL = '/catalog/'

@@ -45,11 +45,10 @@ class Member(models.Model):
     # Active member?
     active = models.BooleanField(default=True)
 
-    # authentication
-    username = models.CharField(max_length=50, null=True)
-    password = models.CharField(max_length=50, null=True)
+    # username
+    username = models.CharField(max_length=50, null=True, blank=True)
 
-    slug = models.SlugField(max_length=31)
+    slug = models.SlugField(max_length=31, blank=True)
 
     # Metadata
     class Meta:

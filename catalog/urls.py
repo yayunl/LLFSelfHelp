@@ -6,8 +6,9 @@ from .views import MemberUpdateView, ServiceUpdateView
 from .views import CreateAccount
 from .views import ResendActivationEmail, ActivateAccount
 from django.views.generic import (RedirectView, TemplateView)
-from django.urls import path
-from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import path, include, reverse_lazy
+from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView,
+    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView)
 from django.contrib.auth.views import AuthenticationForm
 # from django.contrib.auth.decorators import login_required
 
@@ -31,6 +32,35 @@ urlpatterns = [
 
 ]
 
+password_urls = [
+    path('change/', PasswordChangeView.as_view(
+        template_name='catalog/password_change_form.html'),
+         name='pw_change'),
+    path('change/done/', PasswordChangeDoneView.as_view(
+        template_name='catalog/password_change_done.html'),
+         name='pw_change_done'),
+
+    # reset
+    path('reset/', PasswordResetView.as_view(
+        template_name='catalog/password_reset_form.html',
+        email_template_name='catalog/password_reset_email.txt',
+        subject_template_name='catalog/password_reset_subject.txt'
+    ),  name='pw_reset_start'),
+
+    path('reset/sent/', PasswordResetDoneView.as_view(
+        template_name='catalog/password_reset_sent.html'
+    ),  name='pw_reset_sent'),
+
+    path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
+        template_name='catalog/password_reset_confirm.html'
+    ), name='pw_reset_confirm'),
+
+    path('reset/done/',  PasswordResetCompleteView.as_view(
+        template_name='catalog/password_reset_complete.html',
+        extra_context={'form': AuthenticationForm},
+    ), name='pw_reset_complete'),
+]
+
 user_urlpatterns = [
     path('login/', LoginView.as_view(template_name='catalog/login.html'), name='login'),
     path('logout/', LogoutView.as_view(template_name='catalog/logout.html'),name='logout'),
@@ -42,5 +72,8 @@ user_urlpatterns = [
     path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
     # path('activate', RedirectView.as_view(permanent=False)),
     path('activate/resend', ResendActivationEmail.as_view(), name='resend_activation'),
+
+    # password
+    path('password/', include(password_urls)),
 
 ]
