@@ -30,8 +30,8 @@ $.site = $.fn.site = function(parameters) {
     queryArguments = [].slice.call(arguments, 1),
 
     settings        = ( $.isPlainObject(parameters) )
-      ? $.extend(true, {}, $.site.settings, parameters)
-      : $.extend({}, $.site.settings),
+      ? $.extend(true, {}, $.site.base, parameters)
+      : $.extend({}, $.site.base),
 
     namespace       = settings.namespace,
     error           = settings.error,
@@ -103,7 +103,7 @@ $.site = $.fn.site = function(parameters) {
     },
 
     moduleExists: function(name) {
-      return ($.fn[name] !== undefined && $.fn[name].settings !== undefined);
+      return ($.fn[name] !== undefined && $.fn[name].base !== undefined);
     },
 
     enabled: {
@@ -151,13 +151,13 @@ $.site = $.fn.site = function(parameters) {
         $.each(modules, function(index, name) {
           var
             namespace = (module.moduleExists(name))
-              ? $.fn[name].settings.namespace || false
+              ? $.fn[name].base.namespace || false
               : true,
             $existingModules
           ;
           if(module.moduleExists(name)) {
             module.verbose('Changing default setting', setting, value, name);
-            $.fn[name].settings[setting] = value;
+            $.fn[name].base[setting] = value;
             if(modifyExisting && namespace) {
               $existingModules = $(':data(module-' + namespace + ')');
               if($existingModules.length > 0) {
@@ -183,7 +183,7 @@ $.site = $.fn.site = function(parameters) {
           ;
           if(module.moduleExists(name)) {
             module.verbose('Changing default setting', newSettings, name);
-            $.extend(true, $.fn[name].settings, newSettings);
+            $.extend(true, $.fn[name].base, newSettings);
             if(modifyExisting && namespace) {
               $existingModules = $(':data(module-' + namespace + ')');
               if($existingModules.length > 0) {
@@ -972,8 +972,8 @@ $.fn.form = function(parameters) {
               ;
               if(isLegacySettings) {
                 // 1.x (ducktyped)
-                settings   = $.extend(true, {}, $.fn.form.settings, legacyParameters);
-                validation = $.extend({}, $.fn.form.settings.defaults, parameters);
+                settings   = $.extend(true, {}, $.fn.form.base, legacyParameters);
+                validation = $.extend({}, $.fn.form.base.defaults, parameters);
                 module.error(settings.error.oldSyntax, element);
                 module.verbose('Extending settings from legacy parameters', validation, settings);
               }
@@ -982,14 +982,14 @@ $.fn.form = function(parameters) {
                 if(parameters.fields && module.is.shorthandFields(parameters.fields)) {
                   parameters.fields = module.get.fieldsFromShorthand(parameters.fields);
                 }
-                settings   = $.extend(true, {}, $.fn.form.settings, parameters);
-                validation = $.extend({}, $.fn.form.settings.defaults, settings.fields);
+                settings   = $.extend(true, {}, $.fn.form.base, parameters);
+                validation = $.extend({}, $.fn.form.base.defaults, settings.fields);
                 module.verbose('Extending settings', validation, settings);
               }
             }
             else {
-              settings   = $.fn.form.settings;
-              validation = $.fn.form.settings.defaults;
+              settings   = $.fn.form.base;
+              validation = $.fn.form.base.defaults;
               module.verbose('Using default form validation', validation, settings);
             }
 
@@ -1843,12 +1843,12 @@ $.fn.form.settings = {
 
     // is most likely an email
     email: function(value){
-      return $.fn.form.settings.regExp.email.test(value);
+      return $.fn.form.base.regExp.email.test(value);
     },
 
     // value is most likely url
     url: function(value) {
-      return $.fn.form.settings.regExp.url.test(value);
+      return $.fn.form.base.regExp.url.test(value);
     },
 
     // matches specified regExp
@@ -1857,7 +1857,7 @@ $.fn.form.settings = {
         return value.match(regExp);
       }
       var
-        regExpParts = regExp.match($.fn.form.settings.regExp.flags),
+        regExpParts = regExp.match($.fn.form.base.regExp.flags),
         flags
       ;
       // regular expression specified as /baz/gi (flags)
@@ -1877,7 +1877,7 @@ $.fn.form.settings = {
     // is valid integer or matches range
     integer: function(value, range) {
       var
-        intRegExp = $.fn.form.settings.regExp.integer,
+        intRegExp = $.fn.form.base.regExp.integer,
         min,
         max,
         parts
@@ -1908,12 +1908,12 @@ $.fn.form.settings = {
 
     // is valid number (with decimal)
     decimal: function(value) {
-      return $.fn.form.settings.regExp.decimal.test(value);
+      return $.fn.form.base.regExp.decimal.test(value);
     },
 
     // is valid number
     number: function(value) {
-      return $.fn.form.settings.regExp.number.test(value);
+      return $.fn.form.base.regExp.number.test(value);
     },
 
     // is value (case insensitive)
@@ -1955,28 +1955,28 @@ $.fn.form.settings = {
     // value contains text (insensitive)
     contains: function(value, text) {
       // escape regex characters
-      text = text.replace($.fn.form.settings.regExp.escape, "\\$&");
+      text = text.replace($.fn.form.base.regExp.escape, "\\$&");
       return (value.search( new RegExp(text, 'i') ) !== -1);
     },
 
     // value contains text (case sensitive)
     containsExactly: function(value, text) {
       // escape regex characters
-      text = text.replace($.fn.form.settings.regExp.escape, "\\$&");
+      text = text.replace($.fn.form.base.regExp.escape, "\\$&");
       return (value.search( new RegExp(text) ) !== -1);
     },
 
     // value contains text (insensitive)
     doesntContain: function(value, text) {
       // escape regex characters
-      text = text.replace($.fn.form.settings.regExp.escape, "\\$&");
+      text = text.replace($.fn.form.base.regExp.escape, "\\$&");
       return (value.search( new RegExp(text, 'i') ) === -1);
     },
 
     // value contains text (case sensitive)
     doesntContainExactly: function(value, text) {
       // escape regex characters
-      text = text.replace($.fn.form.settings.regExp.escape, "\\$&");
+      text = text.replace($.fn.form.base.regExp.escape, "\\$&");
       return (value.search( new RegExp(text) ) === -1);
     },
 
@@ -2247,8 +2247,8 @@ $.fn.accordion = function(parameters) {
     .each(function() {
       var
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.accordion.settings, parameters)
-          : $.extend({}, $.fn.accordion.settings),
+          ? $.extend(true, {}, $.fn.accordion.base, parameters)
+          : $.extend({}, $.fn.accordion.base),
 
         className       = settings.className,
         namespace       = settings.namespace,
@@ -2855,7 +2855,7 @@ $.fn.checkbox = function(parameters) {
   $allModules
     .each(function() {
       var
-        settings        = $.extend(true, {}, $.fn.checkbox.settings, parameters),
+        settings        = $.extend(true, {}, $.fn.checkbox.base, parameters),
 
         className       = settings.className,
         namespace       = settings.namespace,
@@ -3688,8 +3688,8 @@ $.fn.dimmer = function(parameters) {
     .each(function() {
       var
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.dimmer.settings, parameters)
-          : $.extend({}, $.fn.dimmer.settings),
+          ? $.extend(true, {}, $.fn.dimmer.base, parameters)
+          : $.extend({}, $.fn.dimmer.base),
 
         selector        = settings.selector,
         namespace       = settings.namespace,
@@ -4425,8 +4425,8 @@ $.fn.dropdown = function(parameters) {
     .each(function(elementIndex) {
       var
         settings          = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.dropdown.settings, parameters)
-          : $.extend({}, $.fn.dropdown.settings),
+          ? $.extend(true, {}, $.fn.dropdown.base, parameters)
+          : $.extend({}, $.fn.dropdown.base),
 
         className       = settings.className,
         message         = settings.message,
@@ -8270,7 +8270,7 @@ $.fn.dropdown.settings = {
 };
 
 /* Templates */
-$.fn.dropdown.settings.templates = {
+$.fn.dropdown.base.templates = {
 
   // generates dropdown from select values
   dropdown: function(select) {
@@ -8381,8 +8381,8 @@ $.fn.embed = function(parameters) {
     .each(function() {
       var
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.embed.settings, parameters)
-          : $.extend({}, $.fn.embed.settings),
+          ? $.extend(true, {}, $.fn.embed.base, parameters)
+          : $.extend({}, $.fn.embed.base),
 
         selector        = settings.selector,
         className       = settings.className,
@@ -9096,8 +9096,8 @@ $.fn.modal = function(parameters) {
     .each(function() {
       var
         settings    = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.modal.settings, parameters)
-          : $.extend({}, $.fn.modal.settings),
+          ? $.extend(true, {}, $.fn.modal.base, parameters)
+          : $.extend({}, $.fn.modal.base),
 
         selector        = settings.selector,
         className       = settings.className,
@@ -10119,8 +10119,8 @@ $.fn.nag = function(parameters) {
     .each(function() {
       var
         settings          = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.nag.settings, parameters)
-          : $.extend({}, $.fn.nag.settings),
+          ? $.extend(true, {}, $.fn.nag.base, parameters)
+          : $.extend({}, $.fn.nag.base),
 
         className       = settings.className,
         selector        = settings.selector,
@@ -10633,8 +10633,8 @@ $.fn.popup = function(parameters) {
     .each(function() {
       var
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.popup.settings, parameters)
-          : $.extend({}, $.fn.popup.settings),
+          ? $.extend(true, {}, $.fn.popup.base, parameters)
+          : $.extend({}, $.fn.popup.base),
 
         selector           = settings.selector,
         className          = settings.className,
@@ -12101,7 +12101,7 @@ $.fn.popup.settings = {
     popup: function(text) {
       var
         html   = '',
-        escape = $.fn.popup.settings.templates.escape
+        escape = $.fn.popup.base.templates.escape
       ;
       if(typeof text !== undefined) {
         if(typeof text.title !== undefined && text.title) {
@@ -12171,8 +12171,8 @@ $.fn.progress = function(parameters) {
     .each(function() {
       var
         settings          = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.progress.settings, parameters)
-          : $.extend({}, $.fn.progress.settings),
+          ? $.extend(true, {}, $.fn.progress.base, parameters)
+          : $.extend({}, $.fn.progress.base),
 
         className       = settings.className,
         metadata        = settings.metadata,
@@ -13092,8 +13092,8 @@ $.fn.rating = function(parameters) {
     .each(function() {
       var
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.rating.settings, parameters)
-          : $.extend({}, $.fn.rating.settings),
+          ? $.extend(true, {}, $.fn.rating.base, parameters)
+          : $.extend({}, $.fn.rating.base),
 
         namespace       = settings.namespace,
         className       = settings.className,
@@ -13159,7 +13159,7 @@ $.fn.rating = function(parameters) {
           layout: function() {
             var
               maxRating = module.get.maxRating(),
-              html      = $.fn.rating.settings.templates.icon(maxRating)
+              html      = $.fn.rating.base.templates.icon(maxRating)
             ;
             module.debug('Generating icon html dynamically');
             $module
@@ -13601,8 +13601,8 @@ $.fn.search = function(parameters) {
     .each(function() {
       var
         settings          = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.search.settings, parameters)
-          : $.extend({}, $.fn.search.settings),
+          ? $.extend(true, {}, $.fn.search.base, parameters)
+          : $.extend({}, $.fn.search.base),
 
         className        = settings.className,
         metadata         = settings.metadata,
@@ -14956,7 +14956,7 @@ $.fn.search.settings = {
     category: function(response, fields) {
       var
         html = '',
-        escape = $.fn.search.settings.templates.escape
+        escape = $.fn.search.base.templates.escape
       ;
       if(response[fields.categoryResults] !== undefined) {
 
@@ -15116,8 +15116,8 @@ $.fn.shape = function(parameters) {
       var
         moduleSelector = $allModules.selector || '',
         settings       = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.shape.settings, parameters)
-          : $.extend({}, $.fn.shape.settings),
+          ? $.extend(true, {}, $.fn.shape.base, parameters)
+          : $.extend({}, $.fn.shape.base),
 
         // internal aliases
         namespace     = settings.namespace,
@@ -16042,8 +16042,8 @@ $.fn.sidebar = function(parameters) {
     .each(function() {
       var
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.sidebar.settings, parameters)
-          : $.extend({}, $.fn.sidebar.settings),
+          ? $.extend(true, {}, $.fn.sidebar.base, parameters)
+          : $.extend({}, $.fn.sidebar.base),
 
         selector        = settings.selector,
         className       = settings.className,
@@ -17064,8 +17064,8 @@ $.fn.sticky = function(parameters) {
     .each(function() {
       var
         settings              = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.sticky.settings, parameters)
-          : $.extend({}, $.fn.sticky.settings),
+          ? $.extend(true, {}, $.fn.sticky.base, parameters)
+          : $.extend({}, $.fn.sticky.base),
 
         className             = settings.className,
         namespace             = settings.namespace,
@@ -18031,8 +18031,8 @@ $.fn.tab = function(parameters) {
       var
 
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.tab.settings, parameters)
-          : $.extend({}, $.fn.tab.settings),
+          ? $.extend(true, {}, $.fn.tab.base, parameters)
+          : $.extend({}, $.fn.tab.base),
 
         className       = settings.className,
         metadata        = settings.metadata,
@@ -18158,7 +18158,7 @@ $.fn.tab = function(parameters) {
                 delete parameters.onTabInit;
                 module.error(error.legacyInit, parameters.onFirstLoad);
               }
-              settings = $.extend(true, {}, $.fn.tab.settings, parameters);
+              settings = $.extend(true, {}, $.fn.tab.base, parameters);
             }
           }
         },
@@ -19449,11 +19449,11 @@ $.fn.transition = function() {
           settings: function(animation, duration, onComplete) {
             // single settings object
             if(typeof animation == 'object') {
-              return $.extend(true, {}, $.fn.transition.settings, animation);
+              return $.extend(true, {}, $.fn.transition.base, animation);
             }
             // all arguments provided
             else if(typeof onComplete == 'function') {
-              return $.extend({}, $.fn.transition.settings, {
+              return $.extend({}, $.fn.transition.base, {
                 animation  : animation,
                 onComplete : onComplete,
                 duration   : duration
@@ -19461,27 +19461,27 @@ $.fn.transition = function() {
             }
             // only duration provided
             else if(typeof duration == 'string' || typeof duration == 'number') {
-              return $.extend({}, $.fn.transition.settings, {
+              return $.extend({}, $.fn.transition.base, {
                 animation : animation,
                 duration  : duration
               });
             }
             // duration is actually settings object
             else if(typeof duration == 'object') {
-              return $.extend({}, $.fn.transition.settings, duration, {
+              return $.extend({}, $.fn.transition.base, duration, {
                 animation : animation
               });
             }
             // duration is actually callback
             else if(typeof duration == 'function') {
-              return $.extend({}, $.fn.transition.settings, {
+              return $.extend({}, $.fn.transition.base, {
                 animation  : animation,
                 onComplete : duration
               });
             }
             // only animation provided
             else {
-              return $.extend({}, $.fn.transition.settings, {
+              return $.extend({}, $.fn.transition.base, {
                 animation : animation
               });
             }
@@ -20078,8 +20078,8 @@ $.api = $.fn.api = function(parameters) {
     .each(function() {
       var
         settings          = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.api.settings, parameters)
-          : $.extend({}, $.fn.api.settings),
+          ? $.extend(true, {}, $.fn.api.base, parameters)
+          : $.extend({}, $.fn.api.base),
 
         // internal aliases
         namespace       = settings.namespace,
@@ -21244,8 +21244,8 @@ $.fn.visibility = function(parameters) {
     .each(function() {
       var
         settings        = ( $.isPlainObject(parameters) )
-          ? $.extend(true, {}, $.fn.visibility.settings, parameters)
-          : $.extend({}, $.fn.visibility.settings),
+          ? $.extend(true, {}, $.fn.visibility.base, parameters)
+          : $.extend({}, $.fn.visibility.base),
 
         className       = settings.className,
         namespace       = settings.namespace,

@@ -49,7 +49,7 @@ password_urls = [
 
     path('reset/sent/', PasswordResetDoneView.as_view(
         template_name='catalog/password_reset_sent.html'
-    ),  name='pw_reset_sent'),
+    ),  name='password_reset_done'),
 
     path('reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(
         template_name='catalog/password_reset_confirm.html'
@@ -58,7 +58,7 @@ password_urls = [
     path('reset/done/',  PasswordResetCompleteView.as_view(
         template_name='catalog/password_reset_complete.html',
         extra_context={'form': AuthenticationForm},
-    ), name='pw_reset_complete'),
+    ), name='password_reset_complete'),
 ]
 
 user_urlpatterns = [

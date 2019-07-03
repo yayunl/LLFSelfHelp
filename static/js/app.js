@@ -23,7 +23,7 @@
 
 
 $(function(){
-    $.fn.api.settings
+    $.fn.api.base
             .api = {
         // 'delete member': '/member/{id}/delete',
         // 'update member': '/catalog/member/{id}/update'
