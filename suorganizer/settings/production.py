@@ -1,9 +1,8 @@
 from .base import *
-import os
-import dj_database_url
+import dj_database_url,os
 
 
-ALLOWED_HOSTS = ['llfadmin.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
