@@ -106,11 +106,12 @@ TIME_ZONE = 'America/Chicago'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
+    '/var/www/static',
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
 
 # Email
 # https://docs.djangoproject.com/en/1.8/topics/email/
