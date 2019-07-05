@@ -1,4 +1,3 @@
-{% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,22 +20,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/api.min.js"></script>
 
     <!-- Add additional CSS in static file -->
-    <script>
-        $(function(){
-            $.fn.api.base
-                .api = {
-                // 'delete member': '/member/{id}/delete',
-                // 'update member': '/catalog/member/{id}/update'
-            };
-
-            $('.special.cards .image').dimmer({
-                on: 'hover'
-            });
-
-        });
-    </script>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <script src="{% static 'js/app.js' %}"></script>
 
 </head>
 <body>

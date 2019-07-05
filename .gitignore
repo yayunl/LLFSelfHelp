@@ -5,6 +5,7 @@ test_csv.py
 venv
 .idea
 *.pyc
+.env
 suorganizer/__pycache__/
 user/__pycache__/
 user/migrations/__pycache__/
