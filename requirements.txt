@@ -1,8 +1,10 @@
 backports.csv==1.0.7
+celery==4.3.0
 defusedxml==0.6.0
 diff-match-patch==20181111
 django-extensions==2.1.9
 dj-database-url==0.5.0
+djang-environ==0.4.5
 Django==2.2.2
 django-import-export==1.2.0
 et-xmlfile==1.0.1
@@ -13,6 +15,7 @@ openpyxl==2.6.2
 pytz==2019.1
 PyYAML==5.1.1
 psycopg2==2.8.3
+redis==3.2.1
 sqlparse==0.3.0
 tablib==0.13.0
 xlrd==1.2.0

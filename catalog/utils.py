@@ -2,7 +2,7 @@ import logging
 import traceback
 from logging import CRITICAL, ERROR
 from smtplib import SMTPException
-
+import datetime as dt
 from django.conf import settings
 from django.contrib.auth import get_user
 from django.contrib.auth.tokens import \
@@ -17,6 +17,9 @@ from django.template.loader import \
 from django.utils.encoding import force_bytes
 from django.utils.http import \
     urlsafe_base64_encode
+from django.template import Context, Template
+from django.core.mail import EmailMessage
+from .models import Service
 
 logger = logging.getLogger(__name__)
 
@@ -172,3 +175,52 @@ class ProfileGetObjectMixin:
     def get_object(self, queryset=None):
         current_user = get_user(self.request)
         return current_user.profile
+
+
+def service_dates():
+    """
+    Get the service dates in string of this week and the next week.
+    :return: tuple. (this_week_service_date_str, following_week_service_date_str)
+    """
+    today_full_date = dt.datetime.today()
+
+    today_wk_int = int(dt.datetime.strftime(today_full_date, '%w'))
+
+    delta_days_to_fri = 5 - today_wk_int
+
+    if delta_days_to_fri == -2:
+        # The date of next week
+        service_date = today_full_date + dt.timedelta(5)
+
+    elif delta_days_to_fri == -1:
+        # The date of this week
+        service_date = today_full_date - dt.timedelta(1)
+    else:
+        service_date = today_full_date + dt.timedelta(delta_days_to_fri)
+
+    # The service date a week after
+    following_service_date = service_date + dt.timedelta(7)
+
+    this_week_service_date_str = service_date.strftime('%Y-%m-%d')
+    following_week_service_date_str = following_service_date.strftime('%Y-%m-%d')
+
+    return this_week_service_date_str, following_week_service_date_str
+
+
+def send_reminder_email(email):
+    this_week_service_date_str, following_service_date_str = service_dates()
+    this_week_services = Service.objects.filter(service_date=this_week_service_date_str)
+
+    context = Context({'service': this_week_services})
+
+    email_subject = render_to_string(
+        'catalog/templates/catalog/reminder_email_subject.txt', context).replace('\n', '')
+    email_body = render_to_string('catalog/templates/catalog/reminder_email_body.txt', context)
+
+    email = EmailMessage(
+        email_subject, email_body, email,
+        [settings.DEFAULT_FROM_EMAIL], [],
+        headers={'Reply-To': email}
+    )
+    print(email_subject)
+    return email.send(fail_silently=False)

@@ -8,9 +8,11 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 """
 
 import os
-
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'suorganizer.settings')
+if os.environ.get('ENV').lower() == 'dev':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.production")
 
 application = get_wsgi_application()

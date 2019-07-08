@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
-import os
-import sys
+import os, sys, environ
+
+# Load env
+environ.Env.read_env()
+env = environ.Env(DEBUG=(bool, False),)
 
 
 def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'suorganizer.settings.dev')
+
+    if env('ENV').lower() == 'dev':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.production")
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

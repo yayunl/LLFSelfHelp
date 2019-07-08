@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
 
 import datetime as dt
-from .utils import (MailContextViewMixin)
+from .utils import (MailContextViewMixin, service_dates)
 from .forms import (UserCreationForm)
 
 
@@ -38,31 +38,9 @@ def index(request):
     # The 'all()' is implied by default.
     num_groups = Group.objects.count()
 
-    # service
-    today_full_date = dt.datetime.today()
-
-    today_str = dt.datetime.strftime(today_full_date, '%Y-%m-%d')
-    today_wk_int = int(dt.datetime.strftime(today_full_date, '%w'))
-
-    delta_days_to_fri = 5 - today_wk_int
-
-    if delta_days_to_fri == -2:
-        # next week
-        service_date = today_full_date + dt.timedelta(5)
-
-    elif delta_days_to_fri == -1:
-        # this week
-        service_date = today_full_date - dt.timedelta(1)
-    else:
-        service_date = today_full_date + dt.timedelta(delta_days_to_fri)
-
-    # the service date a week after
-    following_service_date = service_date + dt.timedelta(7)
-
-    service_date_str = service_date.strftime('%Y-%m-%d')
-    following_service_date_str = following_service_date.strftime('%Y-%m-%d')
-
-    services = Service.objects.filter(service_date=service_date_str)
+    # Get services of this week and the following week
+    this_week_service_date_str, following_service_date_str = service_dates()
+    services = Service.objects.filter(service_date=this_week_service_date_str)
     following_week_services = Service.objects.filter(service_date=following_service_date_str)
 
     context = {

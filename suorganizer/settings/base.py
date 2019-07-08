@@ -11,11 +11,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -127,3 +129,21 @@ EMAIL_SUBJECT_PREFIX = '[LLF Admin]'
 # Login redirect
 LOGIN_URL = '/user/login'
 LOGIN_REDIRECT_URL = '/catalog/'
+
+
+# CELERY STUFF
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Chicago'
+
+# Celery beat
+CELERY_BEAT_SCHEDULE = {
+    'send_reminders': {
+        'task': 'catalog.tasks.send_reminders',
+        'schedule': crontab(minute='*/1'),
+        # 'args': (10 , 20)
+    },
+}

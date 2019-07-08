@@ -6,6 +6,10 @@ venv
 .idea
 *.pyc
 .env
+*.bat
 suorganizer/__pycache__/
 user/__pycache__/
 user/migrations/__pycache__/
+*.bak
+*.dat
+*.dir
