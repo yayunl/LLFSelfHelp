@@ -1,16 +1,18 @@
 from celery import task
-from .utils import send_reminder_email
-
-#
-# @task()
-# def sum_two_numbers(a, b):
-#     c = a+b
-#     return c
+from django.core.mail import send_mail
+import os
 
 
-@task()
+@task(name='send_reminders')
 def send_reminders():
 
-    # following_week_services = Service.objects.filter(service_date=following_service_date_str)
-    return send_reminder_email("YOUR_EMAIL@gmail.com")
+    from_email = os.environ.get('EMAIL_HOST_USER')
+    send_mail(
+        'Subject here',
+        'Here is the message.',
+        from_email,
+        [from_email],
+        fail_silently=False,
+    )
 
+    return "Email sent."

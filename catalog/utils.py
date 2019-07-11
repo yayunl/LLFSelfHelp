@@ -18,8 +18,10 @@ from django.utils.encoding import force_bytes
 from django.utils.http import \
     urlsafe_base64_encode
 from django.template import Context, Template
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 from .models import Service
+from django.core import mail
+
 
 logger = logging.getLogger(__name__)
 
@@ -207,7 +209,7 @@ def service_dates():
     return this_week_service_date_str, following_week_service_date_str
 
 
-def send_reminder_email(email):
+def send_reminder_email(from_email):
     this_week_service_date_str, following_service_date_str = service_dates()
     this_week_services = Service.objects.filter(service_date=this_week_service_date_str)
 
@@ -217,10 +219,20 @@ def send_reminder_email(email):
         'catalog/templates/catalog/reminder_email_subject.txt', context).replace('\n', '')
     email_body = render_to_string('catalog/templates/catalog/reminder_email_body.txt', context)
 
-    email = EmailMessage(
-        email_subject, email_body, email,
-        [settings.DEFAULT_FROM_EMAIL], [],
-        headers={'Reply-To': email}
+    # email = EmailMessage(
+    #     email_subject, email_body, from_email,
+    #     [settings.DEFAULT_FROM_EMAIL], [],
+    #     headers={'Reply-To': from_email}
+    # )
+    # print(email_subject)
+    # return email.send(fail_silently=False)
+
+    send_mail(
+        'Subject here',
+        'Here is the message.',
+        from_email,
+        [from_email],
+        fail_silently=False,
     )
-    print(email_subject)
-    return email.send(fail_silently=False)
+
+    return "Email sent."

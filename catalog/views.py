@@ -22,6 +22,12 @@ from .decorators import class_login_required, require_authenticated_permission
 import datetime as dt
 from .utils import (MailContextViewMixin, service_dates)
 from .forms import (UserCreationForm)
+from .tasks import send_reminders
+
+
+def test_email(request):
+    send_reminders.delay()
+    return HttpResponse("Email sent.")
 
 
 @login_required()

@@ -11,10 +11,11 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView
     PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView)
 from django.contrib.auth.views import AuthenticationForm
 # from django.contrib.auth.decorators import login_required
-
+from .views import test_email
 
 urlpatterns = [
     path('', index, name='member_index'),
+    path('email', test_email),
     path('members/', MemberListView.as_view(), name='member_list'),
     path('member/create/', MemberCreateView.as_view(), name='member_create'),
     path('member/<slug>/detail', MemberDetailView.as_view(), name='member_detail'),
