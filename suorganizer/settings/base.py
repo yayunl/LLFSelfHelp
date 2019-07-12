@@ -127,6 +127,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'no-reply@llfadmin.com'
 EMAIL_SUBJECT_PREFIX = '[LLF Admin]'
 
+REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 
 # Login redirect
 LOGIN_URL = '/user/login'
@@ -143,8 +144,8 @@ CELERY_TIMEZONE = 'America/Chicago'
 
 # Celery beat
 CELERY_BEAT_SCHEDULE = {
-    'send_reminders': {
-        'task': 'catalog.tasks.send_reminders',
+    'scheduled_reminders': {
+        'task': 'send_reminders',
         'schedule': crontab(minute='*/1'),
         # 'args': (10 , 20)
     },

@@ -1,1 +1,1 @@
-Reminder of this week's service
+LLFAdmin. Reminder of the services for this week ( {{ this_week_date }} )

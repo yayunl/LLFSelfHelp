@@ -1,11 +1,13 @@
-Service teams of this week:
+Service teams of this week ({{ this_week_date }}):
 
 {% for service in services.all %}
-   {{ service.service_category}}
-   Servants:
+
+   {{ service.service_category}}:
+        {% spaceless %}
         {% for server in service.servants.all %}
         {{ server.name}}
         {% endfor %}
+        {% endspaceless %}
 {% endfor %}
 
 ------
