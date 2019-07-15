@@ -1,16 +1,6 @@
 {% extends parent_template|default:"catalog/base_user.html" %}
 
 {% block content %}
-  <h1>Service List</h1>
-  {% if service_list %}
-  <ul>
-    {% for service in service_list %}
-      <li>
-        <a href="{% url 'service_detail' service.slug %}">{{ service.service_category }} date: {{ service.service_date}}</a>
-      </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-    <p>There are no teams in the library.</p>
-  {% endif %}
+{% load django_tables2 %}
+{% render_table table %}
 {% endblock %}

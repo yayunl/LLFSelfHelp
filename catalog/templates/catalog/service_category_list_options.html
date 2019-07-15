@@ -1,0 +1,9 @@
+<select name="service">
+    {% for service in services %}
+<!--        {% if service == record.service_category %}-->
+<!--        <option value="{{ service }}" selected>{{ service }}</option>-->
+<!--        {% else %}-->
+        <option value="{{ service }}">{{ service }}</option>
+<!--        {% endif %}-->
+    {% endfor %}
+</select>

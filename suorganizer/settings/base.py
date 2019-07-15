@@ -33,7 +33,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     # 'djcelery_email',
+    "bootstrap4",
+    "bootstrap_datepicker_plus",
     'import_export',
+    'django_tables2',
     'catalog',
     'core',
 ]
@@ -150,3 +153,6 @@ CELERY_BEAT_SCHEDULE = {
         # 'args': (10 , 20)
     },
 }
+
+# Django-table2 settings
+DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'

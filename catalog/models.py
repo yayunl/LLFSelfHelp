@@ -1,7 +1,10 @@
 from django.db import models
-from django.conf import settings
+# from django.conf import settings
 from django.urls import reverse
 from django.template.defaultfilters import slugify
+from django_tables2 import tables, TemplateColumn
+
+
 # Create your models here.
 
 
@@ -126,3 +129,16 @@ class Service(models.Model):
         if not self.slug:
             self.slug = self._get_unique_slug()
         super().save(*args, **kwargs)
+
+    @property
+    def servant_names(self):
+        return ','.join([servant.name for servant in self.servants.all()])
+
+
+class ServiceTable(tables.Table):
+
+    change = TemplateColumn(template_name='catalog/service_table_update_column.html')
+
+    class Meta:
+        model = Service
+        fields = ('service_date', 'service_category', 'servant_names', 'change')

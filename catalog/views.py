@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-from catalog.models import Group, Member, Service
-from catalog.forms import MemberForm, ServiceForm, ResendActivationEmailForm
+from catalog.models import Group, Member, Service, ServiceTable
+from catalog.forms import MemberForm, ServiceForm, ServiceUpdateForm, ResendActivationEmailForm
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -15,11 +15,12 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-
+from django_tables2 import tables, LazyPaginator
+import django_tables2
 from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
 
-import datetime as dt
+# import datetime as dt
 from .utils import (MailContextViewMixin, service_dates)
 from .forms import (UserCreationForm)
 from .tasks import send_reminders
@@ -115,24 +116,30 @@ class ServiceCreateView(CreateView):
     model = Service
     form_class = ServiceForm
 
+    # def get_form(self):
+    #     form = super().get_form()
+    #     form.fields['service_date'].widget = DateTimePickerInput()
+    #     return form
+
 
 @require_authenticated_permission('catalog.service_update')
 class ServiceUpdateView(UpdateView):
     model = Service
-    form_class = ServiceForm
+    form_class = ServiceUpdateForm
 
 
 @require_authenticated_permission('catalog.service_delete')
 class ServiceDeleteView(DeleteView):
     model = Service
+    success_url = reverse_lazy('service_list')
 
 
-@class_login_required
-class ServiceListView(ListView):
-    model = Service
-    context_object_name = 'service_list'
-    queryset = Service.objects.filter()
-    template_name = 'catalog/service_list.html'
+# @class_login_required
+# class ServiceListView(ListView):
+#     model = Service
+#     context_object_name = 'service_list'
+#     queryset = Service.objects.filter()
+#     template_name = 'catalog/service_list.html'
 
 
 @class_login_required
@@ -142,6 +149,25 @@ class ServiceDetailView(DetailView):
     context_object_name = 'service'
     template_name = 'catalog/service_detail.html'
     queryset = Service.objects.filter()
+
+
+@class_login_required
+class ServiceListView(django_tables2.SingleTableView):
+    model = Service
+    table_class = ServiceTable
+    queryset = Service.objects.all()
+    template_name = "catalog/service_list.html"
+
+    table_pagination = {"per_page": 10}
+
+    def get_table_kwargs(self):
+        return {"template_name": "django_tables2/bootstrap.html"}
+
+
+@login_required()
+def load_services(request):
+    services = set([s.service_category for s in Service.objects.all()])
+    return render(request, 'catalog/service_category_list_options.html', {'services': services})
 
 
 # User account creation and activation

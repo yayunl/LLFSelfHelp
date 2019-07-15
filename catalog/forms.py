@@ -6,9 +6,13 @@ from django.contrib.auth.forms import (
 
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.forms.widgets import SelectDateWidget
 from django import forms
+from bootstrap_datepicker_plus import DatePickerInput
+
 from .models import Member, Service
 from .utils import ActivationMailFormMixin
+from django.forms import widgets
 
 
 class MemberForm(ModelForm):
@@ -22,9 +26,31 @@ class MemberForm(ModelForm):
 
 
 class ServiceForm(ModelForm):
+    service_category = forms.ChoiceField(choices=set([(s.service_category, s.service_category) for s in Service.objects.all()]))
+
     class Meta:
         model = Service
-        exclude = ('slug',)
+        exclude = ('slug', 'coordinator')
+        # fields = ('service_date', 'service_category', 'edit')
+        attrs = {'class': 'table table-sm'}
+        widgets = {
+            'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
+            'service_category': widgets.Select(attrs={'class': 'select'}),
+        }
+
+
+class ServiceUpdateForm(ModelForm):
+    # service_category = forms.ChoiceField(choices=set([(s.service_category, s.service_category) for s in Service.objects.all()]))
+
+    class Meta:
+        model = Service
+        exclude = ('slug', 'coordinator')
+        # fields = ('service_date', 'service_category', 'edit')
+        attrs = {'class': 'table table-sm'}
+        widgets = {
+            'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
+            # 'service_category': widgets.Select(attrs={'class': 'select'}),
+        }
 
 
 class ResendActivationEmailForm(
