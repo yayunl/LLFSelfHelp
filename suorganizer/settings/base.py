@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django_extensions',
     # 'djcelery_email',
     "bootstrap4",
+    "django_filters",
     "bootstrap_datepicker_plus",
     'import_export',
     'django_tables2',

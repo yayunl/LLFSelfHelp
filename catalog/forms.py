@@ -26,7 +26,10 @@ class MemberForm(ModelForm):
 
 
 class ServiceForm(ModelForm):
-    service_category = forms.ChoiceField(choices=set([(s.service_category, s.service_category) for s in Service.objects.all()]))
+    try:
+        service_category = forms.ChoiceField(choices=set([(s.service_category, s.id) for s in Service.objects.all()]))
+    except:
+        service_category = forms.ChoiceField(choices=set())
 
     class Meta:
         model = Service

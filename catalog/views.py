@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-from catalog.models import Group, Member, Service, ServiceTable
+from catalog.models import Group, Member, Service, ServiceTable, ServiceFilter
 from catalog.forms import MemberForm, ServiceForm, ServiceUpdateForm, ResendActivationEmailForm
+from catalog.resources import MemberResource, ServiceResource
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -15,7 +16,9 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django_tables2 import tables, LazyPaginator
+from django.views.generic.base import TemplateView
+
+
 import django_tables2
 from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
@@ -24,6 +27,7 @@ from .decorators import class_login_required, require_authenticated_permission
 from .utils import (MailContextViewMixin, service_dates)
 from .forms import (UserCreationForm)
 from .tasks import send_reminders
+from tablib import Dataset
 
 
 def test_email(request):
@@ -31,34 +35,25 @@ def test_email(request):
     return HttpResponse("Email sent.")
 
 
-@login_required()
-def index(request):
-    """View function for home page of site."""
+# @login_required()
+class IndexView(ListView):
+    model = Service
+    # table_class = ServiceTable
+    queryset = Service.objects.filter(service_date=service_dates()[0])
+    context_object_name = 'services'
+    template_name = "catalog/index.html"
 
-    # Generate counts of some of the main objects
-    num_members = Member.objects.all().count()
-    # num_groups = Service.
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        this_week_service_date_str, following_service_date_str, _ = service_dates()
+        # services = Service.objects.filter(service_date=this_week_service_date_str)
+        following_week_services = Service.objects.filter(service_date=following_service_date_str)
 
-    # Available members (status = 'a')
-    # num_instances_available = BookInstance.objects.filter(status__exact='a').count()
+        context['next_services'] = following_week_services
 
-    # The 'all()' is implied by default.
-    num_groups = Group.objects.count()
-
-    # Get services of this week and the following week
-    this_week_service_date_str, following_service_date_str = service_dates()
-    services = Service.objects.filter(service_date=this_week_service_date_str)
-    following_week_services = Service.objects.filter(service_date=following_service_date_str)
-
-    context = {
-        'num_members': num_members,
-        'num_groups': num_groups,
-        'services': services,
-        'following_wk_services': following_week_services,
-    }
-
-    # Render the HTML template index.html with the data in the context variable
-    return render(request, 'catalog/index.html', context=context)
+        context['this_week_service_date'] = this_week_service_date_str
+        context['next_week_service_date'] = following_service_date_str
+        return context
 
 
 @require_authenticated_permission('catalog.member_create')
@@ -93,6 +88,46 @@ class MemberListView(ListView):
 @class_login_required
 class MemberDetailView(DetailView):
     model = Member
+
+# Export the members to excel
+@login_required()
+def member_export(request):
+    person_resource = MemberResource()
+    dataset = person_resource.export()
+    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="LLF contacts.xls"'
+    return response
+
+# Import members from excel
+@login_required()
+def member_import(request):
+    if request.method == 'POST':
+        resource = MemberResource()
+        dataset = Dataset()
+        new_persons = request.FILES['external-file']
+
+        imported_data = dataset.load(new_persons.read())
+
+        imported_data.headers = ['Chinese Name', 'English Name', 'Gender', 'Christian', 'Phone Number',\
+                                 'Email', 'wechat_id', 'address', 'Job', 'Hometown', 'note',
+                                 'First Visit Time', 'Birthday', 'month', 'day', 'Habits']
+
+        # add a column `id`
+        imported_data.append_col(range(len(imported_data['Chinese Name'])), header='id')
+
+        # remove some columns
+        del imported_data['wechat_id']
+        del imported_data['address']
+        del imported_data['note']
+        del imported_data['month']
+        del imported_data['day']
+
+        result = resource.import_data(dataset, dry_run=True)  # Test the data import
+
+        if not result.has_errors():
+            resource.import_data(dataset, dry_run=False)  # Actually import now
+
+    return render(request, 'catalog/simple_upload.html')
 
 
 @class_login_required
@@ -156,6 +191,7 @@ class ServiceListView(django_tables2.SingleTableView):
     model = Service
     table_class = ServiceTable
     queryset = Service.objects.all()
+    filterset_class = ServiceFilter
     template_name = "catalog/service_list.html"
 
     table_pagination = {"per_page": 10}
@@ -170,9 +206,17 @@ def load_services(request):
     return render(request, 'catalog/service_category_list_options.html', {'services': services})
 
 
+# Export the services to excel
+@login_required()
+def service_export(request):
+    resource = ServiceResource()
+    dataset = resource.export()
+    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="LLF service schedule.xls"'
+    return response
+
+
 # User account creation and activation
-
-
 class ActivateAccount(View):
     success_url = reverse_lazy('login')
     template_name = 'catalog/user_activate.html'

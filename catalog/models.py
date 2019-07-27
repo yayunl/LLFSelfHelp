@@ -3,8 +3,10 @@ from django.db import models
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django_tables2 import tables, TemplateColumn
-
-
+from .utils import service_dates
+from datetime import datetime as dt
+import datetime
+import django_filters
 # Create your models here.
 
 
@@ -26,7 +28,7 @@ class Group(models.Model):
 
 class Member(models.Model):
     # fields
-
+    id = models.IntegerField(unique=True, primary_key=True)
     name = models.CharField(max_length=50, null=True, blank=True, unique=True)
     # name = models.OneToOneField(settings.AUTH_USER_MODEL)
     english_name = models.CharField(max_length=50, null=True, blank=True)
@@ -66,7 +68,7 @@ class Member(models.Model):
         return reverse('member_detail', args=[self.slug])
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.name} ({self.group.name})"
 
     def _get_unique_slug(self):
         email = self.email.split('@')[0]
@@ -93,12 +95,15 @@ class SocialMediaAccount(models.Model):
 class Service(models.Model):
     service_category = models.CharField(max_length=20, null=True, blank=True)
     service_date = models.DateField(null=True)
-
-    coordinator = models.ManyToManyField(Member, null=True)
+    service_content = models.CharField(max_length=50, null=True, blank=True,
+                                       help_text='Required if the service has specific title.')
+    coordinator = models.ManyToManyField(Member,
+                                         null=True,
+                                         blank=True)
     servants = models.ManyToManyField(Member,
                                       related_name='services',
-                                      null=True)
-
+                                      null=True,
+                                      blank=True)
     slug = models.SlugField(max_length=63)
 
     def __str__(self):
@@ -132,7 +137,13 @@ class Service(models.Model):
 
     @property
     def servant_names(self):
-        return ','.join([servant.name for servant in self.servants.all()])
+        return ','.join([f'{servant.name}({servant.group.name})' for servant in self.servants.all()])
+
+
+class ServiceFilter(django_filters.FilterSet):
+    class Meta:
+        model = Service
+        fields = ['service_date', 'service_category']
 
 
 class ServiceTable(tables.Table):
@@ -141,4 +152,11 @@ class ServiceTable(tables.Table):
 
     class Meta:
         model = Service
-        fields = ('service_date', 'service_category', 'servant_names', 'change')
+        fields = ('service_date', 'service_category', 'service_content', 'servant_names', 'change')
+        row_attrs = {
+            'data-id': lambda record: '1'
+
+            if dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[0] or
+               dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[-1]
+            else '0'
+        }

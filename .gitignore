@@ -13,3 +13,4 @@ user/migrations/__pycache__/
 *.bak
 *.dat
 *.dir
+catalog/migrations/*.py

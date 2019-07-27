@@ -1,0 +1,9 @@
+{% extends parent_template|default:"catalog/base_user.html" %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="external-file">
+    <button type="submit">Upload</button>
+  </form>
+{% endblock %}

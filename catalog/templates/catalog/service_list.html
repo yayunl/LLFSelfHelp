@@ -1,6 +1,13 @@
 {% extends parent_template|default:"catalog/base_user.html" %}
 
 {% block content %}
+<h1>Services </h1>
+<a href="{% url 'service_export' %}">
+    <i class="cloud download icon"></i>
+    Export services
+</a>
+
 {% load django_tables2 %}
 {% render_table table %}
 {% endblock %}
+

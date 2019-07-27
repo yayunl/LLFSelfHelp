@@ -19,7 +19,6 @@ from django.utils.http import \
 from django.core.mail import EmailMessage, send_mail
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -179,7 +178,9 @@ class ProfileGetObjectMixin:
 def service_dates():
     """
     Get the service dates in string of this week and the next week.
-    :return: tuple. (this_week_service_date_str, following_week_service_date_str)
+    :return: tuple. (this_week_service_date_str in YYYY-MM-DD format,
+                     following_week_service_date_str in YYYY-MM-DD format,
+                     this_week_sunday_date_str in YYYY-MM-DD format)
     """
     today_full_date = dt.datetime.today()
 
@@ -200,8 +201,12 @@ def service_dates():
     # The service date a week after
     following_service_date = service_date + dt.timedelta(7)
 
+    # This week's Sunday date
+    this_week_sunday_date = service_date + dt.timedelta(2)
+
     this_week_service_date_str = service_date.strftime('%Y-%m-%d')
     following_week_service_date_str = following_service_date.strftime('%Y-%m-%d')
+    this_week_sunday_date_str = this_week_sunday_date.strftime('%Y-%m-%d')
 
-    return this_week_service_date_str, following_week_service_date_str
+    return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str
 

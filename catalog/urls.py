@@ -1,4 +1,4 @@
-from .views import index, MemberListView, GroupListView, ServiceListView
+from .views import IndexView, MemberListView, GroupListView, ServiceListView
 from .views import MemberDetailView, ServiceDetailView, GroupDetailView
 from .views import MemberCreateView, ServiceCreateView, load_services
 from .views import MemberDeleteView, ServiceDeleteView
@@ -11,21 +11,24 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView
     PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView)
 from django.contrib.auth.views import AuthenticationForm
 # from django.contrib.auth.decorators import login_required
-from .views import test_email
+from .views import test_email, member_export, service_export, member_import
 
 urlpatterns = [
-    path('', index, name='member_index'),
+    path('', IndexView.as_view(), name='member_index'),
     path('email', test_email),
     path('members/', MemberListView.as_view(), name='member_list'),
     path('member/create/', MemberCreateView.as_view(), name='member_create'),
     path('member/<slug>/detail', MemberDetailView.as_view(), name='member_detail'),
     path('member/<slug>/delete', MemberDeleteView.as_view(), name='member_delete'),
     path('member/<slug>/update', MemberUpdateView.as_view(), name='member_update'),
+    path('members/export', member_export, name='member_export'),
+    path('members/import', member_import, name='member_import'),
 
     path('groups/', GroupListView.as_view(), name='group_list'),
     path('group/<slug>', GroupDetailView.as_view(), name='group_detail'),
 
     path('services', ServiceListView.as_view(), name='service_list'),
+    path('services/export', service_export, name='service_export'),
     path('service/create/', ServiceCreateView.as_view(), name='service_create'),
     path('service/<slug>/detail', ServiceDetailView.as_view(), name='service_detail'),
     path('service/<slug>/delete', ServiceDeleteView.as_view(), name='service_delete'),
