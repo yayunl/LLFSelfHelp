@@ -11,9 +11,9 @@ import django_filters
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=20, default='New Comers')
+    name = models.CharField(max_length=20, default='New member', null=True)
 
-    slug = models.SlugField(max_length=31)
+    slug = models.SlugField(max_length=31, default='new-members', null=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -36,24 +36,21 @@ class Member(models.Model):
     christian = models.BooleanField(default=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True)
-
     job = models.CharField(max_length=50, null=True, blank=True)
     hometown = models.CharField(max_length=50, null=True, blank=True)
     first_time = models.DateField(null=True)
     habits = models.TextField(null=True, blank=True)
-
     birthday = models.DateField(null=True, blank=True)
 
     # A member belongs to only one group.
-    group = models.ForeignKey(Group, on_delete=True, related_name='members')
+    group = models.ForeignKey(Group, on_delete=True, related_name='members', null=True)
     group_leader = models.BooleanField(default=False)
     # Active member?
     active = models.BooleanField(default=True)
 
     # username
-    username = models.CharField(max_length=50, null=True, blank=True)
-
-    slug = models.SlugField(max_length=31, blank=True)
+    username = models.CharField(max_length=50, null=True, blank=True, default=None)
+    slug = models.SlugField(max_length=31, blank=True, default=None)
 
     # Metadata
     class Meta:
@@ -68,7 +65,10 @@ class Member(models.Model):
         return reverse('member_detail', args=[self.slug])
 
     def __str__(self):
-        return f"{self.name} ({self.group.name})"
+        try:
+            return f"{self.name} ({self.group.name})"
+        except:
+            return f"{self.name} (New comers)"
 
     def _get_unique_slug(self):
         email = self.email.split('@')[0]

@@ -28,6 +28,7 @@ from .utils import (MailContextViewMixin, service_dates)
 from .forms import (UserCreationForm)
 from .tasks import send_reminders
 from tablib import Dataset
+import datetime as dt
 
 
 def test_email(request):
@@ -108,24 +109,40 @@ def member_import(request):
 
         imported_data = dataset.load(new_persons.read())
 
-        imported_data.headers = ['Chinese Name', 'English Name', 'Gender', 'Christian', 'Phone Number',\
+        imported_data.headers = ['Chinese Name', 'English Name', 'Gender', 'christian', 'Phone Number',\
                                  'Email', 'wechat_id', 'address', 'Job', 'Hometown', 'note',
-                                 'First Visit Time', 'Birthday', 'month', 'day', 'Habits']
+                                 'first visit', 'birthday', 'lunar birthday', 'Habits']
+        convert_first_visit = lambda drow: dt.datetime(1899,12,30)+dt.timedelta(days=int(drow[11])) if drow[11] else None
+        convert_birthday = lambda drow: dt.datetime(1899,12,30) + dt.timedelta(days=int(drow[12])) if drow[12] else None
+        convert_christian_column = lambda drow: True if drow[3]=='是' else False
+        imported_data.append_col(convert_first_visit, header='First Visit Time')
+        imported_data.append_col(convert_birthday, header='Birthday')
+        imported_data.append_col(convert_christian_column, header='Christian')
 
-        # add a column `id`
+        # add columns
         imported_data.append_col(range(len(imported_data['Chinese Name'])), header='id')
+        imported_data.append_col([True]*len(imported_data['Chinese Name']), header='active')
+        imported_data.append_col([False]*len(imported_data['Chinese Name']), header='group_leader')
+        # imported_data.append_col([1]*len(imported_data['Chinese Name']), header='group_id')
+        imported_data.append_col([None] * len(imported_data['Chinese Name']), header='username')
+        imported_data.append_col([None] * len(imported_data['Chinese Name']), header='slug')
 
         # remove some columns
+        del imported_data['first visit']
+        del imported_data['christian']
+        del imported_data['birthday']
         del imported_data['wechat_id']
         del imported_data['address']
         del imported_data['note']
-        del imported_data['month']
-        del imported_data['day']
+        del imported_data['lunar birthday']
 
-        result = resource.import_data(dataset, dry_run=True)  # Test the data import
+        # Test the data import
+        result = resource.import_data(imported_data, dry_run=True)
 
+        # Actually import now
         if not result.has_errors():
-            resource.import_data(dataset, dry_run=False)  # Actually import now
+            results = resource.import_data(imported_data, dry_run=False)
+            errors = results.has_errors()
 
     return render(request, 'catalog/simple_upload.html')
 

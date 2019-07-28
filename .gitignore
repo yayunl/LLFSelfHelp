@@ -14,3 +14,4 @@ user/migrations/__pycache__/
 *.dat
 *.dir
 catalog/migrations/*.py
+test_data/*

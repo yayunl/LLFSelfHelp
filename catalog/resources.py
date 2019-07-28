@@ -20,7 +20,7 @@ class MemberResource(resources.ModelResource):
 
     class Meta:
         model = Member
-        exclude = ('christian', 'group', 'group_leader', 'active', 'username', 'slug')
+        # exclude = ('christian', 'group', 'group_leader', 'active', 'username', 'slug')
         export_order = ('id', 'name', 'english_name', 'gender', 'job', 'email', 'phone_number', 'hometown',\
                         'birthday', 'habits', 'first_time')
 
