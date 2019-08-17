@@ -1,6 +1,5 @@
 from import_export import resources
 from import_export.fields import Field
-from import_export.widgets import ManyToManyWidget
 from .models import Member, Service
 
 
@@ -30,10 +29,10 @@ class MemberResource(resources.ModelResource):
 
 
 class ServiceResource(resources.ModelResource):
-    servant_name = Field(column_name="Servant Name")
-    service_category = Field(attribute='service_category', column_name='Service Category')
-    service_date = Field(attribute='service_date', column_name='Service Date')
-    service_content = Field(attribute='service_content', column_name='Note')
+    servant_name = Field(column_name="Servants")
+    service_category = Field(attribute='service_category', column_name='Category')
+    service_date = Field(attribute='service_date', column_name='Date')
+    # service_content = Field(attribute='service_content', column_name='Note')
 
     class Meta:
         model = Service

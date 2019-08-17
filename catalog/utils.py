@@ -1,8 +1,7 @@
-import logging
-import traceback
+import logging, traceback, datetime as dt, pandas as pd
+from tablib import Dataset
 from logging import CRITICAL, ERROR
 from smtplib import SMTPException
-import datetime as dt
 from django.conf import settings
 from django.contrib.auth import get_user
 from django.contrib.auth.tokens import \
@@ -210,3 +209,52 @@ def service_dates():
 
     return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str
 
+
+def handle_uploaded_schedules(raw_data, resource_instance):
+    # bank name
+    df = raw_data.df
+    df.dropna(subset=['Date'], inplace=True)
+    df.drop([41], inplace=True)
+    convert_date = lambda date: dt.datetime(1899, 12, 30) + dt.timedelta(days=int(date)) if isinstance(date, float) else date
+    df['Date'] = df['Date'].apply(convert_date)
+
+    categories, dates, servants = list(), list(), list()
+
+    for index, r in df.iterrows():
+        sevs = r.to_dict()
+        date = r[0]
+
+        BS_servants = list()
+        # iterate dict of a week's service team
+        for key, val in sevs.items():
+
+            # Escape the columns
+            if key in ('Date', 'Unnamed: 21',''):
+                continue
+
+            # Save the BS leaders
+            if 'BS-G' in key:
+                BS_servants.append(val)
+                continue
+
+            if 'BS-G' not in key:
+                dates.append(date)
+                categories.append(key)
+                servants.append(val)
+
+        # Save BS leaders
+        if type(BS_servants[0]) == str:
+            dates.append(date)
+            categories.append('Bible-study-servants')
+            servants.append(','.join(BS_servants))
+
+    data = {'Date': dates, 'Category': categories, 'Servants': servants}
+    ndf = pd.DataFrame(data)
+    # output the new dataframe to csv
+    ndf.to_csv('temp/temp.csv', index=False)
+
+    imported_data = Dataset().load(open('temp/temp.csv', encoding='utf-8').read())
+    result = resource_instance.import_data(imported_data, dry_run=True)  # Test the data import
+    errors = result.has_errors()
+    if not result.has_errors():
+        resource_instance.import_data(imported_data, dry_run=False)  # Actually import now

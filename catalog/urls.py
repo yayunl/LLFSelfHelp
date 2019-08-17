@@ -11,7 +11,7 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView
     PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView)
 from django.contrib.auth.views import AuthenticationForm
 # from django.contrib.auth.decorators import login_required
-from .views import test_email, member_export, service_export, member_import
+from .views import (test_email, member_export,  member_import, service_export, service_import)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='member_index'),
@@ -29,6 +29,7 @@ urlpatterns = [
 
     path('services', ServiceListView.as_view(), name='service_list'),
     path('services/export', service_export, name='service_export'),
+    path('services/import', service_import, name='service_import'),
     path('service/create/', ServiceCreateView.as_view(), name='service_create'),
     path('service/<slug>/detail', ServiceDetailView.as_view(), name='service_detail'),
     path('service/<slug>/delete', ServiceDeleteView.as_view(), name='service_delete'),

@@ -97,9 +97,9 @@ class Service(models.Model):
     service_date = models.DateField(null=True)
     service_content = models.CharField(max_length=50, null=True, blank=True,
                                        help_text='Required if the service has specific title.')
-    coordinator = models.ManyToManyField(Member,
-                                         null=True,
-                                         blank=True)
+    # coordinator = models.ManyToManyField(Member,
+    #                                      null=True,
+    #                                      blank=True)
     servants = models.ManyToManyField(Member,
                                       related_name='services',
                                       null=True,

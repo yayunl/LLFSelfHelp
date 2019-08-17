@@ -24,7 +24,7 @@ from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
 
 # import datetime as dt
-from .utils import (MailContextViewMixin, service_dates)
+from .utils import (MailContextViewMixin, service_dates, handle_uploaded_schedules)
 from .forms import (UserCreationForm)
 from .tasks import send_reminders
 from tablib import Dataset
@@ -231,6 +231,26 @@ def service_export(request):
     response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment; filename="LLF service schedule.xls"'
     return response
+
+
+# Import services from excel
+@login_required()
+def service_import(request):
+
+    if request.method == 'POST':
+        resource = ServiceResource()
+        dataset = Dataset()
+        loaded_file = request.FILES['external-file']
+
+        imported_data = dataset.load(loaded_file.read())
+        handle_uploaded_schedules(imported_data, resource)
+        # imported_data.headers = ['service_date', 'leader_of_week', 'setup_group', 'food_pickup', 'fruit_dessert',\
+        #                          'dish_clean', 'child_care', 'newcomer_welcome', 'birthday_celebrate', 'worship', 'bible_study',
+        #                          'first visit', 'birthday', 'lunar birthday', 'Habits']
+
+        # convert_first_visit = lambda drow: dt.datetime(1899,12,30)+dt.timedelta(days=int(drow[11])) if drow[11] else None
+
+    return render(request, 'catalog/simple_upload.html')
 
 
 # User account creation and activation

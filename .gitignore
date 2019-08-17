@@ -15,3 +15,5 @@ user/migrations/__pycache__/
 *.dir
 catalog/migrations/*.py
 test_data/*
+*.xlsx
+*.ipynb
