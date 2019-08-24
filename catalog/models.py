@@ -3,11 +3,45 @@ from django.db import models
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django_tables2 import tables, TemplateColumn
-from .utils import service_dates
 from datetime import datetime as dt
-import datetime
-import django_filters
+import django_filters, datetime
 # Create your models here.
+
+
+def service_dates():
+    """
+    Get the service dates in string of this week and the next week.
+    :return: tuple. (this_week_service_date_str in YYYY-MM-DD format,
+                     following_week_service_date_str in YYYY-MM-DD format,
+                     this_week_sunday_date_str in YYYY-MM-DD format)
+    """
+    today_full_date = dt.today()
+
+    today_wk_int = int(dt.strftime(today_full_date, '%w'))
+
+    delta_days_to_fri = 5 - today_wk_int
+
+    if delta_days_to_fri == -2:
+        # The date of next week
+        service_date = today_full_date + datetime.timedelta(5)
+
+    elif delta_days_to_fri == -1:
+        # The date of this week
+        service_date = today_full_date - datetime.timedelta(1)
+    else:
+        service_date = today_full_date + datetime.timedelta(delta_days_to_fri)
+
+    # The service date a week after
+    following_service_date = service_date + datetime.timedelta(7)
+
+    # This week's Sunday date
+    this_week_sunday_date = service_date + datetime.timedelta(2)
+
+    this_week_service_date_str = service_date.strftime('%Y-%m-%d')
+    following_week_service_date_str = following_service_date.strftime('%Y-%m-%d')
+    this_week_sunday_date_str = this_week_sunday_date.strftime('%Y-%m-%d')
+
+    return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str
 
 
 class Group(models.Model):
@@ -93,17 +127,14 @@ class SocialMediaAccount(models.Model):
 
 
 class Service(models.Model):
+    id = models.IntegerField(unique=True, primary_key=True)
     service_category = models.CharField(max_length=20, null=True, blank=True)
     service_date = models.DateField(null=True)
-    service_content = models.CharField(max_length=50, null=True, blank=True,
-                                       help_text='Required if the service has specific title.')
-    # coordinator = models.ManyToManyField(Member,
-    #                                      null=True,
-    #                                      blank=True)
     servants = models.ManyToManyField(Member,
                                       related_name='services',
                                       null=True,
                                       blank=True)
+    service_note = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(max_length=63)
 
     def __str__(self):
@@ -133,11 +164,13 @@ class Service(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self._get_unique_slug()
+        if not self.id:
+            super().save(*args, **kwargs)
         super().save(*args, **kwargs)
 
     @property
     def servant_names(self):
-        return ','.join([f'{servant.name}({servant.group.name})' for servant in self.servants.all()])
+        return ','.join([f'{servant.name}' for servant in self.servants.all()])
 
 
 class ServiceFilter(django_filters.FilterSet):
@@ -152,10 +185,9 @@ class ServiceTable(tables.Table):
 
     class Meta:
         model = Service
-        fields = ('service_date', 'service_category', 'service_content', 'servant_names', 'change')
+        fields = ('service_date', 'service_category', 'servants', 'service_note', 'change')
         row_attrs = {
             'data-id': lambda record: '1'
-
             if dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[0] or
                dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[-1]
             else '0'

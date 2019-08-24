@@ -24,7 +24,8 @@ from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
 
 # import datetime as dt
-from .utils import (MailContextViewMixin, service_dates, handle_uploaded_schedules)
+from .utils import (MailContextViewMixin, handle_uploaded_schedules)
+from .models import service_dates
 from .forms import (UserCreationForm)
 from .tasks import send_reminders
 from tablib import Dataset

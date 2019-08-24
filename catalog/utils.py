@@ -17,6 +17,7 @@ from django.utils.http import \
     urlsafe_base64_encode
 from django.core.mail import EmailMessage, send_mail
 
+from .models import Member, Service
 
 logger = logging.getLogger(__name__)
 
@@ -174,42 +175,6 @@ class ProfileGetObjectMixin:
         return current_user.profile
 
 
-def service_dates():
-    """
-    Get the service dates in string of this week and the next week.
-    :return: tuple. (this_week_service_date_str in YYYY-MM-DD format,
-                     following_week_service_date_str in YYYY-MM-DD format,
-                     this_week_sunday_date_str in YYYY-MM-DD format)
-    """
-    today_full_date = dt.datetime.today()
-
-    today_wk_int = int(dt.datetime.strftime(today_full_date, '%w'))
-
-    delta_days_to_fri = 5 - today_wk_int
-
-    if delta_days_to_fri == -2:
-        # The date of next week
-        service_date = today_full_date + dt.timedelta(5)
-
-    elif delta_days_to_fri == -1:
-        # The date of this week
-        service_date = today_full_date - dt.timedelta(1)
-    else:
-        service_date = today_full_date + dt.timedelta(delta_days_to_fri)
-
-    # The service date a week after
-    following_service_date = service_date + dt.timedelta(7)
-
-    # This week's Sunday date
-    this_week_sunday_date = service_date + dt.timedelta(2)
-
-    this_week_service_date_str = service_date.strftime('%Y-%m-%d')
-    following_week_service_date_str = following_service_date.strftime('%Y-%m-%d')
-    this_week_sunday_date_str = this_week_sunday_date.strftime('%Y-%m-%d')
-
-    return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str
-
-
 def handle_uploaded_schedules(raw_data, resource_instance):
     # bank name
     df = raw_data.df
@@ -218,43 +183,88 @@ def handle_uploaded_schedules(raw_data, resource_instance):
     convert_date = lambda date: dt.datetime(1899, 12, 30) + dt.timedelta(days=int(date)) if isinstance(date, float) else date
     df['Date'] = df['Date'].apply(convert_date)
 
-    categories, dates, servants = list(), list(), list()
+    categories, dates, servants, notes = list(), list(), list(), list()
 
     for index, r in df.iterrows():
         sevs = r.to_dict()
         date = r[0]
-
         BS_servants = list()
         # iterate dict of a week's service team
         for key, val in sevs.items():
-
             # Escape the columns
-            if key in ('Date', 'Unnamed: 21',''):
+            if key in ('Date', 'Unnamed: 21'):
                 continue
-
             # Save the BS leaders
             if 'BS-G' in key:
                 BS_servants.append(val)
                 continue
-
-            if 'BS-G' not in key:
+            else:
                 dates.append(date)
                 categories.append(key)
-                servants.append(val)
 
+                if key.lower() in ['content', 'sharing', 'reminder', 'prayer-meeting', 'clean-up', 'dish-wash']:
+                    notes.append(val)
+                    servants.append(None)
+                else:
+                    notes.append(None)
+                    servants.append(val)
         # Save BS leaders
         if type(BS_servants[0]) == str:
             dates.append(date)
             categories.append('Bible-study-servants')
             servants.append(','.join(BS_servants))
+            notes.append(None)
 
-    data = {'Date': dates, 'Category': categories, 'Servants': servants}
+    data = {'Date': dates, 'Category': categories,
+            'Servants': servants, 'Note': notes}
     ndf = pd.DataFrame(data)
-    # output the new dataframe to csv
-    ndf.to_csv('temp/temp.csv', index=False)
+    ndf['id'] = range(1, len(ndf['Date']) + 1)
+    ndf['id'].astype('int64')
 
-    imported_data = Dataset().load(open('temp/temp.csv', encoding='utf-8').read())
-    result = resource_instance.import_data(imported_data, dry_run=True)  # Test the data import
-    errors = result.has_errors()
-    if not result.has_errors():
-        resource_instance.import_data(imported_data, dry_run=False)  # Actually import now
+    # Iterate through rows
+    for index, row in ndf.iterrows():
+
+        d = row.to_dict()
+        servants = d.get('Servants')
+
+        print(f"Service: {d.get('Date')}, {d.get('Category')}")
+        if not d.get('Category'):
+            continue
+
+        # Create a service instance
+        service = Service(id=d.get('id'),
+                          service_category=d.get('Category'),
+                          service_date=d.get('Date'),
+                          service_note=d.get('Note'))
+        service.save()
+        if isinstance(servants, str):
+            # print('Servants: ' + servants)
+            servants = servants.strip()
+            servants = servants.replace('/', ',').replace('、', ',')
+            if ',' in servants:
+
+                sns = servants.split(',')
+            elif ' ' in servants:
+                sns = servants.split(' ')
+            else:
+                sns = [servants]
+
+            for servant_name in sns:
+                try:
+                    servant = Member.objects.get(name=servant_name)
+                    service.servants.add(servant)
+                except:
+                    print("Cannot find servant: {}".format(servant_name))
+
+    # print("DOne")
+
+
+    # # output the new dataframe to csv
+    # ndf.to_csv('temp/temp.csv', index=False)
+    #
+    # imported_data = Dataset().load(open('temp/temp.csv', encoding='utf-8').read())
+    # result = resource_instance.import_data(imported_data, dry_run=True)  # Test the data import
+    # # errors = result.has_errors()
+    #
+    # if not result.has_errors():
+    #     resource_instance.import_data(imported_data, dry_run=False)  # Actually import now

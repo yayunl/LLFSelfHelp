@@ -1,8 +1,7 @@
 from celery import task
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
-from .models import Service
-from .utils import service_dates
+from .models import Service, service_dates
 import os
 
 

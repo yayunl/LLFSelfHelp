@@ -29,14 +29,14 @@ class MemberResource(resources.ModelResource):
 
 
 class ServiceResource(resources.ModelResource):
-    servant_name = Field(column_name="Servants")
+    servant_name = Field(attribute='servant_names', column_name="Servants")
     service_category = Field(attribute='service_category', column_name='Category')
     service_date = Field(attribute='service_date', column_name='Date')
-    # service_content = Field(attribute='service_content', column_name='Note')
+    service_note = Field(attribute='service_note', column_name='Note')
 
     class Meta:
         model = Service
-        exclude = ('id', 'coordinator', 'slug', 'servants')
+        exclude = ('slug', 'id', 'servants')
 
     def dehydrate_servant_name(self, service):
         servants = service.servants.all()
