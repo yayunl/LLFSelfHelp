@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Members </h1>
   <a href="{% url 'member_export' %}"><i class="cloud download icon"></i> Export contacts</a>
-
+  <a href="{% url 'member_create' %}"><i class="address book icon"></i>Create</a>
 {% if member_list %}
     <div class="ui cards">
       {% for member in member_list %}

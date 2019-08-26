@@ -52,7 +52,7 @@ class ServiceUpdateForm(ModelForm):
         attrs = {'class': 'table table-sm'}
         widgets = {
             'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
-            # 'service_category': widgets.Select(attrs={'class': 'select'}),
+            'service_category': widgets.Select(attrs={'class': 'select'}),
         }
 
 

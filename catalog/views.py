@@ -180,6 +180,13 @@ class ServiceUpdateView(UpdateView):
     model = Service
     form_class = ServiceUpdateForm
 
+    def get_context_data(self, **kwargs):
+        context = super(ServiceUpdateView, self).get_context_data(**kwargs)
+        category = context.get('service').service_category
+        context['category'] = category
+        return context
+
+
 
 @require_authenticated_permission('catalog.service_delete')
 class ServiceDeleteView(DeleteView):
@@ -220,8 +227,11 @@ class ServiceListView(django_tables2.SingleTableView):
 
 @login_required()
 def load_services(request):
+
     services = set([s.service_category for s in Service.objects.all()])
-    return render(request, 'catalog/service_category_list_options.html', {'services': services})
+    return render(request,
+                  'catalog/service_category_list_options.html',
+                  {'services': services})
 
 
 # Export the services to excel

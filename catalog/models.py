@@ -127,7 +127,7 @@ class SocialMediaAccount(models.Model):
 
 
 class Service(models.Model):
-    id = models.IntegerField(unique=True, primary_key=True)
+    # id = models.IntegerField(unique=True, primary_key=True)
     service_category = models.CharField(max_length=20, null=True, blank=True)
     service_date = models.DateField(null=True)
     servants = models.ManyToManyField(Member,
@@ -135,7 +135,7 @@ class Service(models.Model):
                                       null=True,
                                       blank=True)
     service_note = models.CharField(max_length=100, null=True, blank=True)
-    slug = models.SlugField(max_length=63)
+    slug = models.SlugField(max_length=63, primary_key=True)
 
     def __str__(self):
         return f"{self.service_category} of {self.service_date}"
@@ -153,7 +153,8 @@ class Service(models.Model):
         return reverse('service_detail', args=[self.slug])
 
     def _get_unique_slug(self):
-        slug = slugify(f"{self.service_category}-{self.service_date}")
+        service_date = datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
+        slug = slugify(f"{self.service_category}-{service_date}")
         unique_slug = slug
         num = 1
         while Service.objects.filter(slug=unique_slug).exists():
@@ -164,8 +165,7 @@ class Service(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self._get_unique_slug()
-        if not self.id:
-            super().save(*args, **kwargs)
+        # Create/update an object
         super().save(*args, **kwargs)
 
     @property

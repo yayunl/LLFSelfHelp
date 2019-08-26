@@ -1,2 +1,2 @@
-<a class="btn btn-info btn-sm" href="{% url 'service_update' record.slug %}">Edit</a>
-<a class="btn btn-info btn-sm" href="{% url 'service_delete' record.slug %}">Delete</a>
+<a class="btn btn-info btn-sm edit" href="{% url 'service_update' record.slug %}" value="{{ record.slug}}">Edit</a>
+<a class="btn btn-info btn-sm delete" href="{% url 'service_delete' record.slug %}" value="{{ record.slug}}">Delete</a>

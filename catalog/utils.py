@@ -232,7 +232,8 @@ def handle_uploaded_schedules(raw_data, resource_instance):
             continue
 
         # Create a service instance
-        service = Service(id=d.get('id'),
+        service = Service(
+            # id=d.get('id'),
                           service_category=d.get('Category'),
                           service_date=d.get('Date'),
                           service_note=d.get('Note'))
@@ -255,9 +256,6 @@ def handle_uploaded_schedules(raw_data, resource_instance):
                     service.servants.add(servant)
                 except:
                     print("Cannot find servant: {}".format(servant_name))
-
-    # print("DOne")
-
 
     # # output the new dataframe to csv
     # ndf.to_csv('temp/temp.csv', index=False)
