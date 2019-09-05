@@ -16,6 +16,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django_filters.views import FilterView
 from django.views.generic.base import TemplateView
 
 
@@ -212,7 +213,7 @@ class ServiceDetailView(DetailView):
 
 
 @class_login_required
-class ServiceListView(django_tables2.SingleTableView):
+class ServiceListView(django_tables2.SingleTableMixin, FilterView):
     model = Service
     table_class = ServiceTable
     queryset = Service.objects.all()

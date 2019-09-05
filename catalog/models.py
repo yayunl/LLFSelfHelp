@@ -5,6 +5,8 @@ from django.template.defaultfilters import slugify
 from django_tables2 import tables, TemplateColumn
 from datetime import datetime as dt
 import django_filters, datetime
+from bootstrap_datepicker_plus import DatePickerInput
+from django.forms.widgets import DateInput
 # Create your models here.
 
 
@@ -174,9 +176,17 @@ class Service(models.Model):
 
 
 class ServiceFilter(django_filters.FilterSet):
+    # Date = django_filters.DateFilter(
+    #     widget=DateInput(
+    #         attrs={
+    #             'class': 'datepicker'
+    #         }
+    #     )
+    # )
+
     class Meta:
         model = Service
-        fields = ['service_date', 'service_category']
+        fields = ['service_date']
 
 
 class ServiceTable(tables.Table):
@@ -190,5 +200,6 @@ class ServiceTable(tables.Table):
             'data-id': lambda record: '1'
             if dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[0] or
                dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[-1]
-            else '0'
+            else '0',
+            'category': lambda record: record.service_category
         }

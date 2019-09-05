@@ -19,10 +19,6 @@ class MemberForm(ModelForm):
     class Meta:
         model = Member
         fields = ['name','english_name', 'gender','email', 'group']
-            # ,'phone_number','job',
-            #       'birthday','hometown','active','group_leader','christian',
-            #       'group','first_time','habits']
-        # widgets = {'slug': forms.HiddenInput()}
 
 
 class ServiceForm(ModelForm):
@@ -37,7 +33,7 @@ class ServiceForm(ModelForm):
         # fields = ('service_date', 'service_category', 'edit')
         attrs = {'class': 'table table-sm'}
         widgets = {
-            'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
+            # 'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
             'service_category': widgets.Select(attrs={'class': 'select'}),
         }
 
@@ -52,7 +48,7 @@ class ServiceUpdateForm(ModelForm):
         attrs = {'class': 'table table-sm'}
         widgets = {
             'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
-            'service_category': widgets.Select(attrs={'class': 'select'}),
+            # 'service_category': widgets.Select(attrs={'class': 'select'}),
         }
 
 
