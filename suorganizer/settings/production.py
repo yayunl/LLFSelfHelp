@@ -27,7 +27,7 @@ DATABASES['default'].update(prod_db)
 
 
 # Static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ## Amazon Credentials
 
