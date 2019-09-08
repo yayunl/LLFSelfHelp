@@ -5,9 +5,26 @@ from django.template.defaultfilters import slugify
 from django_tables2 import tables, TemplateColumn
 from datetime import datetime as dt
 import django_filters, datetime
-from bootstrap_datepicker_plus import DatePickerInput
-from django.forms.widgets import DateInput
-# Create your models here.
+
+
+
+SERVICE_GROUP = (("Chairman-of-week", "Chairman-of-week"),
+                  ("Clean-up", "Clean-up"),
+                  ("Food-pickup", "Food-pickup"),
+                  ("Fruit-dessert", "Fruit-dessert"),
+                  ("Dish-wash", "Dish-wash"),
+                  ("Child-care", "Child-care"),
+                  ("Newcomer-welcome", "Newcomer-welcome"),
+                  ("Birthday-celebrate", "Birthday-celebrate"),
+                  ("Worship-leader", "Worship-leader"),
+                  ("Worship", "Worship"),
+                  ("Content", "Content"),
+                  ("Prayer-meeting", "Prayer-meeting"),
+                  ("Sharing", "Sharing"),
+                  ("BS-designer", "BS-designer"),
+                  ("BS-advisor", "BS-advisor"),
+                  ("Reminder", "Reminder"),
+                  ("Bible-study-servants", "Bible-study-servants"))
 
 
 def service_dates():
@@ -79,7 +96,10 @@ class Member(models.Model):
     birthday = models.DateField(null=True, blank=True)
 
     # A member belongs to only one group.
-    group = models.ForeignKey(Group, on_delete=True, related_name='members', null=True)
+    group = models.ForeignKey(Group,
+                              on_delete=True,
+                              related_name='members',
+                              null=True)
     group_leader = models.BooleanField(default=False)
     # Active member?
     active = models.BooleanField(default=True)
@@ -131,6 +151,9 @@ class SocialMediaAccount(models.Model):
 class Service(models.Model):
     # id = models.IntegerField(unique=True, primary_key=True)
     service_category = models.CharField(max_length=20, null=True, blank=True)
+    # service_category = models.CharField(choices=SERVICE_GROUP,
+    #                                     max_length=30,
+    #                                     )
     service_date = models.DateField(null=True)
     servants = models.ManyToManyField(Member,
                                       related_name='services',
@@ -176,17 +199,12 @@ class Service(models.Model):
 
 
 class ServiceFilter(django_filters.FilterSet):
-    # Date = django_filters.DateFilter(
-    #     widget=DateInput(
-    #         attrs={
-    #             'class': 'datepicker'
-    #         }
-    #     )
-    # )
-
     class Meta:
         model = Service
         fields = ['service_date']
+        # widgets = {
+        #     'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
+        # }
 
 
 class ServiceTable(tables.Table):

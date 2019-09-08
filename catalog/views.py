@@ -169,11 +169,12 @@ class GroupDetailView(DetailView):
 class ServiceCreateView(CreateView):
     model = Service
     form_class = ServiceForm
+    template_name = 'catalog/service_form.html'
 
-    # def get_form(self):
-    #     form = super().get_form()
-    #     form.fields['service_date'].widget = DateTimePickerInput()
-    #     return form
+    def get_form(self):
+        form = super(ServiceCreateView, self).get_form()
+        form.fields['service_date'].widget.attrs.update({'class': 'datepicker'})
+        return form
 
 
 @require_authenticated_permission('catalog.service_update')

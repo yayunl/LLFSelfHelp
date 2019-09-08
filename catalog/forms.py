@@ -10,7 +10,7 @@ from django.forms.widgets import SelectDateWidget
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput
 
-from .models import Member, Service
+from .models import Member, Service, SERVICE_GROUP
 from .utils import ActivationMailFormMixin
 from django.forms import widgets
 
@@ -22,24 +22,27 @@ class MemberForm(ModelForm):
 
 
 class ServiceForm(ModelForm):
-    try:
-        service_category = forms.ChoiceField(choices=set([(s.service_category, s.id) for s in Service.objects.all()]))
-    except:
-        service_category = forms.ChoiceField(choices=set())
+
+    def __init__(self, *args, **kwargs):
+        super(ServiceForm, self).__init__(*args, **kwargs)
+        self.fields['service_category'] = forms.ChoiceField(choices=SERVICE_GROUP)
 
     class Meta:
         model = Service
         exclude = ('slug', 'coordinator')
         # fields = ('service_date', 'service_category', 'edit')
         attrs = {'class': 'table table-sm'}
-        widgets = {
-            # 'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
-            'service_category': widgets.Select(attrs={'class': 'select'}),
-        }
+        # widgets = {
+        #     'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
+        #     # 'service_category': widgets.Select(attrs={'class': 'select'}),
+        # }
 
 
 class ServiceUpdateForm(ModelForm):
     # service_category = forms.ChoiceField(choices=set([(s.service_category, s.service_category) for s in Service.objects.all()]))
+    def __init__(self, *args, **kwargs):
+        super(ServiceUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['service_category'].widget.attrs['readonly'] = True
 
     class Meta:
         model = Service
@@ -49,6 +52,7 @@ class ServiceUpdateForm(ModelForm):
         widgets = {
             'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
             # 'service_category': widgets.Select(attrs={'class': 'select'}),
+            # 'service_category': widget.fields
         }
 
 
