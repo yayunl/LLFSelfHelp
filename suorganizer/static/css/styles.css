@@ -1,0 +1,10 @@
+.sidebar-nav {
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+tr[data-id="1"]{
+    font-weight: bold;
+    color: cadetblue;
+}
