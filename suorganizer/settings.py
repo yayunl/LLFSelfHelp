@@ -166,7 +166,7 @@ ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 TEMPLATE_DEBUG = False
-SECRET_KEY = os.environ.get('SECRET_KEY')
+DJANGO_SECRET_KEY = os.environ.get('SECRET_KEY','WEJ0XWX')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
