@@ -2,10 +2,10 @@ from .base import *
 import dj_database_url, os
 
 
-ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
+ALLOWED_HOSTS = []
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -18,7 +18,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(PROJECT_ROOT, 'db.sqlite3'),
     }
 }
 
@@ -27,7 +27,7 @@ DATABASES['default'].update(prod_db)
 
 
 # Static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ## Amazon Credentials
 
