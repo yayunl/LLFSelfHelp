@@ -2,8 +2,8 @@ from .base import *
 import dj_database_url, os
 import django_heroku
 
-ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
+ALLOWED_HOSTS = []
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 TEMPLATE_DEBUG = False
@@ -26,6 +26,7 @@ DATABASES = {
 # DATABASES['default'].update(prod_db)
 
 django_heroku.settings(locals())
+
 # Static files
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 

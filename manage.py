@@ -11,8 +11,10 @@ def main():
 
     if env('ENV').lower() == 'dev':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
-    else:
+    elif env('ENV').lower() == 'sudo-production':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.production")
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings")
 
     try:
         from django.core.management import execute_from_command_line
