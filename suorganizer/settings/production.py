@@ -1,11 +1,11 @@
 from .base import *
 import dj_database_url, os
+import django_heroku
 
-
-ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
-# ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
+ALLOWED_HOSTS = []
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = False
 SECRET_KEY = os.environ.get('SECRET_KEY')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -22,10 +22,10 @@ DATABASES = {
     }
 }
 
-prod_db = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(prod_db)
+# prod_db = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(prod_db)
 
-
+django_heroku.settings(locals())
 # Static files
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
