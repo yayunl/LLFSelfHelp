@@ -136,9 +136,16 @@ class Member(models.Model):
             num += 1
         return unique_slug
 
+    def _get_unique_id(self):
+        members = Member.objects.all()
+        return len(members)+1
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self._get_unique_slug()
+        if not self.id:
+            self.id = self._get_unique_id()
+
         super().save(*args, **kwargs)
 
 
@@ -151,9 +158,6 @@ class SocialMediaAccount(models.Model):
 class Service(models.Model):
     # id = models.IntegerField(unique=True, primary_key=True)
     service_category = models.CharField(max_length=20, null=True, blank=True)
-    # service_category = models.CharField(choices=SERVICE_GROUP,
-    #                                     max_length=30,
-    #                                     )
     service_date = models.DateField(null=True)
     servants = models.ManyToManyField(Member,
                                       related_name='services',
