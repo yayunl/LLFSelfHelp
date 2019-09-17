@@ -38,24 +38,42 @@
 
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-sm-2">
-      {% block sidebar %}
-        <ul class="sidebar-nav">
-            <li><a href="{% url 'member_index' %}">Home</a></li>
-            <li><a href="{% url 'member_list'%}">Members</a></li>
-            <li><a href="{% url 'group_list'%}">Small groups</a></li>
-            <li><a href="{% url 'service_list'%}">Services</a></li>
-            {% if user.is_authenticated %}
-                <li></li>
-                <li><a href="{% url 'logout'%}">Logout</a></li>
-            {% endif %}
-        </ul>
-     {% endblock %}
+
+
+ <div class="ui borderless main menu">
+      <div class="ui text container">
+<!--        <div class="header item" href="% url 'member_index' %}">-->
+<!--          <img class="logo" src="" />Home-->
+<!--        </div>-->
+          <a class="item" href="{% url 'member_index' %}">Home</a>
+        <a class="item" href="{% url 'member_list' %}">Members</a>
+        <a class="item" href="{% url 'service_list'%}">Services</a>
+          <a class="item" href="{% url 'group_list'%}">Groups</a>
+          <a class="item" href="{% url 'logout' %}">Log Out</a>
+<!--        <a class="ui right floated dropdown item" href="#root">-->
+<!--          Dropdown <i class="dropdown icon"></i>-->
+<!--          <div class="menu">-->
+<!--            <div class="item">Link Item</div>-->
+<!--            <div class="item">Link Item</div>-->
+<!--            <div class="divider"></div>-->
+<!--            <div class="header">Header Item</div>-->
+<!--            <div class="item">-->
+<!--              <i class="dropdown icon"></i> Sub Menu-->
+<!--              <div class="menu">-->
+<!--                <div class="item">Link Item</div>-->
+<!--                <div class="item">Link Item</div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="item">Link Item</div>-->
+<!--          </div>-->
+<!--        </a>-->
       </div>
-      <div class="col-sm-10 ">{% block content %}{% endblock %}</div>
-    </div>
-  </div>
+ </div>
+
+<div class="ui text container">
+    {% block content %}
+    {% endblock %}
+</div>
+
 </body>
 </html>

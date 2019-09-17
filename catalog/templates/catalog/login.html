@@ -5,19 +5,31 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="offset-by-two five columns">
+  <div class="sign-in-box">
+
+    <a href="https://llfadmin.herukoapp.com">
+      {% load static %}
+        <img class="little-lambs-logo" src="{% static 'img/little-lambs.jpg' %}" width="150" height="150">
+    </a>
+
+    <p class="loginVerse">"For even the Son of Man came not to be served but to serve, and to give his life as a ransom for many. "  - Mark 10:45</p>
+
+    <div class="loginBox">
       {% include "catalog/login_form.html" %}
     </div>
-    <div class="three columns">
-      <ul class="task-list">
-        <li><a href="{% url 'create' %}">
-          Register New Account</a></li>
-        <li><a href="{% url 'pw_reset_start' %}">
-          Forgotten password?</a></li>
-        <li><a href="{% url 'resend_activation' %}">
-          Lost Activation E-Mail?</a></li>
-      </ul>
-    </div>
+
+<!--    <div class="offset-by-two five columns">-->
+
+<!--    </div>-->
+<!--    <div class="three columns">-->
+<!--      <ul class="task-list">-->
+<!--        <li><a href="{% url 'create' %}">-->
+<!--          Register New Account</a></li>-->
+<!--        <li><a href="{% url 'pw_reset_start' %}">-->
+<!--          Forgotten password?</a></li>-->
+<!--        <li><a href="{% url 'resend_activation' %}">-->
+<!--          Lost Activation E-Mail?</a></li>-->
+<!--      </ul>-->
+<!--    </div>-->
   </div>
 {% endblock %}
