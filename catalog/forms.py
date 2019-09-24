@@ -1,21 +1,15 @@
 from django.forms import ModelForm
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import (
-    UserChangeForm as BaseUserChangeForm,
-    UserCreationForm as BaseUserCreationForm)
-
-from django.utils.text import slugify
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.core.exceptions import ValidationError
-from django.forms.widgets import SelectDateWidget
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput
-
+from bootstrap_modal_forms.forms import BSModalForm
 from .models import Member, Service, SERVICE_GROUP
 from .utils import ActivationMailFormMixin
-from django.forms import widgets
 
 
-class MemberForm(ModelForm):
+class MemberForm(BSModalForm):
     class Meta:
         model = Member
         fields = ['name','english_name', 'gender','email', 'group']

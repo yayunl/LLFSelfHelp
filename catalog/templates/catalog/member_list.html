@@ -1,39 +1,46 @@
 {% extends parent_template|default:"catalog/base_user.html" %}
 
 {% block content %}
-  <h1>Members </h1>
-  <a href="{% url 'member_export' %}"><i class="cloud download icon"></i> Export contacts</a>
-  <a href="{% url 'member_create' %}"><i class="address book icon"></i>Create</a>
+<h1>Members </h1>
+<a href="{% url 'member_export' %}"><i class="cloud download icon"></i> Export contacts</a>
+<!--<a href="{% url 'member_create' %}"><i class="address book icon"></i>Create</a>-->
+<div class="modal fade" tabindex="-1" role="dialog" id="modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+<button class="create-member btn btn-primary" type="button" name="button">Create</button>
 {% if member_list %}
-    <div class="ui cards">
-      {% for member in member_list %}
-            <div class="card">
-              <div class="content">
-                <a class="header" href="{% url 'member_detail' member.slug %}">{{ member.name }}</a>
-                <div class="meta">{{ member.job }}</div>
-                <div class="description">
-                  From {{ member.hometown}}
-                </div>
-              </div>
-                <div class="extra content">
-                  <div class="ui buttons">
-                    <div class="ui delete button">
-                      <a href="{% url 'member_delete' member.slug%}">Delete</a>
-                    </div>
-                    <div class="or"></div>
-                    <div class="ui primary update button">
-                      <a href="{% url 'member_update' member.slug%}">Update</a>
-                    </div>
-                  </div>
-                </div>
-
+<div class="ui cards">
+    {% for member in member_list %}
+    <div class="card">
+        <div class="content">
+            <a class="header" href="{% url 'member_detail' member.slug %}">{{ member.name }}</a>
+            <div class="meta">{{ member.job }}</div>
+            <div class="description">
+                From {{ member.hometown}}
             </div>
-          {% endfor %}
+        </div>
+        <div class="extra content">
+            <div class="ui buttons">
+                <div class="ui delete button">
+                    <a href="{% url 'member_delete' member.slug%}">Delete</a>
+                </div>
+                <div class="or"></div>
+                <div class="ui primary update button">
+                    <a href="{% url 'member_update' member.slug%}">Update</a>
+                </div>
+            </div>
+        </div>
 
     </div>
-  {% else %}
-    <p>There are no members in the library.</p>
-  {% endif %}
+    {% endfor %}
+
+</div>
+{% else %}
+<p>There are no members in the library.</p>
+{% endif %}
 {% endblock %}
 
 <div class="ui cards">

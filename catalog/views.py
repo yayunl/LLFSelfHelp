@@ -17,7 +17,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_filters.views import FilterView
-from django.views.generic.base import TemplateView
+from bootstrap_modal_forms.generic import BSModalCreateView
 
 
 import django_tables2
@@ -59,11 +59,13 @@ class IndexView(ListView):
         return context
 
 
-@require_authenticated_permission('catalog.member_create')
-class MemberCreateView(CreateView):
-    model = Member
+@require_authenticated_permission('catalog.create_member')
+class MemberCreateView(BSModalCreateView):
+    # model = Member
     form_class = MemberForm
     template_name = 'catalog/member_form.html'
+    success_message = 'Success: Member was created.'
+    success_url = reverse_lazy('member_create')
 
 
 @require_authenticated_permission('catalog.member_update')

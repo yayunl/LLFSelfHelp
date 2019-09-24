@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     "bootstrap3",
     "bootstrap4",
     "django_filters",
+    'bootstrap_modal_forms',
     "bootstrap_datepicker_plus",
     'import_export',
     'django_tables2',

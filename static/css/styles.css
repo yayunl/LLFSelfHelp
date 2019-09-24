@@ -77,3 +77,8 @@ tr[data-id="1"]{
     /*margin-right: auto;*/
     text-align: center;
 }
+
+.errorlist {
+    list-style-type: none;
+    color:red;
+}

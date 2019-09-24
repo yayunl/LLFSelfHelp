@@ -3,7 +3,10 @@ $(function(){
     // var url = $("#serviceForm").attr("data-services-url");  // get the url of the `load_services` view
 
     $( "#id_service_date" ).datepicker();
+    $(".create-member").modalForm({
 
+        formURL: "{% url 'member_list' %}"
+    });
 });
 
 
