@@ -1,14 +1,22 @@
-{% extends parent_template|default:"catalog/base_user.html" %}
+{% load widget_tweaks %}
 
-{% block content %}
-
-<h1>Delete Member</h1>
-
-<p>Are you sure you want to delete the member: {{ member }}?</p>
-
-<form action="" method="POST">
+<form method="post" action="">
   {% csrf_token %}
-  <input type="submit" value="Yes, delete.">
-</form>
 
-{% endblock %}
+  <div class="modal-header">
+    <h3 class="modal-title">Delete Book</h3>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <p class="delete-text">Are you sure you want to delete book with title
+      <strong>{{ book.title }}</strong>?</p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="submit" class="delete-btn btn btn-danger">Delete</button>
+  </div>
+
+</form>

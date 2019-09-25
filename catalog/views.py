@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
 from catalog.models import Group, Member, Service, ServiceTable, ServiceFilter
-from catalog.forms import MemberForm, ServiceForm, ServiceUpdateForm, ResendActivationEmailForm
+from catalog.forms import MemberForm, ServiceForm, ServiceUpdateForm, ResendActivationEmailForm, UserCreationForm
 from catalog.resources import MemberResource, ServiceResource
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -27,7 +27,6 @@ from .decorators import class_login_required, require_authenticated_permission
 # import datetime as dt
 from .utils import (MailContextViewMixin, handle_uploaded_schedules)
 from .models import service_dates
-from .forms import (UserCreationForm)
 from .tasks import send_reminders
 from tablib import Dataset
 import datetime as dt
@@ -59,27 +58,30 @@ class IndexView(ListView):
         return context
 
 
-@require_authenticated_permission('catalog.create_member')
+@require_authenticated_permission('catalog.member_create')
 class MemberCreateView(BSModalCreateView):
     # model = Member
-    form_class = MemberForm
     template_name = 'catalog/member_form.html'
+    form_class = MemberForm
     success_message = 'Success: Member was created.'
-    success_url = reverse_lazy('member_create')
+    success_url = reverse_lazy('member_index')
 
 
 @require_authenticated_permission('catalog.member_update')
 class MemberUpdateView(UpdateView):
     model = Member
-    template_name = 'catalog/member_form.html'
+    template_name = 'catalog/member_update.html'
     form_class = MemberForm
+    success_message = 'Success: Member was updated.'
+    success_url = reverse_lazy('member_index')
 
 
 @require_authenticated_permission('catalog.member_delete')
 class MemberDeleteView(DeleteView):
     model = Member
-    # template_name = 'user/member_delete.html'
+    template_name = 'catalog/member_confirm_delete.html'
     success_url = reverse_lazy('member_list')
+    success_message = 'Success: Member was deleted.'
 
 
 @class_login_required

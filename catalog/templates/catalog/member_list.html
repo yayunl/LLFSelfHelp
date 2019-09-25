@@ -1,15 +1,53 @@
 {% extends parent_template|default:"catalog/base_user.html" %}
 
+{% block scripts %}
+    <script type="text/javascript">
+        $(function() {
+
+            $(".create-member").modalForm({
+                formURL: "{% url 'member_create' %}"
+            });
+
+        });
+
+        // Update book buttons
+      $(".update-member").each(function () {
+        $(this).modalForm({
+            formURL: $(this).data('id'),
+            // modalContent: ".modal-content-dbmf",
+            // modalForm: ".modal-content-dbmf form"
+        });
+      });
+
+      // Delete book buttons
+      $(".delete-member").each(function () {
+        $(this).modalForm({
+            formURL: $(this).data('id'),
+            // modalContent: ".modal-content-dbmf",
+            // modalForm: ".modal-content-dbmf form"
+        });
+      });
+
+        // Hide message
+      $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+        $(".alert").slideUp(500);
+      });
+    </script>
+{% endblock scripts %}
+
+
 {% block content %}
+
+<div class="modal fade" tabindex="-1" role="dialog" id="modal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"></div>
+  </div>
+</div>
+
 <h1>Members </h1>
 <a href="{% url 'member_export' %}"><i class="cloud download icon"></i> Export contacts</a>
 <!--<a href="{% url 'member_create' %}"><i class="address book icon"></i>Create</a>-->
-<div class="modal fade" tabindex="-1" role="dialog" id="modal">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-    </div>
-  </div>
-</div>
+
 <button class="create-member btn btn-primary" type="button" name="button">Create</button>
 {% if member_list %}
 <div class="ui cards">
@@ -22,10 +60,13 @@
                 From {{ member.hometown}}
             </div>
         </div>
+
         <div class="extra content">
             <div class="ui buttons">
-                <div class="ui delete button">
-                    <a href="{% url 'member_delete' member.slug%}">Delete</a>
+<!--                <button type="button" id='delete-member' class="delete-member btn btn-sm btn-danger" data-id="{% url 'member_delete' member.slug %}"> Delete</button>-->
+                <div class="delete-member btn btn-sm btn-danger">
+                    <a href="{% url 'member_delete' member.slug %}">Delete</a>
+
                 </div>
                 <div class="or"></div>
                 <div class="ui primary update button">
@@ -42,6 +83,4 @@
 <p>There are no members in the library.</p>
 {% endif %}
 {% endblock %}
-
-<div class="ui cards">
 

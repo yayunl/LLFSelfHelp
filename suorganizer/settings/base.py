@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     # 'djcelery_email',
+    'widget_tweaks',
     "bootstrap3",
     "bootstrap4",
     "django_filters",
