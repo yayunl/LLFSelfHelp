@@ -21,10 +21,9 @@
 
     <!-- Add additional CSS in static file -->
     {% load staticfiles %}
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <!-- load javascripts -->
 
 
@@ -34,14 +33,15 @@
     <script src="{% static 'js/jquery.min.js' %}"></script>
       <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
-<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/api.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/api.min.js"></script>
 <!--    <script src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js"></script>-->
 <!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.4/js/bootstrap.js"></script>-->
+    <script src="{% static 'js/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
 
 
-<!--    <script src="{% static 'js/app.js' %}"></script>-->
+    <script src="{% static 'js/app.js' %}"></script>
 
     {% block scripts %}
     {% endblock scripts %}

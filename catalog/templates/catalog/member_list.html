@@ -2,36 +2,43 @@
 
 {% block scripts %}
     <script type="text/javascript">
-        $(function() {
 
-            $(".create-member").modalForm({
-                formURL: "{% url 'member_create' %}"
+    $(function () {
+
+          // log in & sign up buttons
+
+
+          // create book button
+          $(".create-member").modalForm({
+            formURL: "{% url 'member_create' %}",
+            // modalContent: ".modal-content-dbmf",
+            // modalForm: ".modal-content-dbmf form"
+          });
+
+
+
+          // delete book buttons
+          $(".delete-member").each(function () {
+
+            $(this).modalForm({
+              formURL: $(this).data('id'),
+              // modalContent: ".modal-content-dbmf",
+              // modalForm: ".modal-content-dbmf form"
             });
+          });
+
+          // hide message
+          $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+            $(".alert").slideUp(500);
+          });
+
+          // autofocus to first input field of a modal
+          $('.modal').on('shown.bs.modal', function () {
+            $('form').find('input[type=text]').filter(':visible:first').focus();
+          });
 
         });
 
-        // Update book buttons
-      $(".update-member").each(function () {
-        $(this).modalForm({
-            formURL: $(this).data('id'),
-            // modalContent: ".modal-content-dbmf",
-            // modalForm: ".modal-content-dbmf form"
-        });
-      });
-
-      // Delete book buttons
-      $(".delete-member").each(function () {
-        $(this).modalForm({
-            formURL: $(this).data('id'),
-            // modalContent: ".modal-content-dbmf",
-            // modalForm: ".modal-content-dbmf form"
-        });
-      });
-
-        // Hide message
-      $(".alert").fadeTo(2000, 500).slideUp(500, function(){
-        $(".alert").slideUp(500);
-      });
     </script>
 {% endblock scripts %}
 
@@ -50,34 +57,26 @@
 
 <button class="create-member btn btn-primary" type="button" name="button">Create</button>
 {% if member_list %}
+
 <div class="ui cards">
     {% for member in member_list %}
-    <div class="card">
-        <div class="content">
-            <a class="header" href="{% url 'member_detail' member.slug %}">{{ member.name }}</a>
-            <div class="meta">{{ member.job }}</div>
-            <div class="description">
-                From {{ member.hometown}}
-            </div>
-        </div>
-
-        <div class="extra content">
-            <div class="ui buttons">
-<!--                <button type="button" id='delete-member' class="delete-member btn btn-sm btn-danger" data-id="{% url 'member_delete' member.slug %}"> Delete</button>-->
-                <div class="delete-member btn btn-sm btn-danger">
-                    <a href="{% url 'member_delete' member.slug %}">Delete</a>
-
+        <div class="card">
+            <div class="content">
+                <a class="header" href="{% url 'member_detail' member.slug %}">{{ member.name }}</a>
+                <div class="meta">{{ member.job }}</div>
+                <div class="description">
+                    From {{ member.hometown}}
                 </div>
-                <div class="or"></div>
-                <div class="ui primary update button">
-                    <a href="{% url 'member_update' member.slug%}">Update</a>
+            </div>
+
+            <div class="extra content">
+                <div class="ui two buttons">
+                    <button type="button" class="delete-member ui basic green button" data-id="{% url 'member_update' member.slug %}"> Update</button>
+                    <button type="button" class="delete-member ui basic red button" data-id="{% url 'member_delete' member.slug %}"> Delete</button>
                 </div>
             </div>
         </div>
-
-    </div>
     {% endfor %}
-
 </div>
 {% else %}
 <p>There are no members in the library.</p>

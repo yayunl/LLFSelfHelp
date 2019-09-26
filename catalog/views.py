@@ -17,9 +17,11 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_filters.views import FilterView
-from bootstrap_modal_forms.generic import BSModalCreateView
-
-
+from bootstrap_modal_forms.generic import (BSModalLoginView,
+                                           BSModalCreateView,
+                                           BSModalUpdateView,
+                                           BSModalReadView,
+                                           BSModalDeleteView)
 import django_tables2
 from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
@@ -64,20 +66,20 @@ class MemberCreateView(BSModalCreateView):
     template_name = 'catalog/member_form.html'
     form_class = MemberForm
     success_message = 'Success: Member was created.'
-    success_url = reverse_lazy('member_index')
+    success_url = reverse_lazy('member_list')
 
 
 @require_authenticated_permission('catalog.member_update')
-class MemberUpdateView(UpdateView):
+class MemberUpdateView(BSModalUpdateView):
     model = Member
     template_name = 'catalog/member_update.html'
     form_class = MemberForm
     success_message = 'Success: Member was updated.'
-    success_url = reverse_lazy('member_index')
+    success_url = reverse_lazy('member_list')
 
 
 @require_authenticated_permission('catalog.member_delete')
-class MemberDeleteView(DeleteView):
+class MemberDeleteView(BSModalDeleteView):
     model = Member
     template_name = 'catalog/member_confirm_delete.html'
     success_url = reverse_lazy('member_list')
