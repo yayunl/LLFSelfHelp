@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from catalog.urls import urlpatterns as catalogurls
 from catalog.urls import user_urlpatterns as userurls
+from catalog.urls import password_urls as authurls
 
 urlpatterns = [
     path('',
@@ -27,4 +28,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('catalog/', include(catalogurls)),
     path('user/', include(userurls)),
+    path('auth/', include(authurls))
 ]

@@ -1,10 +1,10 @@
 {% extends parent_template|default:"catalog/base_user.html" %}
 
 {% block content %}
-<h1>Services </h1>
-<a href="{% url 'service_export' %}"><i class="cloud download icon"></i>Export services</a>
-<a href="{% url 'service_create' %}"><i class="plus circle icon"></i>Create</a>
-
+<h1>Services
+<a href="{% url 'service_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
+<a href="{% url 'service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+</h1>
 
 {% load django_tables2 %}
 <!--{% load bootstrap3 %}-->

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
 from catalog.models import Group, Member, Service, ServiceTable, ServiceFilter
-from catalog.forms import MemberForm, ServiceForm, ServiceUpdateForm, ResendActivationEmailForm, UserCreationForm
+from catalog.forms import MemberForm, ServiceForm, GroupForm, ServiceUpdateForm, ResendActivationEmailForm, UserCreationForm
 from catalog.resources import MemberResource, ServiceResource
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -169,7 +169,15 @@ class GroupDetailView(DetailView):
     model = Group
 
 
+@class_login_required
+class GroupCreateView(BSModalCreateView):
+    template_name = 'catalog/group_form.html'
+    form_class = GroupForm
+    success_message = 'Success: Group was created.'
+    success_url = reverse_lazy('group_list')
+
 # services
+
 
 @require_authenticated_permission('catalog.service_create')
 class ServiceCreateView(CreateView):
@@ -193,7 +201,6 @@ class ServiceUpdateView(UpdateView):
         category = context.get('service').service_category
         context['category'] = category
         return context
-
 
 
 @require_authenticated_permission('catalog.service_delete')

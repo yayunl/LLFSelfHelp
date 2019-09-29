@@ -1,6 +1,6 @@
 from .views import IndexView, MemberListView, GroupListView, ServiceListView
 from .views import MemberDetailView, ServiceDetailView, GroupDetailView
-from .views import MemberCreateView, ServiceCreateView, load_services
+from .views import MemberCreateView, ServiceCreateView, load_services, GroupCreateView
 from .views import MemberDeleteView, ServiceDeleteView
 from .views import MemberUpdateView, ServiceUpdateView
 from .views import CreateAccount
@@ -25,7 +25,8 @@ urlpatterns = [
     path('members/import', member_import, name='member_import'),
 
     path('groups/', GroupListView.as_view(), name='group_list'),
-    path('group/<slug>', GroupDetailView.as_view(), name='group_detail'),
+    path('group/create/', GroupCreateView.as_view(), name='group_create'),
+    path('group/<slug>/detail', GroupDetailView.as_view(), name='group_detail'),
 
     path('services', ServiceListView.as_view(), name='service_list'),
     path('services/export', service_export, name='service_export'),

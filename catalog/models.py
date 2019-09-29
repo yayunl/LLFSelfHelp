@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django_tables2 import tables, TemplateColumn
 from datetime import datetime as dt
-import django_filters, datetime
+import django_filters, datetime, pinyin
 
 
 
@@ -64,9 +64,9 @@ def service_dates():
 
 
 class Group(models.Model):
-    name = models.CharField(max_length=20, default='New member', null=True)
+    name = models.CharField(max_length=20, null=True)
 
-    slug = models.SlugField(max_length=31, default='new-members', null=True)
+    slug = models.SlugField(max_length=31, null=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -77,6 +77,21 @@ class Group(models.Model):
         :return:
         """
         return reverse('group_detail', args=[self.slug])
+
+    def _get_unique_slug(self):
+        slug = pinyin.get(self.name,format='strip',delimiter='')
+        # slug = slugify(f"{self.name}")
+        unique_slug = slug
+        num = 1
+        while Group.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self._get_unique_slug()
+        super().save(*args, **kwargs)
 
 
 class Member(models.Model):

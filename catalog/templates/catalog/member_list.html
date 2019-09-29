@@ -51,13 +51,12 @@
   </div>
 </div>
 
-<h1>Members </h1>
-<a href="{% url 'member_export' %}"><i class="cloud download icon"></i> Export contacts</a>
-<!--<a href="{% url 'member_create' %}"><i class="address book icon"></i>Create</a>-->
+<h1>Members
+<a href="{% url 'member_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
+<a href='#' class="create-member btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+</h1>
 
-<button class="create-member btn btn-primary" type="button" name="button">Create</button>
 {% if member_list %}
-
 <div class="ui cards">
     {% for member in member_list %}
         <div class="card">

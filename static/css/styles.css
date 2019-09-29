@@ -55,7 +55,9 @@ body {
     padding: 5em 0em;
 }
 
-
+.task-list{
+    list-style: none;
+}
 
 tr[data-id="1"]{
     font-weight: bold;
@@ -76,6 +78,11 @@ tr[data-id="1"]{
     margin-top: 20%;
     /*margin-right: auto;*/
     text-align: center;
+}
+
+.reset-email-box{
+    margin-left: 35%;
+    margin-top:10%;
 }
 
 .errorlist {

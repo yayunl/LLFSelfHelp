@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_modal_forms.forms import BSModalForm
-from .models import Member, Service, SERVICE_GROUP
+from .models import Member, Service, Group, SERVICE_GROUP
 from .utils import ActivationMailFormMixin
 
 
@@ -13,6 +13,12 @@ class MemberForm(BSModalForm):
     class Meta:
         model = Member
         fields = ['name','english_name', 'gender','email', 'group']
+
+
+class GroupForm(BSModalForm):
+    class Meta:
+        model = Group
+        fields = ['name']
 
 
 class ServiceForm(ModelForm):
