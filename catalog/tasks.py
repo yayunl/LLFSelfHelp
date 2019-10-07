@@ -10,7 +10,7 @@ def send_reminders():
     sender_email = os.environ.get('EMAIL_HOST_USER')
     recipient_emails = os.environ.get('REMINDER_RECIPIENTS_EMAIL').split(',')
 
-    this_week_service_date_str, following_service_date_str = service_dates()
+    this_week_service_date_str, following_service_date_str, _ = service_dates()
     this_week_services = Service.objects.filter(service_date=this_week_service_date_str)
 
     context = {'services': this_week_services,

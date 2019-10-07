@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    # 'djcelery_email',
+    'djcelery_email',
     "bootstrap3",
     "bootstrap4",
     "django_filters",
@@ -140,23 +140,6 @@ LOGIN_URL = '/user/login'
 LOGIN_REDIRECT_URL = '/catalog/'
 
 
-# CELERY STUFF
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'America/Chicago'
-
-# Celery beat
-CELERY_BEAT_SCHEDULE = {
-    'scheduled_reminders': {
-        'task': 'send_reminders',
-        'schedule': crontab(minute='*/1'),
-        # 'args': (10 , 20)
-    },
-}
-
 # Django-table2 settings
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 
@@ -188,3 +171,28 @@ django_heroku.settings(locals())
 
 # Static files
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+# Celery
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "django://")
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+CELERY_BROKER_POOL_LIMIT = 1
+CELERY_ACCEPT_CONTENT = ['application/json']
+# CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'America/Chicago'
+
+if CELERY_BROKER_URL == "django://":
+    INSTALLED_APPS += ("kombu.transport.django",)
+
+
+# Celery beat
+CELERY_BEAT_SCHEDULE = {
+    'scheduled_reminders': {
+        'task': 'send_reminders',
+        'schedule': crontab(minute='*/1'),
+        # 'args': (10 , 20)
+    },
+}
