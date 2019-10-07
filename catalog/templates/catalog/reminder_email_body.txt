@@ -1,4 +1,5 @@
-Service teams of this week ({{ this_week_date }}):
+本周({{ this_week_date }})的服事团队如下:
+{{ emails }}
 
 {% for service in services.all %}
 
@@ -10,5 +11,5 @@ Service teams of this week ({{ this_week_date }}):
         {% endspaceless %}
 {% endfor %}
 
-------
+Blessings,
 Sent via LLFAdmin
