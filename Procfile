@@ -1,3 +1,1 @@
-web: gunicorn --env DJANGO_SETTINGS_MODULE=suorganizer.settings.production suorganizer.wsgi --log-file -
-worker: celery -A suorganizer worker -l info -P solo
-beat: celery -A suorganizer beat -l info
+web: env > .env; env PYTHONUNBUFFERED=true honcho start -f Procfile.real 2>&1
