@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.common.BrokenLinkEmailsMiddleware'
 ]
 
-ROOT_URLCONF = 'suorganizer.urls'
+ROOT_URLCONF = 'app.suorganizer.urls'
 
 TEMPLATES = [
     {
@@ -113,26 +113,25 @@ USE_TZ = True
 
 TIME_ZONE = 'America/Chicago'
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "app/static"),
 ]
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 # Email
 # https://docs.djangoproject.com/en/1.8/topics/email/
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('MAIL_USERNAME')
+EMAIL_HOST_PASSWORD = os.environ.get('MAIL_PASSWORD')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'no-reply@llfadmin.com'
 EMAIL_SUBJECT_PREFIX = '[LLF Admin]'
-
 REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 
 # Login redirect
@@ -143,15 +142,14 @@ LOGIN_REDIRECT_URL = '/catalog/'
 # Django-table2 settings
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
 
-
+# Hosts allowed
 ALLOWED_HOSTS = ['llfadmin.herokuapp.com']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 TEMPLATE_DEBUG = False
-DJANGO_SECRET_KEY = os.environ.get('SECRET_KEY','WEJ0XWX')
+DJANGO_SECRET_KEY = os.environ.get('SECRET_KEY')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 
 
 # Database
@@ -174,18 +172,14 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # Celery
-
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "django://")
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
 CELERY_BROKER_POOL_LIMIT = 1
 CELERY_ACCEPT_CONTENT = ['application/json']
-# CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Chicago'
-
-if CELERY_BROKER_URL == "django://":
-    INSTALLED_APPS += ("kombu.transport.django",)
+if CELERY_BROKER_URL == "django://": INSTALLED_APPS += ("kombu.transport.django",)
 
 
 # Celery beat

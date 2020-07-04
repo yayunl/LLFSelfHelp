@@ -64,12 +64,16 @@ def service_dates():
 
 
 class Group(models.Model):
+    """
+    A group class. Each member belongs to a group.
+    """
+    id = models.IntegerField(unique=True, primary_key=True)
     name = models.CharField(max_length=20, null=True)
-
+    description = models.CharField(max_length=100, null=True)
     slug = models.SlugField(max_length=31, null=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"<Group: {self.name}>"
 
     def get_absolute_url(self):
         """
@@ -98,7 +102,8 @@ class Member(models.Model):
     # fields
     id = models.IntegerField(unique=True, primary_key=True)
     name = models.CharField(max_length=50, null=True, blank=True, unique=True)
-    # name = models.OneToOneField(settings.AUTH_USER_MODEL)
+
+    # meta data
     english_name = models.CharField(max_length=50, null=True, blank=True)
     gender = models.CharField(max_length=10, null=True, blank=True)
     christian = models.BooleanField(default=True)
@@ -110,7 +115,7 @@ class Member(models.Model):
     habits = models.TextField(null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
 
-    # A member belongs to only one group.
+    # One-to-one relationship
     group = models.ForeignKey(Group,
                               on_delete=True,
                               related_name='members',
@@ -119,8 +124,9 @@ class Member(models.Model):
     # Active member?
     active = models.BooleanField(default=True)
 
-    # username
+    # credentials
     username = models.CharField(max_length=50, null=True, blank=True, default=None)
+    password_hash = models.CharField(max_length=128, null=True, blank=True, default=None)
     slug = models.SlugField(max_length=31, blank=True, default=None)
 
     # Metadata

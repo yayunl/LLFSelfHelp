@@ -11,8 +11,8 @@ def main():
 
     if env('ENV').lower() == 'dev':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
-    elif env('ENV').lower() == 'sudo-production':
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.production")
+    elif env('ENV').lower() == 'prod':
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.prod")
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings")
 

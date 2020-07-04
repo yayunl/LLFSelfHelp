@@ -1,0 +1,106 @@
+############################
+## Database relationships ##
+############################
+
+1. Many-to-many relationships: use ManytoManyField
+
+*definition:
+
+class Publication(models.Model):
+    title = models.CharField(max_length=30)
+
+class Article(models.Model):
+    headline = models.CharField(max_length=100)
+    publications = models.ManyToManyField(Publication) <-- use ManyToManyField on either side
+
+*Methods (add, create, list, etc.):
+p1 = Publication(title='The Python Journal')
+p2 = Publication(title='The Java Journal')
+p1.save()
+p2.save()
+a1 = Article(headline='Django lets you build Web apps easily')
+a2 = Article(headline='Flask lets you build Web apps easily')
+a1.save()
+a2.save()
+
+** add
+a1.publications.add(p1, p2)
+p2.article_set.add(a2)
+
+** create
+new_publication = a1.publications.create(title='new publication')
+new_article = p3.article_set.create(headline='new article')
+
+** list all
+a1.publications.all()
+p1.article_set.all()
+Publication.objects.get(id=4).article_set.all()
+
+** filter
+Article.objects.filter(publications__title__startswith="Science").count()
+Publication.objects.filter(article__headline__startswith="NASA")
+
+** delete
+a1.publications.remove(p1)
+p2.article_set.remove(a2)
+
+*** bulk delete
+Publication.objects.filter(title__startswith='Science').delete()
+Article.objects.filter(headline__startswith='Django').delete()
+
+# set relation
+a1.publications.set([p2])
+
+# clear set
+a1.publications.clear()
+p2.article_set.clear()
+
+
+2. Many-to-one relationships: use ForeignKey
+
+* Definition: one reporter has many articles
+
+class Reporter(models.Model):
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    email = models.EmailField()
+
+class Article(models.Model):
+    headline = models.CharField(max_length=100)
+    pub_date = models.DateField()
+    reporter = models.ForeignKey(Reporter, on_delete=models.CASCADE) <-- Use ForeignKey on the `many` side
+
+* Methods
+r1 = Reporter(first_name='John', last_name='Smith', email='john@example.com')
+r2 = Reporter(first_name='Paul', last_name='Jones', email='paul@example.com')
+r1.save()
+r2.save()
+
+a = Article.objects.create(headline="This is a test", pub_date=date(2005, 7, 27), reporter=r2)
+
+* get
+r = a.reporter
+
+* create
+new_article = r.article_set.create(headline="John's second story", pub_date=date(2005, 7, 29))
+new_article2 = Article.objects.create(headline="Paul's story", pub_date=date(2006, 1, 17), reporter=r)
+
+* add
+r2.article_set.add(new_article2)
+
+* list all
+r2.article_set.all()
+
+** list count
+r2.article_set.count()
+
+* filter/query
+r.article_set.filter(headline__startswith='This')
+
+Article.objects.filter(reporter__first_name='John', reporter__last_name='Smith')
+Reporter.objects.filter(article__headline__startswith='This')
+
+* delete
+(Note: If the `one` side instance is deleted, its corresponding `many` will be deleted with default `CASCADE`)
+ r2.delete()
+ Reporter.objects.filter(article__headline__startswith='This').delete()

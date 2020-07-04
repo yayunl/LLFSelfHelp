@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.middleware.common.BrokenLinkEmailsMiddleware'
 ]
 
-ROOT_URLCONF = 'suorganizer.urls'
+ROOT_URLCONF = 'app.suorganizer.urls'
 
 TEMPLATES = [
     {
@@ -115,22 +115,27 @@ USE_TZ = True
 
 TIME_ZONE = 'America/Chicago'
 
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(PROJECT_ROOT, "static"),
+    os.path.join(PROJECT_ROOT, "app/static"),
 ]
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+
+# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
+# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+
 
 # Email
 # https://docs.djangoproject.com/en/1.8/topics/email/
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_BACKEND = 'djcelery_email.backends.CeleryEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = os.environ.get('MAIL_USERNAME')
+EMAIL_HOST_PASSWORD = os.environ.get('MAIL_PASSWORD')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'no-reply@llfadmin.com'
 EMAIL_SUBJECT_PREFIX = '[LLF Admin]'
@@ -142,7 +147,7 @@ LOGIN_URL = '/user/login'
 LOGIN_REDIRECT_URL = '/catalog/'
 
 
-# CELERY STUFF
+# CELERY
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
 CELERY_ACCEPT_CONTENT = ['application/json']

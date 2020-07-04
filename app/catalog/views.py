@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-from catalog.models import Group, Member, Service, ServiceTable, ServiceFilter
-from catalog.forms import MemberForm, ServiceForm, GroupForm, ServiceUpdateForm, ResendActivationEmailForm, UserCreationForm
-from catalog.resources import MemberResource, ServiceResource
+from app.catalog.models import Group, Member, Service, ServiceTable, ServiceFilter
+from app.catalog import MemberForm, ServiceForm, GroupForm, ServiceUpdateForm, ResendActivationEmailForm, UserCreationForm
+from app.catalog import MemberResource, ServiceResource
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -10,17 +10,15 @@ from django.contrib.messages import error, success
 from django.template.response import TemplateResponse
 
 from django.contrib.auth.tokens import default_token_generator as token_generator
-from django.contrib.auth import (get_user, get_user_model, logout)
+from django.contrib.auth import (get_user_model)
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django_filters.views import FilterView
-from bootstrap_modal_forms.generic import (BSModalLoginView,
-                                           BSModalCreateView,
+from bootstrap_modal_forms.generic import (BSModalCreateView,
                                            BSModalUpdateView,
-                                           BSModalReadView,
                                            BSModalDeleteView)
 import django_tables2
 from django.contrib.auth.decorators import login_required

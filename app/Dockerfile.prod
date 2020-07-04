@@ -1,0 +1,50 @@
+FROM ubuntu:18.04
+
+MAINTAINER "krashilili0915@gmail.com"
+
+# create directory for the app user
+RUN mkdir -p /home/app
+
+# create the app user
+RUN addgroup -S app && adduser -S app -G app
+
+# create the appropriate directories
+ENV HOME=/home/code
+ENV APP_HOME=/home/code/app
+RUN mkdir $APP_HOME
+
+# set work directory
+WORKDIR $APP_HOME
+
+# Install build essentials
+RUN apt-get update -y && \
+    apt-get install -y python3-pip python3-dev netcat redis-server build-essential libpq-dev locales && \
+    locale-gen en_US.UTF-8
+
+# set environment variables
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+
+# Install dependencies
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+# Copy project
+COPY . $APP_HOME
+
+# Copy manage.py and bash script to home dir
+COPY manage.py entrypoint.prod.sh $HOME
+
+# Enable execution
+RUN chmod +x ./entrypoint.prod.sh
+
+# chown all the files to the app user
+RUN chown -R app:app $APP_HOME
+
+# change to the app user
+USER app
+
+# run entrypoint.sh
+ENTRYPOINT ["/usr/code/entrypoint.prod.sh"]
+
+

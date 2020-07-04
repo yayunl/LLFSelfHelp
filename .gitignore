@@ -1,13 +1,14 @@
 *.sqlite3
 *.csv
-test.py
-test_csv.py
+tests
 venv
 .idea
 *.pyc
+.env.dev
+.env.prod
 .env
 *.bat
-suorganizer/__pycache__/
+app/suorganizer/__pycache__/
 user/__pycache__/
 user/migrations/__pycache__/
 *.bak
