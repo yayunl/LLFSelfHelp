@@ -98,12 +98,19 @@ class Group(models.Model):
         super().save(*args, **kwargs)
 
 
+class ServiceDate(models.Model):
+    # service dates
+    id = models.IntegerField(unique=True, primary_key=True)
+    service_date = models.DateField(null=True)
+
+    def __str__(self):
+        return f"<ServiceDate: {self.service_date.isoformat()}>"
+
+
 class Member(models.Model):
     # fields
     id = models.IntegerField(unique=True, primary_key=True)
     name = models.CharField(max_length=50, null=True, blank=True, unique=True)
-
-    # meta data
     english_name = models.CharField(max_length=50, null=True, blank=True)
     gender = models.CharField(max_length=10, null=True, blank=True)
     christian = models.BooleanField(default=True)
@@ -114,19 +121,21 @@ class Member(models.Model):
     first_time = models.DateField(null=True)
     habits = models.TextField(null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
-
-    # One-to-one relationship
-    group = models.ForeignKey(Group,
-                              on_delete=True,
-                              related_name='members',
-                              null=True)
     group_leader = models.BooleanField(default=False)
     # Active member?
     active = models.BooleanField(default=True)
 
+    # One-to-one relationships
+    group = models.OneToOneField(Group,
+                                 on_delete=models.CASCADE,
+                                 )
+    # Many-to-many relationships
+    service_dates = models.ManyToManyField(ServiceDate)
+
     # credentials
     username = models.CharField(max_length=50, null=True, blank=True, default=None)
     password_hash = models.CharField(max_length=128, null=True, blank=True, default=None)
+
     slug = models.SlugField(max_length=31, blank=True, default=None)
 
     # Metadata
@@ -134,18 +143,15 @@ class Member(models.Model):
         ordering = ['-name']
 
     # methods
+    def __str__(self):
+        return f"<Member: {self.name}>"
+
     def get_absolute_url(self):
         """
         Used in urls and details template.
         :return:
         """
         return reverse('member_detail', args=[self.slug])
-
-    def __str__(self):
-        try:
-            return f"{self.name} ({self.group.name})"
-        except:
-            return f"{self.name} (New comers)"
 
     def _get_unique_slug(self):
         email = self.email.split('@')[0]
@@ -173,28 +179,32 @@ class Member(models.Model):
 class SocialMediaAccount(models.Model):
     media_name = models.CharField(max_length=20, null=True, blank=True)
     account_id = models.CharField(max_length=20, null=True, blank=True)
-    member = models.ForeignKey(Member, on_delete=True, related_name='social_media_accounts')
+    # many-to-one relationships
+    member = models.ForeignKey(Member,
+                               on_delete=models.CASCADE,
+                               related_name='social_media_accounts')
 
 
 class Service(models.Model):
     # id = models.IntegerField(unique=True, primary_key=True)
-    service_category = models.CharField(max_length=20, null=True, blank=True)
-    service_date = models.DateField(null=True)
-    servants = models.ManyToManyField(Member,
-                                      related_name='services',
-                                      null=True,
-                                      blank=True)
-    service_note = models.CharField(max_length=100, null=True, blank=True)
+    name = models.CharField(max_length=20, null=True, blank=True)
+    # service_date = models.DateField(null=True)
+    description = models.CharField(max_length=100, null=True, blank=True)
+
     slug = models.SlugField(max_length=63, primary_key=True)
 
-    def __str__(self):
-        return f"{self.service_category} of {self.service_date}"
+    # Many-to-many relationships
+    servants = models.ManyToManyField(Member, related_name='services',)
+    service_dates = models.ManyToManyField(ServiceDate)
 
     class Meta:
         verbose_name = 'Service'
-        ordering = ['service_date', 'service_category']
+        ordering = ['name']
 
     # methods
+    def __str__(self):
+        return f"<Service: {self.name}>"
+
     def get_absolute_url(self):
         """
         Used in urls and details template.
@@ -204,7 +214,7 @@ class Service(models.Model):
 
     def _get_unique_slug(self):
         service_date = datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
-        slug = slugify(f"{self.service_category}-{service_date}")
+        slug = slugify(f"{self.name}-{service_date}")
         unique_slug = slug
         num = 1
         while Service.objects.filter(slug=unique_slug).exists():
@@ -223,26 +233,26 @@ class Service(models.Model):
         return ','.join([f'{servant.name}' for servant in self.servants.all()])
 
 
-class ServiceFilter(django_filters.FilterSet):
-    class Meta:
-        model = Service
-        fields = ['service_date']
-        # widgets = {
-        #     'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
-        # }
-
-
-class ServiceTable(tables.Table):
-
-    change = TemplateColumn(template_name='catalog/service_table_update_column.html')
-
-    class Meta:
-        model = Service
-        fields = ('service_date', 'service_category', 'servants', 'service_note', 'change')
-        row_attrs = {
-            'data-id': lambda record: '1'
-            if dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[0] or
-               dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[-1]
-            else '0',
-            'category': lambda record: record.service_category
-        }
+# class ServiceFilter(django_filters.FilterSet):
+#     class Meta:
+#         model = Service
+#         fields = ['service_dates']
+#         # widgets = {
+#         #     'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
+#         # }
+#
+#
+# class ServiceTable(tables.Table):
+#
+#     change = TemplateColumn(template_name='catalog/service_table_update_column.html')
+#
+#     class Meta:
+#         model = Service
+#         fields = ('name', 'servants', 'description', 'change')
+#         row_attrs = {
+#             'data-id': lambda record: '1'
+#             if dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[0] or
+#                dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[-1]
+#             else '0',
+#             'category': lambda record: record.name
+#         }

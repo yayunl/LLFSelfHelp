@@ -1,3 +1,9 @@
+from django.views.generic import (RedirectView, TemplateView)
+from django.urls import path, include, reverse_lazy
+from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView,
+    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView)
+from django.contrib.auth.views import AuthenticationForm
+
 from .views import IndexView, MemberListView, GroupListView, ServiceListView
 from .views import MemberDetailView, ServiceDetailView, GroupDetailView
 from .views import MemberCreateView, ServiceCreateView, load_services, GroupCreateView
@@ -5,11 +11,6 @@ from .views import MemberDeleteView, ServiceDeleteView
 from .views import MemberUpdateView, ServiceUpdateView
 from .views import CreateAccount
 from .views import ResendActivationEmail, ActivateAccount
-from django.views.generic import (RedirectView, TemplateView)
-from django.urls import path, include, reverse_lazy
-from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView,
-    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView)
-from django.contrib.auth.views import AuthenticationForm
 # from django.contrib.auth.decorators import login_required
 from .views import (test_email, member_export,  member_import, service_export, service_import)
 

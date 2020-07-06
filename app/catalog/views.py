@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-from app.catalog.models import Group, Member, Service, ServiceTable, ServiceFilter
-from app.catalog import MemberForm, ServiceForm, GroupForm, ServiceUpdateForm, ResendActivationEmailForm, UserCreationForm
-from app.catalog import MemberResource, ServiceResource
+
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -21,15 +19,17 @@ from bootstrap_modal_forms.generic import (BSModalCreateView,
                                            BSModalUpdateView,
                                            BSModalDeleteView)
 import django_tables2
+import datetime as dt
+from tablib import Dataset
 from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
 
-# import datetime as dt
+# sub-level imports
+from .models import Group, Member, Service,  service_dates #ServiceTable, ServiceFilter
+from .forms import MemberForm, ServiceForm, GroupForm, ServiceUpdateForm, ResendActivationEmailForm, UserCreationForm
+from .resources import MemberResource, ServiceResource
 from .utils import (MailContextViewMixin, handle_uploaded_schedules)
-from .models import service_dates
 from .tasks import send_reminders
-from tablib import Dataset
-import datetime as dt
 
 
 def test_email(request):
@@ -41,7 +41,9 @@ def test_email(request):
 class IndexView(ListView):
     model = Service
     # table_class = ServiceTable
-    queryset = Service.objects.filter(service_date=service_dates()[0])
+
+    # Query services of this week
+    queryset = Service.objects.filter(service_dates__service_date=service_dates()[0])
     context_object_name = 'services'
     template_name = "catalog/index.html"
 
@@ -49,7 +51,7 @@ class IndexView(ListView):
         context = super().get_context_data(**kwargs)
         this_week_service_date_str, following_service_date_str, _ = service_dates()
         # services = Service.objects.filter(service_date=this_week_service_date_str)
-        following_week_services = Service.objects.filter(service_date=following_service_date_str)
+        following_week_services = Service.objects.filter(service_dates__service_date=following_service_date_str)
 
         context['next_services'] = following_week_services
 
@@ -227,9 +229,9 @@ class ServiceDetailView(DetailView):
 @class_login_required
 class ServiceListView(django_tables2.SingleTableMixin, FilterView):
     model = Service
-    table_class = ServiceTable
+    # table_class = ServiceTable
     queryset = Service.objects.all()
-    filterset_class = ServiceFilter
+    # filterset_class = ServiceFilter
     template_name = "catalog/service_list.html"
 
     table_pagination = {"per_page": 10}

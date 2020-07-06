@@ -2,9 +2,18 @@
 ## Database relationships ##
 ############################
 
-1. Many-to-many relationships: use ManytoManyField
+Summary
+1. Many-to-many relationships: use `ManytoManyField` on either side
+2. Many-to-one relationships: use `ForeignKey` on many side
+3. One-to-one relationships: use `OneToOneField` on either side
 
-*definition:
+
+Breakdown
+---------------------------------------------------
+1. Many-to-many relationships: use ManytoManyField
+---------------------------------------------------
+
+*Definition:
 
 class Publication(models.Model):
     title = models.CharField(max_length=30)
@@ -36,7 +45,7 @@ a1.publications.all()
 p1.article_set.all()
 Publication.objects.get(id=4).article_set.all()
 
-** filter
+** filter/query
 Article.objects.filter(publications__title__startswith="Science").count()
 Publication.objects.filter(article__headline__startswith="NASA")
 
@@ -55,8 +64,9 @@ a1.publications.set([p2])
 a1.publications.clear()
 p2.article_set.clear()
 
-
+---------------------------------------------------
 2. Many-to-one relationships: use ForeignKey
+---------------------------------------------------
 
 * Definition: one reporter has many articles
 
@@ -78,29 +88,78 @@ r2.save()
 
 a = Article.objects.create(headline="This is a test", pub_date=date(2005, 7, 27), reporter=r2)
 
-* get
+** access
 r = a.reporter
+articles = r1.article_set.all()
 
-* create
+** create
 new_article = r.article_set.create(headline="John's second story", pub_date=date(2005, 7, 29))
 new_article2 = Article.objects.create(headline="Paul's story", pub_date=date(2006, 1, 17), reporter=r)
 
-* add
+** add
 r2.article_set.add(new_article2)
 
-* list all
+** list all
 r2.article_set.all()
 
 ** list count
 r2.article_set.count()
 
-* filter/query
+** filter/query
 r.article_set.filter(headline__startswith='This')
 
 Article.objects.filter(reporter__first_name='John', reporter__last_name='Smith')
 Reporter.objects.filter(article__headline__startswith='This')
 
-* delete
+** delete
 (Note: If the `one` side instance is deleted, its corresponding `many` will be deleted with default `CASCADE`)
  r2.delete()
  Reporter.objects.filter(article__headline__startswith='This').delete()
+
+-----------------------------------------------
+3. One-to-one relationships: use OneToOneField
+-----------------------------------------------
+
+* Definition
+For example, a Place optionally can be a Restaurant.
+
+class Place(models.Model):
+    name = models.CharField(max_length=50)
+    address = models.CharField(max_length=80)
+
+class Restaurant(models.Model):
+    place = models.OneToOneField(
+        Place,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )  <------- Use `OneToOneField` to define the relationship
+
+* Methods
+p1 = Place(name='Demon Dogs', address='944 W. Fullerton')
+p2 = Place(name='Ace Hardware', address='1013 N. Ashland')
+p1.save()
+p2.save()
+
+** create
+restaurant = Restaurant(place=p1, serves_hot_dogs=True, serves_pizza=False)
+restaurant.save()
+
+** access
+p = restaurant.place
+r = p1.restaurant  <--- restaurant as if an attribute defined in Place
+
+*** verify access (returns Boolean)
+hasattr(p1, 'restaurant')
+
+** filter/query
+Restaurant.objects.filter(place__name__startswith="Demon")
+Place.objects.filter(restaurant=r)
+
+############################
+## Django 101             ##
+############################
+1. Create super user
+python manage.py createsuperuser
+2. Create database
+python3 manage.py makemigrations
+python3 manage.py migrate

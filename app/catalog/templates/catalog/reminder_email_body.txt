@@ -3,7 +3,7 @@
 
 {% for service in services.all %}
 
-   {{ service.service_category}}:
+   {{ service.name}}:
         {% spaceless %}
         {% for server in service.servants.all %}
         {{ server.name}}

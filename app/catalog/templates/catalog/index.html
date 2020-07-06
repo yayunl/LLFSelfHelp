@@ -21,7 +21,7 @@
     <tbody>
     {% for service in services %}
     <tr>
-      <td>{{ service.service_category }}</td>
+      <td>{{ service.name }}</td>
       <td>{{ service.servant_names }}</td>
       <td>{{ service.service_content }}</td>
     </tr>
@@ -41,7 +41,7 @@
     <tbody>
     {% for service in next_services %}
     <tr>
-      <td>{{ service.service_category }}</td>
+      <td>{{ service.name }}</td>
       <td>{{ service.servant_names }}</td>
       <td>{{ service.service_content }}</td>
     </tr>

@@ -11,6 +11,7 @@ venv
 app/suorganizer/__pycache__/
 user/__pycache__/
 user/migrations/__pycache__/
+*/*/migrations/
 *.bak
 *.dat
 *.dir

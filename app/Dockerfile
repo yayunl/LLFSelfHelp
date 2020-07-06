@@ -3,8 +3,8 @@ FROM ubuntu:18.04
 MAINTAINER "krashilili0915@gmail.com"
 
 # Setup work directory
-RUN mkdir -p /usr/code/app
-WORKDIR /usr/code/
+#RUN mkdir -p /usr/code/app
+WORKDIR /usr/code/app
 
 # Install build essentials
 RUN apt-get update -y && \
@@ -21,17 +21,16 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-
-# Copy source code to /usr/code/app
-COPY . app
+# Copy project
+COPY . .
 
 # Copy manage.py and bash script to /usr/code
-COPY manage.py entrypoint.sh ./
+#COPY manage.py entrypoint.sh ./
 
 # Enable execution
-RUN chmod +x ./entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/code/entrypoint.sh"]
+ENTRYPOINT ["/usr/code/app/entrypoint.sh"]
 
 

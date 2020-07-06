@@ -25,11 +25,11 @@ class ServiceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)
-        self.fields['service_category'] = forms.ChoiceField(choices=SERVICE_GROUP)
+        self.fields['name'] = forms.ChoiceField(choices=SERVICE_GROUP)
 
     class Meta:
         model = Service
-        exclude = ('slug', 'coordinator')
+        exclude = ('slug', )
         # fields = ('service_date', 'service_category', 'edit')
         attrs = {'class': 'table table-sm'}
         # widgets = {

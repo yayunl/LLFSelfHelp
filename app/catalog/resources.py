@@ -19,7 +19,7 @@ class MemberResource(resources.ModelResource):
 
     class Meta:
         model = Member
-        # exclude = ('christian', 'group', 'group_leader', 'active', 'username', 'slug')
+        exclude = ('username', 'password_hash', 'slug')
         export_order = ('id', 'name', 'english_name', 'gender', 'job', 'email', 'phone_number', 'hometown',\
                         'birthday', 'habits', 'first_time')
 
@@ -30,9 +30,9 @@ class MemberResource(resources.ModelResource):
 
 class ServiceResource(resources.ModelResource):
     servant_name = Field(attribute='servant_names', column_name="Servants")
-    service_category = Field(attribute='service_category', column_name='Category')
+    service_category = Field(attribute='name', column_name='Category')
     service_date = Field(attribute='service_date', column_name='Date')
-    service_note = Field(attribute='service_note', column_name='Note')
+    service_note = Field(attribute='description', column_name='Note')
 
     class Meta:
         model = Service

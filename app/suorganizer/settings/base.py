@@ -18,6 +18,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
+# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
+# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -57,7 +61,7 @@ MIDDLEWARE = [
     'django.middleware.common.BrokenLinkEmailsMiddleware'
 ]
 
-ROOT_URLCONF = 'app.suorganizer.urls'
+ROOT_URLCONF = 'suorganizer.urls'
 
 TEMPLATES = [
     {
@@ -124,10 +128,6 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
-# 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
-# For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
-
 
 # Email
 # https://docs.djangoproject.com/en/1.8/topics/email/
@@ -159,7 +159,7 @@ CELERY_TIMEZONE = 'America/Chicago'
 CELERY_BEAT_SCHEDULE = {
     'scheduled_reminders': {
         'task': 'send_reminders',
-        'schedule': crontab(minute='*/1'),
+        'schedule': crontab(minute='*/10'),
         # 'args': (10 , 20)
     },
 }

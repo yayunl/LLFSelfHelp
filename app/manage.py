@@ -1,20 +1,16 @@
 #!/usr/bin/env python
 """Django's command-line utility for administrative tasks."""
-import os, sys, environ
-
-# Load env
-environ.Env.read_env()
-env = environ.Env(DEBUG=(bool, False),)
+import os, sys
 
 
 def main():
 
-    if env('ENV').lower() == 'dev':
+    if os.environ.get('ENV') == 'dev':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
-    elif env('ENV').lower() == 'prod':
+    elif os.environ.get('ENV') == 'prod':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.prod")
-    else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings")
+    # else:
+    #     os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings")
 
     try:
         from django.core.management import execute_from_command_line

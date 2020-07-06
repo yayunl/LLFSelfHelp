@@ -11,12 +11,12 @@ def send_reminders():
     recipient_emails = os.environ.get('REMINDER_RECIPIENTS_EMAIL').split(',')
 
     this_week_service_date_str, following_service_date_str, _ = service_dates()
-    this_week_services = Service.objects.filter(service_date=this_week_service_date_str)
+    this_week_services_query = Service.objects.filter(service_dates__service_date=this_week_service_date_str)
 
     # send emails to all servants
-    emails = ';'.join([servant.email for service in this_week_services.all() for servant in service.servants.all()])
+    emails = ';'.join([servant.email for service in this_week_services_query.all() for servant in service.servants.all()])
 
-    context = {'services': this_week_services,
+    context = {'services': this_week_services_query,
                'this_week_date': this_week_service_date_str,
                'emails': emails}
 

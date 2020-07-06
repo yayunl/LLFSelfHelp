@@ -32,11 +32,8 @@ RUN pip3 install -r requirements.txt
 # Copy project
 COPY . $APP_HOME
 
-# Copy manage.py and bash script to home dir
-COPY manage.py entrypoint.prod.sh $HOME
-
 # Enable execution
-RUN chmod +x ./entrypoint.prod.sh
+RUN chmod +x entrypoint.prod.sh
 
 # chown all the files to the app user
 RUN chown -R app:app $APP_HOME
@@ -45,6 +42,6 @@ RUN chown -R app:app $APP_HOME
 USER app
 
 # run entrypoint.sh
-ENTRYPOINT ["/usr/code/entrypoint.prod.sh"]
+ENTRYPOINT ["/usr/code/app/entrypoint.prod.sh"]
 
 
