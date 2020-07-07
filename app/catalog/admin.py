@@ -5,26 +5,28 @@ from .models import Member, Group, Service, ServiceDate
 from import_export.admin import ImportExportModelAdmin
 
 
-class MemberResource(resources.ModelResource):
+# class MemberResource(resources.ModelResource):
+#
+#     class Meta:
+#         model = Member
+#         skip_unchanged = True
+#         report_skipped = False
+#         exclude = ('id', 'username', 'password_hash', 'slug')
+#
+#
+# class MemberAdminImport(ImportExportModelAdmin):
+#     resource_class = MemberResource
+#     #: import data encoding
+#     from_encoding = "utf8"
 
-    class Meta:
-        model = Member
-        skip_unchanged = True
-        report_skipped = False
-        exclude = ('chinese_name','bapatized','Month','Day','lunar_birthday',
-                   'social_media_type','social_media_account', 'username', 'password_hash')
-
-
-class MemberAdminImport(ImportExportModelAdmin):
-    resource_class = MemberResource
-    #: import data encoding
-    from_encoding = "utf8"
+class MemberAdmin(admin.ModelAdmin):
+    exclude = ('id', 'username', 'password_hash', 'slug', 'service_dates')
 
 
 class ServiceAdmin(admin.ModelAdmin):
     # prepopulated_fields = {'slug': ('name', 'service_date'), }
     # list_display = ['service_date', 'name']
-    exclude = ('slug', 'servants')
+    exclude = ('slug',)
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -36,7 +38,8 @@ class ServiceDateAdmin(admin.ModelAdmin):
 
 
 # register the classes
-admin.site.register(Member, MemberAdminImport)
+# admin.site.register(Member, MemberAdminImport)
+admin.site.register(Member, MemberAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Service, ServiceAdmin)
 admin.site.register(ServiceDate, ServiceDateAdmin)

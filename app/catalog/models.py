@@ -69,7 +69,7 @@ class Group(models.Model):
     """
     id = models.IntegerField(unique=True, primary_key=True)
     name = models.CharField(max_length=20, null=True)
-    description = models.CharField(max_length=100, null=True)
+    description = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(max_length=31, null=True)
 
     def __str__(self):
@@ -92,16 +92,21 @@ class Group(models.Model):
             num += 1
         return unique_slug
 
+    def _get_unique_id(self):
+        groups = Group.objects.all()
+        return len(groups)+1
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self._get_unique_slug()
+        if not self.id:
+            self.id = self._get_unique_id()
         super().save(*args, **kwargs)
 
 
 class ServiceDate(models.Model):
     # service dates
-    id = models.IntegerField(unique=True, primary_key=True)
-    service_date = models.DateField(null=True)
+    service_date = models.DateField(unique=True, primary_key=True)
 
     def __str__(self):
         return f"<ServiceDate: {self.service_date.isoformat()}>"
@@ -110,19 +115,24 @@ class ServiceDate(models.Model):
 class Member(models.Model):
     # fields
     id = models.IntegerField(unique=True, primary_key=True)
+
     name = models.CharField(max_length=50, null=True, blank=True, unique=True)
     english_name = models.CharField(max_length=50, null=True, blank=True)
-    gender = models.CharField(max_length=10, null=True, blank=True)
-    christian = models.BooleanField(default=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     email = models.EmailField(null=True)
     job = models.CharField(max_length=50, null=True, blank=True)
     hometown = models.CharField(max_length=50, null=True, blank=True)
-    first_time = models.DateField(null=True)
+    first_time_visit = models.DateField(null=True)
     habits = models.TextField(null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
+
+    username = models.CharField(max_length=50, null=True, blank=True, default=None)
+    password_hash = models.CharField(max_length=128, null=True, blank=True, default=None)
+
+    # Boolean attributes
+    gender = models.BooleanField(default=True) # Male: true, Female: False
+    christian = models.BooleanField(default=True)
     group_leader = models.BooleanField(default=False)
-    # Active member?
     active = models.BooleanField(default=True)
 
     # One-to-one relationships
@@ -132,10 +142,7 @@ class Member(models.Model):
     # Many-to-many relationships
     service_dates = models.ManyToManyField(ServiceDate)
 
-    # credentials
-    username = models.CharField(max_length=50, null=True, blank=True, default=None)
-    password_hash = models.CharField(max_length=128, null=True, blank=True, default=None)
-
+    # Slug is the unique identifier
     slug = models.SlugField(max_length=31, blank=True, default=None)
 
     # Metadata
@@ -187,11 +194,10 @@ class SocialMediaAccount(models.Model):
 
 class Service(models.Model):
     # id = models.IntegerField(unique=True, primary_key=True)
-    name = models.CharField(max_length=20, null=True, blank=True)
-    # service_date = models.DateField(null=True)
+    name = models.CharField(max_length=40, unique=True, primary_key=True)
     description = models.CharField(max_length=100, null=True, blank=True)
-
-    slug = models.SlugField(max_length=63, primary_key=True)
+    # Slug is a unique identifier
+    # slug = models.SlugField(max_length=63, primary_key=True)
 
     # Many-to-many relationships
     servants = models.ManyToManyField(Member, related_name='services',)
@@ -210,23 +216,23 @@ class Service(models.Model):
         Used in urls and details template.
         :return:
         """
-        return reverse('service_detail', args=[self.slug])
+        return reverse('service_detail', args=[self.name])
 
-    def _get_unique_slug(self):
-        service_date = datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
-        slug = slugify(f"{self.name}-{service_date}")
-        unique_slug = slug
-        num = 1
-        while Service.objects.filter(slug=unique_slug).exists():
-            unique_slug = '{}-{}'.format(slug, num)
-            num += 1
-        return unique_slug
+    # def _get_unique_slug(self):
+    #     service_date = datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
+    #     slug = slugify(f"{self.name}-{service_date}")
+    #     unique_slug = slug
+    #     num = 1
+    #     while Service.objects.filter(slug=unique_slug).exists():
+    #         unique_slug = '{}-{}'.format(slug, num)
+    #         num += 1
+    #     return unique_slug
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = self._get_unique_slug()
-        # Create/update an object
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if not self.slug:
+    #         self.slug = self._get_unique_slug()
+    #     # Create/update an object
+    #     super().save(*args, **kwargs)
 
     @property
     def servant_names(self):

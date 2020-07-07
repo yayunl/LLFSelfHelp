@@ -159,7 +159,14 @@ Place.objects.filter(restaurant=r)
 ## Django 101             ##
 ############################
 1. Create super user
-python manage.py createsuperuser
+python3 manage.py createsuperuser
 2. Create database
 python3 manage.py makemigrations
 python3 manage.py migrate
+
+3. Recreate the database
+  a. Drop the tables
+  b. Delete xxx_initial.py files in migrations folder
+  c. on web service, run makemigrations and migrate
+  d. create super user using the following command:
+  echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'password')" | python3 manage.py shell
