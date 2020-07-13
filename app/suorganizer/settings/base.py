@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     "bootstrap_datepicker_plus",
     'import_export',
     'django_tables2',
+    # user defined apps
     'catalog',
+    'users',
     'core',
 ]
 
@@ -103,6 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'users.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -123,10 +126,10 @@ TIME_ZONE = 'America/Chicago'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(PROJECT_ROOT, "app/static"),
-]
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "staticfiles"),
+# ]
+# STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 
 
 # Email
@@ -143,8 +146,9 @@ EMAIL_SUBJECT_PREFIX = '[LLF Admin]'
 REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 
 # Login redirect
-LOGIN_URL = '/user/login'
-LOGIN_REDIRECT_URL = '/catalog/'
+LOGIN_URL = '/auth/login'
+# Redirect on a successful login
+LOGIN_REDIRECT_URL = '/user/users'
 
 
 # CELERY

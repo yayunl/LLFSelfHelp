@@ -16,8 +16,11 @@ from django.utils.encoding import force_bytes
 from django.utils.http import \
     urlsafe_base64_encode
 from django.core.mail import EmailMessage, send_mail
+from datetime import datetime as dt
+import datetime
 
-from .models import Member, Service
+from .models import Service
+from users.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -154,9 +157,9 @@ class ActivationMailFormMixin:
 
 
 class MailContextViewMixin:
-    email_template_name = 'catalog/email_create.txt'
+    email_template_name = 'users/email_create.txt'
     subject_template_name = (
-        'catalog/subject_create.txt')
+        'users/subject_create.txt')
 
     def get_save_kwargs(self, request):
         return {
@@ -252,7 +255,7 @@ def handle_uploaded_schedules(raw_data, resource_instance):
 
             for servant_name in sns:
                 try:
-                    servant = Member.objects.get(name=servant_name)
+                    servant = User.objects.get(name=servant_name)
                     service.servants.add(servant)
                 except:
                     print("Cannot find servant: {}".format(servant_name))
@@ -266,3 +269,39 @@ def handle_uploaded_schedules(raw_data, resource_instance):
     #
     # if not result.has_errors():
     #     resource_instance.import_data(imported_data, dry_run=False)  # Actually import now
+
+
+def service_dates():
+    """
+    Get the service dates in string of this week and the next week.
+    :return: tuple. (this_week_service_date_str in YYYY-MM-DD format,
+                     following_week_service_date_str in YYYY-MM-DD format,
+                     this_week_sunday_date_str in YYYY-MM-DD format)
+    """
+    today_full_date = dt.today()
+
+    today_wk_int = int(dt.strftime(today_full_date, '%w'))
+
+    delta_days_to_fri = 5 - today_wk_int
+
+    if delta_days_to_fri == -2:
+        # The date of next week
+        service_date = today_full_date + datetime.timedelta(5)
+
+    elif delta_days_to_fri == -1:
+        # The date of this week
+        service_date = today_full_date - datetime.timedelta(1)
+    else:
+        service_date = today_full_date + datetime.timedelta(delta_days_to_fri)
+
+    # The service date a week after
+    following_service_date = service_date + datetime.timedelta(7)
+
+    # This week's Sunday date
+    this_week_sunday_date = service_date + datetime.timedelta(2)
+
+    this_week_service_date_str = service_date.strftime('%Y-%m-%d')
+    following_week_service_date_str = following_service_date.strftime('%Y-%m-%d')
+    this_week_sunday_date_str = this_week_sunday_date.strftime('%Y-%m-%d')
+
+    return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str

@@ -167,6 +167,34 @@ python3 manage.py migrate
 3. Recreate the database
   a. Drop the tables
   b. Delete xxx_initial.py files in migrations folder
-  c. on web service, run makemigrations and migrate
+  c. on `Web` service, run python3 manage.py makemigrations && python3 manage.py migrate
   d. create super user using the following command:
   echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'password')" | python3 manage.py shell
+  e. Create fake data  `python3 manage.py create_fake_data`
+
+4. makemigrations dry run
+python3 manage.py makemigrations APP --dry-run --verbosity 3
+
+5. Order of creating random data
+  a. Create group `python3 manage.py create_group`
+   i.e. python3 manage.py create_group 1 -g Xiyangyang -ds "Little Lamb group"
+
+  b. Create service `python3 manage.py create_service`
+   i.e. python3 manage.py create_service -s "Bible Study" -ds "Studying the bible" -dt "2020-7-17"
+
+  c. Create service note `python3 manage.py create_servicenote`
+    i.e. python3 manage.py create_servicenote 1 -s "Bible Study" -n "Genesis 1" -dt "2020-07-17"
+
+  d. Create member `python3 manage.py create_user`
+    i.e. python3 manage.py create_user 1 -u yayun -e "krashilili0915@gmail.com" -p liu -n "Aaron Liu"
+
+  e. Create superuser
+
+
+#################################
+# Pycharm Dockerization setting #
+#################################
+1. Go to > File > Settings> Languages & frameworks > Django
+Details: https://stackoverflow.com/questions/53753612/pycharm-no-manage-py-file-specified-in-settings-django-support-after-refactori/53782056
+2. Setup pycharm to debug Django
+Detials: https://testdriven.io/blog/django-debugging-pycharm/

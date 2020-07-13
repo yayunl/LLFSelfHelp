@@ -1,23 +1,20 @@
-{% extends parent_template|default:"catalog/base_user.html" %}
+{% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
     <h1>Group Members</h1>
-<!--    {% for member in group.members.all  %}-->
-<!--        <a href="{% url 'member_detail' member.slug%}">{{ member.slug}}</a>-->
-<!--{% endfor %}}-->
         <div class="ui cards">
-            {% for member in group.members.all  %}
+            {% for user in group.users.all  %}
             <div class="card">
                 <div class="content">
-                    <a class="header" href="#">{{ member.name }}</a>
-                    <div class="meta">{{ member.job }}</div>
+                    <a class="header" href="#">{{ user.name }}</a>
+                    <div class="meta">{{ user.job }}</div>
                     <div class="description">
-                        From {{ member.hometown}}
+                        From {{ user.hometown}}
                     </div>
                     <div class="extra content">
                         <div class="ui buttons">
                             <div class="ui button">
-                                <a href="{% url 'member_detail' member.slug%}">View</a>
+                                <a href="{% url 'users.user_detail' user.slug%}">View</a>
                             </div>
                         </div>
                     </div>

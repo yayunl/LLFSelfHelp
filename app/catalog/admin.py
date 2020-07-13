@@ -1,26 +1,7 @@
 from django.contrib import admin
 from import_export import resources
 # Register your models here.
-from .models import Member, Group, Service, ServiceDate
-from import_export.admin import ImportExportModelAdmin
-
-
-# class MemberResource(resources.ModelResource):
-#
-#     class Meta:
-#         model = Member
-#         skip_unchanged = True
-#         report_skipped = False
-#         exclude = ('id', 'username', 'password_hash', 'slug')
-#
-#
-# class MemberAdminImport(ImportExportModelAdmin):
-#     resource_class = MemberResource
-#     #: import data encoding
-#     from_encoding = "utf8"
-
-class MemberAdmin(admin.ModelAdmin):
-    exclude = ('id', 'username', 'password_hash', 'slug', 'service_dates')
+from .models import Group, Service, ServiceDate, ServiceNote
 
 
 class ServiceAdmin(admin.ModelAdmin):
@@ -37,9 +18,12 @@ class ServiceDateAdmin(admin.ModelAdmin):
     exclude = ('id', )
 
 
+class ServiceNoteAdmin(admin.ModelAdmin):
+    exclude = ('id', 'slug',)
+
+
 # register the classes
-# admin.site.register(Member, MemberAdminImport)
-admin.site.register(Member, MemberAdmin)
 admin.site.register(Group, GroupAdmin)
 admin.site.register(Service, ServiceAdmin)
+admin.site.register(ServiceNote, ServiceNoteAdmin)
 admin.site.register(ServiceDate, ServiceDateAdmin)

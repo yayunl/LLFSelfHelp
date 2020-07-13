@@ -1,8 +1,10 @@
 from celery import task
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
-from .models import Service, service_dates
 import os
+
+from .models import Service
+from .utils import service_dates
 
 
 @task(name='send_reminders')
@@ -21,8 +23,8 @@ def send_reminders():
                'emails': emails}
 
     email_subject = render_to_string(
-        'catalog/reminder_email_subject.txt', context).replace('\n', '')
-    email_body = render_to_string('catalog/reminder_email_body.txt', context)
+        'users/reminder_email_subject.txt', context).replace('\n', '')
+    email_body = render_to_string('users/reminder_email_body.txt', context)
 
 
     send_mail(

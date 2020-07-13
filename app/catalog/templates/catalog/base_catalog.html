@@ -1,0 +1,23 @@
+{% extends parent_template|default:"base.html" %}
+
+{% block statics %}
+    {% load static %}
+
+    <!-- Add additional CSS in static file -->
+    <link rel="stylesheet" href="{% static 'catalog/css/styles.css' %}">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{% static 'catalog/css/bootstrap.min.css' %}">
+{% endblock statics %}
+
+{% block scripts %}
+    {% load static %}
+    <!-- Load additional javascripts -->
+    <script src="{% static 'catalog/js/jquery.min.js' %}"></script>
+    <script src="{% static 'catalog/js/app.js' %}"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/components/api.min.js"></script>
+    <script src="{% static 'catalog/js/popper.min.js' %}"></script>
+    <script src="{% static 'catalog/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'catalog/js/jquery.bootstrap.modal.forms.js' %}"></script>
+{% endblock scripts %}

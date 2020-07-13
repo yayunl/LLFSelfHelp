@@ -1,0 +1,20 @@
+{% extends parent_template|default:"users/base_users.html" %}
+
+{% block content %}
+    <h1>{{ user.name }}</h1>
+
+    <p><strong>Group:</strong> <a href="{% url 'group_detail' user.group.slug %}">{{ user.group.name }}</a></p> <!-- author detail link not yet defined -->
+    <p><strong>Gender:</strong> {{ user.gender }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+    <p><strong>Job:</strong> {{ user.job }}</p>
+    <p><strong>Birthday:</strong> {{ user.birthday|date:'M. jS' }}</p>
+    <p><strong>Hometown:</strong> {{ user.hometown }}</p>
+    <p><strong>Believer?</strong> {% if user.christian %} Yes {% else %} No {% endif %}</p>
+    <p><strong>Active user:</strong> {% if user.active %} Yes {% else %} No {% endif %}</p>
+    <p><strong>First visit on:</strong> {{ user.first_time }}</p>
+    <p><strong>Habits:</strong> {{ user.habits }}</p>
+
+<!--  <p><strong>Genre:</strong> {% for genre in book.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>  -->
+
+{% endblock %}

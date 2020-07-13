@@ -1,4 +1,4 @@
-{% extends parent_template|default:"catalog/base_user.html" %}
+{% extends parent_template|default:"catalog/base_catalog.html" %}
 
 
 {% block scripts %}
@@ -19,7 +19,7 @@
 
 
           // delete book buttons
-          $(".delete-member").each(function () {
+          $(".delete-user").each(function () {
 
             $(this).modalForm({
               formURL: $(this).data('id'),
@@ -68,7 +68,7 @@
           <div class="extra content">
             <a>
               <i class="users icon"></i>
-              {{ group.members.count }}Members
+              {{ group.users.count }}Users
             </a>
           </div>
         </div>

@@ -18,16 +18,16 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 
 from catalog.urls import urlpatterns as catalogurls
-from catalog.urls import user_urlpatterns as userurls
-from catalog.urls import password_urls as authurls
+from users.urls import user_urls as userurls
+from users.urls import auth_urls as authurls
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
-    path('',
-         RedirectView.as_view(
-             pattern_name='member_index',
-             permanent=False)),
+    path('', RedirectView.as_view(pattern_name='catalog_index', permanent=False)),
     path('admin/', admin.site.urls),
     path('catalog/', include(catalogurls)),
     path('user/', include(userurls)),
     path('auth/', include(authurls))
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
