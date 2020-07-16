@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
-from catalog.models import Group, Service, ServiceNote, ServiceDate
+from catalog.models import Group, Service, Category
 from users.models import User
 from datetime import datetime as dt
-
+from catalog.utils import str2date
 
 class Command(BaseCommand):
     help = 'Create fake data'
@@ -20,30 +20,26 @@ class Command(BaseCommand):
             gr.save()
         self.stdout.write('Group records saved successfully.')
 
+        # Create two categories
+        cts = [('Bible study', 'Studying the Lords word'),
+               ('Food pickup', 'Picking up food')]
+        for c in cts:
+            cat = Category(name=c[0], description=c[1])
+            cat.save()
+
         # Create two services
-        services = [('Bible study', 'Studying the Lords word'),
-                    ('Food pickup', 'Picking up food')]
+        categories = Category.objects.filter().all()
+        c1, c2 = categories[0], categories[1]
+        services = [(c1, 'Genesis1', str2date('2020-07-18'), 'Nothing' ),
+                    (c2, 'Panda', str2date('2020-07-17'),'Picking up food')]
+
         for service in services:
-            sr = Service(name=service[0],
-                         description=service[1])
+            sr = Service(category=service[0],
+                         description=service[1],
+                         service_date=service[2],
+                         note=service[-1])
             sr.save()
-            sd = ServiceDate(service_date=dt.strptime('2020-07-17', '%Y-%m-%d'))
-            sd.save()
-
-            sr.service_dates.add(sd)
         self.stdout.write('Service records created successfully.')
-
-        # Create service notes
-        service_notes = [('Genesis 1', '2020-07-17', 'Bible study'),
-                         ('Panda Express at 6:40 pm', '2020-07-17', 'Food pickup')]
-        for sn in service_notes:
-            service = Service.objects.filter(name=sn[-1]).first()
-            sdate = ServiceDate.objects.filter(service_date=dt.strptime(sn[1], '%Y-%m-%d')).first()
-            srnote = ServiceNote(note=sn[0],
-                                 service=service,
-                                 service_date=sdate)
-            srnote.save()
-        self.stdout.write('Service notes created successfully.')
 
         # Create four fake members
         # grp1 = Group.objects.filter(name='Xiyangyang').first()

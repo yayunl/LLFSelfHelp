@@ -5,18 +5,19 @@ from datetime import datetime as dt
 from django.utils.html import format_html
 from django.urls import reverse
 from .utils import service_dates
-from .models import Service, ServiceNote
+from .models import Service
+# from users.models import User
 
 
 class ServiceTable(tables.Table):
 
     action = TemplateColumn(template_name='catalog/_service_table_update_column.html', orderable=False)
-    notes = tables2.Column(orderable=False, verbose_name='Note')
-    name = tables2.Column(orderable=False, verbose_name='Service')
+    # notes = tables2.Column(orderable=False, verbose_name='Note')
+    category = tables2.Column(orderable=False)
 
     class Meta:
         model = Service
-        fields = ('name',  'notes', 'servants',  'action')
+        fields = ('service_date', 'description', 'category', 'servants',  'action')
         row_attrs = {
             'data-id': 0,
             # 'data-id': lambda record: '1'  if record.objects.filter(service_dates__service_date)
@@ -34,24 +35,24 @@ class ServiceTable(tables.Table):
         servant_names_html = ', '.join(servant_names)
         return format_html(servant_names_html)
 
-    def render_notes(self, value, record):
-        sdate_str = service_dates()[0]
-        sdate = dt.strptime(sdate_str, '%Y-%m-%d').date()
-        try:
-            snote = ServiceNote.objects.filter(service=record, service_date=sdate).first()
-            note= snote.note
-            return note
-        except:
-            return ""
+    # def render_notes(self, value, record):
+    #     sdate_str = service_dates()[0]
+    #     sdate = dt.strptime(sdate_str, '%Y-%m-%d').date()
+    #     try:
+    #         snote = ServiceNote.objects.filter(service=record, service_date=sdate).first()
+    #         note= snote.note
+    #         return note
+    #     except:
+    #         return ""
 
     # def render_action(self, value, record):
     #     return ""
 
 
-class ServiceFilter(django_filters.FilterSet):
-    class Meta:
-        model = Service
-        fields = ['service_dates']
+# class ServiceFilter(django_filters.FilterSet):
+#     class Meta:
+#         model = Service
+#         fields = ['service_dates']
         # widgets = {
         #     'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
         # }

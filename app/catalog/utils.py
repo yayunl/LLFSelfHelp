@@ -305,3 +305,11 @@ def service_dates():
     this_week_sunday_date_str = this_week_sunday_date.strftime('%Y-%m-%d')
 
     return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str
+
+
+def date2str(date):
+    return datetime.datetime.strftime(date, '%Y-%m-%d')
+
+
+def str2date(date_str):
+    return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()

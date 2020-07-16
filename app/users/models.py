@@ -41,11 +41,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
-    # Relationships
-    group = models.ForeignKey('catalog.Group', on_delete=models.CASCADE, ) # one-to-many
-    service_dates = models.ManyToManyField('catalog.ServiceDate') # many-to-many
+    # One-to-many relationships defined on the `many` side
+    group = models.ForeignKey('catalog.Group', on_delete=models.CASCADE) # one-to-many
+    service = models.ForeignKey('catalog.Service', on_delete=models.CASCADE)
 
-    # Slug is the unique identifier
+    # unique identifier
     slug = models.SlugField(max_length=31, blank=True, default=None)
 
     objects = CustomUserManager()

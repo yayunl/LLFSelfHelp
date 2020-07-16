@@ -19,7 +19,7 @@ from .models import Group, Service
 from .tables import ServiceTable # ServiceFilter
 from .forms import  ServiceForm, GroupForm, ServiceUpdateForm
 from .resources import ServiceResource
-from .utils import handle_uploaded_schedules, service_dates
+from .utils import handle_uploaded_schedules, service_dates, str2date
 from .tasks import send_reminders
 
 
@@ -34,7 +34,7 @@ class IndexView(ListView):
     # table_class = ServiceTable
 
     # Query services of this week
-    queryset = Service.objects.filter(service_dates__service_date=service_dates()[0])
+    queryset = Service.objects.filter(service_date=str2date(service_dates()[0]))
     context_object_name = 'services'
     template_name = "catalog/index.html"
 
@@ -42,7 +42,7 @@ class IndexView(ListView):
         context = super().get_context_data(**kwargs)
         this_week_service_date_str, following_service_date_str, _ = service_dates()
         # services = Service.objects.filter(service_date=this_week_service_date_str)
-        following_week_services = Service.objects.filter(service_dates__service_date=following_service_date_str)
+        following_week_services = Service.objects.filter(service_date=str2date(following_service_date_str))
 
         context['next_services'] = following_week_services
 
@@ -117,10 +117,15 @@ class ServiceUpdateView(UpdateView):
     model = Service
     form_class = ServiceUpdateForm
 
+    def get_form_kwargs(self):
+        kwargs = super(ServiceUpdateView, self).get_form_kwargs()
+        kwargs.update({'servicedate': self.kwargs.get('servicedate')})
+        return kwargs
+
     # def get_context_data(self, **kwargs):
     #     context = super(ServiceUpdateView, self).get_context_data(**kwargs)
-    #     category = context.get('service').service_category
-    #     context['category'] = category
+    #     # category = context.get('service').service_category
+    #     context['servicedate'] = kwargs.get('servicedate')
     #     return context
 
 

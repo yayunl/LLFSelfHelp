@@ -70,46 +70,77 @@ class Group(models.Model):
         super().save(*args, **kwargs)
 
 
-class ServiceDate(models.Model):
-    # service dates
-    service_date = models.DateField(unique=True, primary_key=True)
-
-    def __str__(self):
-        return f"<ServiceDate: {self.service_date.isoformat()}>"
-
-    def date_to_str(self):
-        return datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
-
-
-class Service(models.Model):
+class Category(models.Model):
     # id = models.IntegerField(unique=True, primary_key=True)
     name = models.CharField(max_length=40, unique=True, primary_key=True)
     description = models.CharField(max_length=100, null=True, blank=True)
-    # Slug is a unique identifier
-    # slug = models.SlugField(max_length=63, primary_key=True)
-
-    # Many-to-many relationships
-    servants = models.ManyToManyField('users.User', related_name='services',)
-    service_dates = models.ManyToManyField(ServiceDate)
 
     class Meta:
-        verbose_name = 'Service'
+        verbose_name = 'Category'
         ordering = ['name']
 
     # methods
     def __str__(self):
-        return f"<Service: {self.name}>"
+        return f"<Category: {self.name}>"
 
     def get_absolute_url(self):
         """
         Used in urls and details template.
         :return:
         """
-        return reverse('service_detail', args=[self.name])
+        return reverse('category_detail', args=[self.name])
+
+
+class Service(models.Model):
+    id = models.IntegerField(unique=True, primary_key=True)
+    description = models.CharField(max_length=100, null=True, blank=True)
+    note = models.CharField(max_length=100, null=True, blank=True)
+    service_date = models.DateField(null=True, blank=True)
+    # unique identifier
+    slug = models.SlugField(max_length=100, blank=True, default=None)
+
+    # One-to-one relationships
+    category = models.OneToOneField(Category, on_delete=models.CASCADE)
+    # @property
+    # def categories(self):
+    #     return self.category_set.all()
 
     @property
-    def notes(self):
-        return self.servicenote_set.all()
+    def servants(self):
+        return self.user_set.all()
+
+    def __str__(self):
+        return f"<Service: {self.category}-{self.date_to_str()}>"
+
+    def date_to_str(self):
+        return datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
+
+    def _get_unique_slug(self):
+        slug = slugify(f"{self.category}-on-{self.date_to_str()}")
+        unique_slug = slug
+        num = 1
+        while Service.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
+
+    def _get_unique_id(self):
+        members = Service.objects.all()
+        return len(members) + 1
+
+    def save(self, *args, **kwargs):
+        service = Service.objects.filter(service_date=kwargs.get('servicedate'),
+                                         category=kwargs.get('category')).first()
+        if not service:
+            if not self.slug:
+                self.slug = self._get_unique_slug()
+            if not self.id:
+                self.id = self._get_unique_id()
+
+            super().save(*args, **kwargs)
+
+
+
 
     # def _get_unique_slug(self):
     #     service_date = datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
@@ -128,19 +159,19 @@ class Service(models.Model):
     #     super().save(*args, **kwargs)
 
 
-class ServiceNote(models.Model):
-    # id = models.IntegerField(unique=True, primary_key=True)
-    note = models.CharField(max_length=100, null=True, blank=True)
-    slug = models.SlugField(max_length=31, null=True)
-    # One-to-many relationships
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    service_date = models.ForeignKey(ServiceDate, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"ServiceNote: {self.note}>"
-
-    def _get_slug(self):
-        return self.service.name+'@'+self.service_date.date_to_str()
+# class ServiceNote(models.Model):
+#     # id = models.IntegerField(unique=True, primary_key=True)
+#     note = models.CharField(max_length=100, null=True, blank=True)
+#     slug = models.SlugField(max_length=31, null=True)
+#     # One-to-many relationships
+#     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+#     service_date = models.ForeignKey(Service, on_delete=models.CASCADE)
+#
+#     def __str__(self):
+#         return f"ServiceNote: {self.note}>"
+#
+#     def _get_slug(self):
+#         return self.category.name+'@'+self.service_date.date_to_str()
 
 
 
