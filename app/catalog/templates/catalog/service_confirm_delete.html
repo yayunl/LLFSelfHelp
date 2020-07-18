@@ -2,13 +2,6 @@
 
 {% block content %}
 
-<h1>Delete Service</h1>
-
-<p>Are you sure you want to delete the service: {{ service }}?</p>
-
-<form action="" method="POST">
-  {% csrf_token %}
-  <input type="submit" value="Yes, delete.">
-</form>
+{% include 'catalog/_delete.html' with item_type='Service' item_name=service.slug %}
 
 {% endblock %}

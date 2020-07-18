@@ -1,27 +1,30 @@
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.utils.crypto import get_random_string
-from datetime import datetime as dt
-from catalog.models import Service, ServiceDate, ServiceNote
+from catalog.utils import date2str, str2date
+from catalog.models import Service, Category
 
 
 class Command(BaseCommand):
     help = 'Create service data'
 
     def add_arguments(self, parser):
-        # parser.add_argument('services', type=int, help='Indicates the number of users to be created')
-
-        parser.add_argument('-s', '--service', type=str, help='Service name')
+        parser.add_argument('-c','--category', type=str, help='Service category')
         parser.add_argument('-ds', '--description', type=str, help='Service description')
         parser.add_argument('-dt', '--date', type=str, help='Service date (YYYY-MM-DD)')
+        parser.add_argument('-nt', '--note', type=str, help='Note')
 
     def handle(self, *args, **kwargs):
-        sr = Service(name=kwargs.get('service'), description=kwargs.get('description'))
-        sr.save()
-        sd = ServiceDate(service_date=dt.strptime(kwargs.get('date'), '%Y-%m-%d'))
-        sd.save()
+        cat = Category.objects.filter(name=kwargs.get('category')).first()
+        if not cat:
+            cat = Category(name=kwargs.get('category'))
+            cat.save()
 
-        sr.service_dates.add(sd)
+        sr = Service(service_date=str2date(kwargs.get('date')),
+                     description=kwargs.get('description'),
+                     note=kwargs.get('note'))
+        sr.save()
+        sr.categories.add(cat)
 
         self.stdout.write('Service record is saved successfully.')
 

@@ -1,7 +1,7 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
-  <h1>LLF Administration Portal</h1>
+  <h1>LLF Admin Portal</h1>
   <h2>Active members and groups</h2>
   <ul>
     <li><strong>Members:</strong> {{ num_members }}</li>
@@ -19,11 +19,13 @@
     </tr>
     </thead>
     <tbody>
+
+
     {% for service in services %}
     <tr>
-      <td>{{ service.name }}</td>
+      <td>{{ service.category_names }}</td>
       <td>{{ service.servant_names }}</td>
-      <td>{{ service.service_content }}</td>
+      <td>{{ service.note }}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -39,11 +41,11 @@
     </tr>
     </thead>
     <tbody>
-    {% for service in next_services %}
+    {% for service in next_week_services %}
     <tr>
-      <td>{{ service.name }}</td>
+      <td>{{ service.category_names }}</td>
       <td>{{ service.servant_names }}</td>
-      <td>{{ service.service_content }}</td>
+      <td>{{ service.note }}</td>
     </tr>
     {% endfor %}
     </tbody>

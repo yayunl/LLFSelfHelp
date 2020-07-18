@@ -1,5 +1,5 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
-{% include 'catalog/_form.html' with id='serviceForm' %}
+ {% include 'catalog/_list.html' with item_type='Category' item_list=category_list %}
 {% endblock %}

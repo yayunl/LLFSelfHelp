@@ -2,64 +2,99 @@ from django.forms import ModelForm
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_modal_forms.forms import BSModalModelForm
-from datetime import datetime as dt
-from .models import Service, Group, SERVICE_GROUP
+
+from .models import Service, Group, Category
 from users.models import User
 
-class GroupForm(BSModalModelForm):
+
+class GroupForm(ModelForm):
+
     class Meta:
         model = Group
-        fields = ['name']
+        fields = ['name', 'description']
+
+        labels= {
+            'name': 'Group name',
+            'description': 'Group description',
+        }
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.name = self.cleaned_data['name']
+        instance.description = self.cleaned_data['description']
+        if commit:
+            instance.save()
+        return instance
+
+
+class CategoryForm(ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'description']
+
+        labels= {
+            'name': 'Category name',
+            'description': 'Category description',
+        }
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.name = self.cleaned_data['name']
+        instance.description = self.cleaned_data['description']
+        if commit:
+            instance.save()
+        return instance
 
 
 class ServiceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)
-        self.fields['name'] = forms.ChoiceField(choices=SERVICE_GROUP)
+        self.fields['service_date'].required=True
+
+    def save(self, commit=True):
+        instance = super().save(commit)
+        # set ServiceNote reverse foreign key from the Service model
+        # for servant in self.cleaned_data['servants']:
+        #     instance.user_set.add(servant)
+        return instance
 
     class Meta:
         model = Service
-        exclude = ('slug', )
-        # fields = ('service_date', 'service_category', 'edit')
-        attrs = {'class': 'table table-sm'}
-        # widgets = {
-        #     'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
-        #     # 'service_category': widgets.Select(attrs={'class': 'select'}),
-        # }
+        fields = ('service_date', 'categories', 'servants', 'note')
+        widgets = {
+            'note': forms.Textarea(attrs={'cols': 10, 'rows': 5}),  # default date-format %m/%d/%Y will be used
+            'service_date': DatePickerInput(),
+            # 'service_category': widgets.Select(attrs={'class': 'select'}),
+        }
 
 
 class ServiceUpdateForm(ModelForm):
-    servants = forms.ModelChoiceField(User.objects.filter())
-    # note = forms.CharField(initial='Make a note')
 
     def __init__(self, *args, **kwargs):
-        service = kwargs.get('instance')
-        # self.servicedate = kwargs.pop('servicedate')
-        # category = kwargs.pop('category')
-        # note = Service.objects.filter(service_date=kwargs.get('instance'),
-        #                                   service_date=dt.strptime(self.servicedate, '%Y-%m-%d').date()).first().note
-        # Change the initial note conent
-        initial = kwargs.get('initial', {})
-        initial['servants'] = service.servants
-        kwargs['initial'] = initial
+        # service = kwargs.get('instance')
+        # initial = kwargs.get('initial', {})
+        # initial['servants'] = service.servants
+        # kwargs['initial'] = initial
         # Initialize the instance
         super(ServiceUpdateForm, self).__init__(*args, **kwargs)
 
+    def save(self, commit=True):
+        instance = super().save(commit)
+        # set ServiceNote reverse foreign key from the Service model
+        # for servant in self.cleaned_data['servants']:
+        #     instance.user_set.add(servant)
+        return instance
+
     class Meta:
         model = Service
-        fields = ('servants', 'description', 'service_date', 'note')
+        fields = ('servants', 'service_date', 'categories', 'note')
         attrs = {'class': 'table table-sm'}
         widgets = {
             'service_date': DatePickerInput(),
         }
 
-    # def save(self, commit=True):
-    #     # service = Service.objects.filter(service)
-    #     instance = super().save(commit)
-    #     # set ServiceNote reverse foreign key from the Service model
-    #     instance.servicenote_set.add(self.cleaned_data['note'])
-    #     return instance
+
 
 
 

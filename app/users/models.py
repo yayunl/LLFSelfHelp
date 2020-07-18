@@ -42,8 +42,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
 
     # One-to-many relationships defined on the `many` side
-    group = models.ForeignKey('catalog.Group', on_delete=models.CASCADE) # one-to-many
-    service = models.ForeignKey('catalog.Service', on_delete=models.CASCADE)
+    group = models.ForeignKey('catalog.Group',
+                              on_delete=models.CASCADE,
+                              blank=True,
+                              null=True)    # one-to-many
 
     # unique identifier
     slug = models.SlugField(max_length=31, blank=True, default=None)

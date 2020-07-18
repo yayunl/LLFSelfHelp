@@ -15,9 +15,9 @@ from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
 
 # sub-level imports
-from .models import Group, Service
-from .tables import ServiceTable # ServiceFilter
-from .forms import  ServiceForm, GroupForm, ServiceUpdateForm
+from .models import Group, Service, Category
+from .tables import ServiceTable, ServiceFilter
+from .forms import ServiceForm, GroupForm, ServiceUpdateForm, CategoryForm
 from .resources import ServiceResource
 from .utils import handle_uploaded_schedules, service_dates, str2date
 from .tasks import send_reminders
@@ -44,13 +44,23 @@ class IndexView(ListView):
         # services = Service.objects.filter(service_date=this_week_service_date_str)
         following_week_services = Service.objects.filter(service_date=str2date(following_service_date_str))
 
-        context['next_services'] = following_week_services
+        context['next_week_services'] = following_week_services
 
         context['this_week_service_date'] = this_week_service_date_str
         context['next_week_service_date'] = following_service_date_str
         return context
 
+
 # Groups
+@class_login_required
+class GroupCreateView(CreateView):
+    model = Group
+    template_name = 'catalog/group_form.html'
+    form_class = GroupForm
+    success_message = 'Success: Group was created.'
+    success_url = reverse_lazy('group_list')
+
+
 @class_login_required
 class GroupListView(ListView):
     model = Group
@@ -61,16 +71,57 @@ class GroupListView(ListView):
 
 
 @class_login_required
+class GroupUpdateView(UpdateView):
+    model = Group
+    form_class = GroupForm
+    success_url = reverse_lazy('group_list')
+
+
+@class_login_required
 class GroupDetailView(DetailView):
     model = Group
 
 
 @class_login_required
-class GroupCreateView(BSModalCreateView):
-    template_name = 'catalog/_group_form.html'
-    form_class = GroupForm
-    success_message = 'Success: Group was created.'
+class GroupDeleteView(DeleteView):
+    model = Group
     success_url = reverse_lazy('group_list')
+
+
+# Categories
+@class_login_required
+class CategoryCreateView(CreateView):
+    model = Category
+    template_name = 'catalog/group_form.html'
+    form_class = CategoryForm
+    success_message = 'Success: Category was created.'
+    success_url = reverse_lazy('category_list')
+
+
+@class_login_required
+class CategoryListView(ListView):
+    model = Category
+    context_object_name = 'category_list'
+    queryset = Category.objects.filter()
+    template_name = 'catalog/category_list.html'
+
+
+@class_login_required
+class CategoryUpdateView(UpdateView):
+    model = Category
+    form_class = CategoryForm
+    success_url = reverse_lazy('category_list')
+
+
+@class_login_required
+class CategoryDetailView(DetailView):
+    model = Category
+
+
+@class_login_required
+class CategoryDeleteView(DeleteView):
+    model = Category
+    success_url = reverse_lazy('category_list')
 
 
 # Services
@@ -84,6 +135,8 @@ class ServiceCreateView(CreateView):
         form = super(ServiceCreateView, self).get_form()
         form.fields['service_date'].widget.attrs.update({'class': 'datepicker'})
         return form
+
+    success_url = reverse_lazy('service_list')
 
 
 @class_login_required
@@ -102,8 +155,10 @@ class ServiceDetailView(DetailView):
 class ServiceListView(django_tables2.SingleTableMixin, FilterView):
     model = Service
     table_class = ServiceTable
+    filterset_class = ServiceFilter
+
     queryset = Service.objects.all()
-    # filterset_class = ServiceFilter
+
     template_name = "catalog/service_list.html"
 
     table_pagination = {"per_page": 10}
@@ -115,18 +170,8 @@ class ServiceListView(django_tables2.SingleTableMixin, FilterView):
 @require_authenticated_permission('catalog.service_update')
 class ServiceUpdateView(UpdateView):
     model = Service
-    form_class = ServiceUpdateForm
-
-    def get_form_kwargs(self):
-        kwargs = super(ServiceUpdateView, self).get_form_kwargs()
-        kwargs.update({'servicedate': self.kwargs.get('servicedate')})
-        return kwargs
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(ServiceUpdateView, self).get_context_data(**kwargs)
-    #     # category = context.get('service').service_category
-    #     context['servicedate'] = kwargs.get('servicedate')
-    #     return context
+    form_class = ServiceForm
+    success_url = reverse_lazy('service_list')
 
 
 @require_authenticated_permission('catalog.service_delete')

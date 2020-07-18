@@ -175,20 +175,18 @@ python3 manage.py migrate
 4. makemigrations dry run
 python3 manage.py makemigrations APP --dry-run --verbosity 3
 
-5. Order of creating random data
-  a. Create group `python3 manage.py create_group`
+5. Create random data
+  ** Create group `python3 manage.py create_group`
    i.e. python3 manage.py create_group 1 -g Xiyangyang -ds "Little Lamb group"
 
-  b. Create service `python3 manage.py create_service`
-   i.e. python3 manage.py create_service -s "Bible Study" -ds "Studying the bible" -dt "2020-7-17"
+  ** Create service `python3 manage.py create_service`
+   i.e. python3 manage.py create_service -c "Worship" -ds "Worship team" -dt "2020-07-30" -nt "New heart ministry"
 
-  c. Create service note `python3 manage.py create_servicenote`
-    i.e. python3 manage.py create_servicenote 1 -s "Bible Study" -n "Genesis 1" -dt "2020-07-17"
+  ** Create member `python3 manage.py create_user`
+    i.e. Specific user: python3 manage.py create_user 1 -u yayun -e "krashilili0915@gmail.com" -p liu -n "Aaron Liu"
+    i.e. Random users: python3 manage.py create_user 4
 
-  d. Create member `python3 manage.py create_user`
-    i.e. python3 manage.py create_user 1 -u yayun -e "krashilili0915@gmail.com" -p liu -n "Aaron Liu"
-
-  e. Create superuser
+  e. Create superuser `python3 manage.py createsuperuser`
 
 
 #################################

@@ -90,6 +90,10 @@ class Category(models.Model):
         """
         return reverse('category_detail', args=[self.name])
 
+    def save(self, *args, **kwargs):
+        # print("here")
+        super().save(*args, **kwargs)
+
 
 class Service(models.Model):
     id = models.IntegerField(unique=True, primary_key=True)
@@ -99,24 +103,33 @@ class Service(models.Model):
     # unique identifier
     slug = models.SlugField(max_length=100, blank=True, default=None)
 
-    # One-to-one relationships
-    category = models.OneToOneField(Category, on_delete=models.CASCADE)
-    # @property
-    # def categories(self):
-    #     return self.category_set.all()
+    # Many-to-many relationship
+    categories = models.ManyToManyField(Category)
+    servants = models.ManyToManyField('users.User')
 
     @property
-    def servants(self):
-        return self.user_set.all()
+    def servant_names(self):
+        return ', '.join([s.name for s in self.servants.all()])
+
+    @property
+    def category_names(self):
+        return self.categories.all()[0].name
 
     def __str__(self):
-        return f"<Service: {self.category}-{self.date_to_str()}>"
+        return f"<Service: {self.id}-{self.date_to_str()}>"
 
     def date_to_str(self):
         return datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
 
+    def get_absolute_url(self):
+        """
+        Used in urls and detail template.
+        :return:
+        """
+        return reverse('service_update', args=[self.slug])
+
     def _get_unique_slug(self):
-        slug = slugify(f"{self.category}-on-{self.date_to_str()}")
+        slug = slugify(f"service{self.id}-on-{self.date_to_str()}")
         unique_slug = slug
         num = 1
         while Service.objects.filter(slug=unique_slug).exists():
@@ -125,53 +138,18 @@ class Service(models.Model):
         return unique_slug
 
     def _get_unique_id(self):
-        members = Service.objects.all()
-        return len(members) + 1
+        services = Service.objects.all()
+        return len(services) + 1
 
     def save(self, *args, **kwargs):
-        service = Service.objects.filter(service_date=kwargs.get('servicedate'),
-                                         category=kwargs.get('category')).first()
-        if not service:
-            if not self.slug:
-                self.slug = self._get_unique_slug()
-            if not self.id:
-                self.id = self._get_unique_id()
+        # todo: duplicate service exists
+        # service = Service.objects.filter(service_date=kwargs.get('servicedate'),
+        #                                  category=kwargs.get('category')).first()
+        # if not service:
+        if not self.id:
+            self.id = self._get_unique_id()
+        if not self.slug:
+            self.slug = self._get_unique_slug()
 
-            super().save(*args, **kwargs)
-
-
-
-
-    # def _get_unique_slug(self):
-    #     service_date = datetime.datetime.strftime(self.service_date, '%Y-%m-%d')
-    #     slug = slugify(f"{self.name}-{service_date}")
-    #     unique_slug = slug
-    #     num = 1
-    #     while Service.objects.filter(slug=unique_slug).exists():
-    #         unique_slug = '{}-{}'.format(slug, num)
-    #         num += 1
-    #     return unique_slug
-
-    # def save(self, *args, **kwargs):
-    #     if not self.slug:
-    #         self.slug = self._get_unique_slug()
-    #     # Create/update an object
-    #     super().save(*args, **kwargs)
-
-
-# class ServiceNote(models.Model):
-#     # id = models.IntegerField(unique=True, primary_key=True)
-#     note = models.CharField(max_length=100, null=True, blank=True)
-#     slug = models.SlugField(max_length=31, null=True)
-#     # One-to-many relationships
-#     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-#     service_date = models.ForeignKey(Service, on_delete=models.CASCADE)
-#
-#     def __str__(self):
-#         return f"ServiceNote: {self.note}>"
-#
-#     def _get_slug(self):
-#         return self.category.name+'@'+self.service_date.date_to_str()
-
-
+        super().save(*args, **kwargs)
 

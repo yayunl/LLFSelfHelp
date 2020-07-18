@@ -13,10 +13,11 @@
     <form action="" method="get" class="form form-inline">
         {% bootstrap_form filter.form layout='inline' %}
         {% bootstrap_button 'filter' %}
+        <button class="btn btn-default" id="clear_table">clear</button>
     </form>
 {% endif %}
 
-
+<br>
 {% render_table table 'django_tables2/bootstrap.html' %}
 {% endblock %}
 

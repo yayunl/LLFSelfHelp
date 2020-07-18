@@ -1,6 +1,10 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
+    <h1>Group Info</h1>
+    <p>Group name: {{ group.name }}</p>
+    <p>Details: {{ group.description}}</p>
+
     <h1>Group Members</h1>
         <div class="ui cards">
             {% for user in group.users.all  %}

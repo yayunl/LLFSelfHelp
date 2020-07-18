@@ -1,0 +1,8 @@
+{% extends parent_template|default:"catalog/base_catalog.html" %}
+
+{% block content %}
+    <h1>Category Info</h1>
+    <p>Category: {{ category.name }}</p>
+    <p>Detail: {{ category.description}}</p>
+
+{% endblock %}}

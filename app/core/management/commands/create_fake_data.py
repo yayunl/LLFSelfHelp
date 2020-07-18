@@ -26,6 +26,7 @@ class Command(BaseCommand):
         for c in cts:
             cat = Category(name=c[0], description=c[1])
             cat.save()
+        self.stdout.write('Category records created successfully.')
 
         # Create two services
         categories = Category.objects.filter().all()
