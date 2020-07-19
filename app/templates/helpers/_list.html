@@ -15,14 +15,17 @@
         <div class="ui special cards">
             <div class="card">
                 <div class="content">
-                    <a class="header" href="{{ item.get_absolute_url }}">{{ item.slug}}</a>
+                    <a class="header" href="{{ item.get_absolute_url }}">{{ item.name}}</a>
                     <div class="meta">
-                        <span class="date">Created in Sep 2014</span>
+                        {% if item_type == 'Group' %}
+                            <i class="users icon"></i>
+                            <span class="date">{{ item.user_set.count }} Users</span>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="extra content">
                     <a>
-                        <i class="users icon"></i>
+
                         {#              {{ group.users.count }}Users#}
                     </a>
                     <a href="{{item.get_absolute_update_url}}">

@@ -19,9 +19,9 @@ urlpatterns = [
     # Category paths
     path('category/create/', CategoryCreateView.as_view(), name='category_create'),
     path('categories/', CategoryListView.as_view(), name='category_list'),
-    path('category/<pk>/detail', CategoryDetailView.as_view(), name='category_detail'),
-    path('category/<pk>/update', CategoryUpdateView.as_view(), name='category_update'),
-    path('category/<pk>/delete', CategoryDeleteView.as_view(), name='category_delete'),
+    path('category/<slug>/detail', CategoryDetailView.as_view(), name='category_detail'),
+    path('category/<slug>/update', CategoryUpdateView.as_view(), name='category_update'),
+    path('category/<slug>/delete', CategoryDeleteView.as_view(), name='category_delete'),
 
     # Service paths
     path('services', ServiceListView.as_view(), name='service_list'),

@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-from bootstrap_modal_forms.generic import BSModalCreateView, BSModalUpdateView, BSModalDeleteView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.messages import error, success
@@ -16,11 +15,14 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from tablib import Dataset
 import datetime as dt1
+from django_filters.views import FilterView
+import django_tables2
 
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
 from catalog.utils import MailContextViewMixin
 from .models import User
+from .tables import UserTable, UserTableFilter
 from .forms import UserForm, UserCreationForm, ResendActivationEmailForm
 from .resources import UserResource
 
@@ -28,7 +30,7 @@ from .resources import UserResource
 
 
 @require_authenticated_permission('users.user_create')
-class UserCreateView(BSModalCreateView):
+class UserCreateView(CreateView):
     # model = Member
     template_name = 'users/user_form.html'
     form_class = UserForm
@@ -42,26 +44,34 @@ class UserDetailView(DetailView):
 
 
 @class_login_required
-class UserListView(ListView):
+class UserListView(django_tables2.SingleTableMixin, FilterView):
     model = User
+    table_class = UserTable
+    filterset_class = UserTableFilter
     context_object_name = 'user_list'
+
     queryset = User.objects.filter()
     template_name = 'users/user_list.html'
 
+    table_pagination = {"per_page": 10}
+
+    def get_table_kwargs(self):
+        return {"template_name": "django_tables2/bootstrap.html"}
+
 
 @require_authenticated_permission('users.user_update')
-class UserUpdateView(BSModalUpdateView):
+class UserUpdateView(UpdateView):
     model = User
-    template_name = 'users/user_update.html'
+    # template_name = 'users/user_update.html'
     form_class = UserForm
     success_message = 'Success: User was updated.'
     success_url = reverse_lazy('user_list')
 
 
 @require_authenticated_permission('users.user_delete')
-class UserDeleteView(BSModalDeleteView):
+class UserDeleteView(DeleteView):
     model = User
-    template_name = 'users/user_confirm_delete.html'
+    # template_name = 'users/user_confirm_delete.html'
     success_url = reverse_lazy('user_list')
     success_message = 'Success: User was deleted.'
 

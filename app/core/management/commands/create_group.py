@@ -12,13 +12,14 @@ class Command(BaseCommand):
         parser.add_argument('-ds', '--description', type=str, help='Group description')
 
     def handle(self, *args, **kwargs):
+        groups = [('喜羊羊', 'Little Lamb'), ('爱加贝', 'Agape'), ('清心', 'Pure Heart'), ('晨星', 'Dawn star')]
         total, gn, ds = kwargs.get('total'), kwargs.get('group'), kwargs.get('description')
         if not gn and not ds:
             records = list()
             for i in range(total):
-                gr = Group(name=get_random_string())
-                records.append(gr)
-            Group.objects.bulk_create(records)
+                gr = Group(name=groups[i][0],
+                           description=groups[i][1])
+                gr.save()
             self.stdout.write('Group records saved successfully.')
         else:
             gr = Group(name=kwargs.get('group'),

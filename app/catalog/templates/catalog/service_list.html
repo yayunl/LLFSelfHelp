@@ -1,23 +1,12 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
-<h1>Services
-<a href="{% url 'service_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
-<a href="{% url 'service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
-</h1>
+    <h1>Services
+        <a href="{% url 'service_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
+        <a href="{% url 'service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+    </h1>
 
-{% load django_tables2 %}
-<!--{% load bootstrap3 %}-->
+    {% include 'helpers/_table_list.html' %}
 
-{% if filter %}
-    <form action="" method="get" class="form form-inline">
-        {% bootstrap_form filter.form layout='inline' %}
-        {% bootstrap_button 'filter' %}
-        <button class="btn btn-default" id="clear_table">clear</button>
-    </form>
-{% endif %}
-
-<br>
-{% render_table table 'django_tables2/bootstrap.html' %}
 {% endblock %}
 

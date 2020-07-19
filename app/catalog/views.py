@@ -1,15 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-
 from django.urls import reverse_lazy
 from django.http import HttpResponse
-
 from django_filters.views import FilterView
-from bootstrap_modal_forms.generic import (BSModalCreateView,
-                                           BSModalUpdateView,
-                                           BSModalDeleteView)
 import django_tables2
-import datetime as dt
 from tablib import Dataset
 from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
@@ -17,7 +11,7 @@ from .decorators import class_login_required, require_authenticated_permission
 # sub-level imports
 from .models import Group, Service, Category
 from .tables import ServiceTable, ServiceFilter
-from .forms import ServiceForm, GroupForm, ServiceUpdateForm, CategoryForm
+from .forms import ServiceForm, GroupForm, CategoryForm
 from .resources import ServiceResource
 from .utils import handle_uploaded_schedules, service_dates, str2date
 from .tasks import send_reminders
@@ -69,6 +63,11 @@ class GroupListView(ListView):
     queryset = Group.objects.filter()
     template_name = 'catalog/group_list.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_url'] = reverse_lazy('group_create')
+        return context
+
 
 @class_login_required
 class GroupUpdateView(UpdateView):
@@ -104,6 +103,11 @@ class CategoryListView(ListView):
     context_object_name = 'category_list'
     queryset = Category.objects.filter()
     template_name = 'catalog/category_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['create_url'] = reverse_lazy('category_create')
+        return context
 
 
 @class_login_required
@@ -186,7 +190,6 @@ class ServiceDeleteView(DeleteView):
 #     context_object_name = 'service_list'
 #     queryset = Service.objects.filter()
 #     template_name = 'catalog/service_list.html'
-
 
 
 

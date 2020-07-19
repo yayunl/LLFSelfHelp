@@ -1,6 +1,6 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
- {% include 'catalog/_list.html' with item_type='Group' item_list=group_list %}
+    {% include 'helpers/_list.html' with item_type='Group' item_list=group_list %}
 {% endblock %}
 

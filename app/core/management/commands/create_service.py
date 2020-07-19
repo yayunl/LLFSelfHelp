@@ -15,16 +15,47 @@ class Command(BaseCommand):
         parser.add_argument('-nt', '--note', type=str, help='Note')
 
     def handle(self, *args, **kwargs):
-        cat = Category.objects.filter(name=kwargs.get('category')).first()
-        if not cat:
-            cat = Category(name=kwargs.get('category'))
-            cat.save()
+        services = [('查经', 'Bible Study', '创世纪1', '2020-07-20'),
+                    ('查经', 'Bible Study', '创世纪2', '2020-07-25'),
+                    ('查经', 'Bible Study', '创世纪3', '2020-07-31'),
+                    ('敬拜', 'Worship', '新心音乐', '2020-07-20'),
+                    ('敬拜', 'Worship', '赞美之泉', '2020-07-25'),
+                    ('敬拜', 'Worship', 'Hillsong', '2020-07-31'),
+                    ('饭食', 'Food pickup', 'First Chinese', '2020-07-20'),
+                    ('饭食', 'Food pickup', 'Panda Express', '2020-07-25'),
+                    ('饭食', 'Food pickup', 'Chickfila', '2020-07-31'),
+                    ]
 
-        sr = Service(service_date=str2date(kwargs.get('date')),
-                     description=kwargs.get('description'),
-                     note=kwargs.get('note'))
-        sr.save()
-        sr.categories.add(cat)
+        kcat, kds, kdt, knt = kwargs.get('category'), kwargs.get('description'), kwargs.get('date'), kwargs.get('note')
+        # Create several services
+        if not kcat and not kds and not kdt and not knt:
+            for ser in services:
+                cat = Category.objects.filter(name=ser[0]).first()
+                if not cat:
+                    # Create the category
+                    cat = Category(name=ser[0])
+                    cat.save()
 
-        self.stdout.write('Service record is saved successfully.')
+                s = Service(description=ser[1],
+                            note=ser[2],
+                            service_date=str2date(ser[-1]),
+                            )
+                s.save()
+                s.categories.add(cat)
+
+            self.stdout.write('Service records are saved successfully.')
+
+        else: # Create a service
+            cat = Category.objects.filter(name=kwargs.get('category')).first()
+            if not cat:
+                cat = Category(name=kwargs.get('category'))
+                cat.save()
+
+            sr = Service(service_date=str2date(kwargs.get('date')),
+                         description=kwargs.get('description'),
+                         note=kwargs.get('note'))
+            sr.save()
+            sr.categories.add(cat)
+
+            self.stdout.write('Service record is saved successfully.')
 

@@ -6,6 +6,7 @@ venv
 *.pyc
 .env.dev
 .env.prod
+notes.txt
 .env
 *.bat
 app/suorganizer/__pycache__/

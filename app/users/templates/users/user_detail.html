@@ -16,7 +16,8 @@
     <p><strong>Hometown:</strong> {{ user.hometown }}</p>
     <p><strong>Believer?</strong> {% if user.christian %} Yes {% else %} No {% endif %}</p>
     <p><strong>Active user:</strong> {% if user.active %} Yes {% else %} No {% endif %}</p>
-    <p><strong>First visit on:</strong> {{ user.first_time }}</p>
+    <p><strong>First time visit:</strong> {{ user.first_time_visit }}</p>
+{#    <p><strong>First visit on:</strong> {{ user.first_time }}</p>#}
     <p><strong>Habits:</strong> {{ user.habits }}</p>
 
 <!--  <p><strong>Genre:</strong> {% for genre in book.genre.all %} {{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>  -->

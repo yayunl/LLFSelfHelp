@@ -27,9 +27,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     habits = models.TextField(null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
-    gender = models.CharField(max_length=20,
-                              choices=GENDER,
-                              default='0')
+    gender = models.CharField(max_length=20, choices=GENDER, default='Male')
     # Social media accounts
     facebook = models.CharField(max_length=20, null=True, blank=True, default=None)
     wechat = models.CharField(max_length=20, null=True, blank=True, default=None)
@@ -63,7 +61,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         Used in urls and detail template.
         :return:
         """
-        return reverse('member_detail', args=[self.slug])
+        return reverse('user_detail', args=[self.slug])
+
+    def get_absolute_delete_url(self):
+        """
+        Used in urls and delete template.
+        :return:
+        """
+        return reverse('user_delete', args=[self.slug])
+
+    def get_absolute_update_url(self):
+        """
+        Used in urls and update template.
+        :return:
+        """
+        return reverse('user_update', args=[self.slug])
 
     def _get_unique_slug(self):
         email = self.email.split('@')[0]

@@ -169,7 +169,7 @@ python3 manage.py migrate
   b. Delete xxx_initial.py files in migrations folder
   c. on `Web` service, run python3 manage.py makemigrations && python3 manage.py migrate
   d. create super user using the following command:
-  echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'password')" | python3 manage.py shell
+  echo "from users.model import User; User.objects.create_superuser('admin', 'admin@example.com', 'password')" | python3 manage.py shell
   e. Create fake data  `python3 manage.py create_fake_data`
 
 4. makemigrations dry run
@@ -177,17 +177,18 @@ python3 manage.py makemigrations APP --dry-run --verbosity 3
 
 5. Create random data
   ** Create group `python3 manage.py create_group`
-   i.e. python3 manage.py create_group 1 -g Xiyangyang -ds "Little Lamb group"
+    i.e. Create a specific group: python3 manage.py create_group 1 -g Xiyangyang -ds "Little Lamb group"
+    i.e. Create groups: python3 manage.py create_group 4
 
   ** Create service `python3 manage.py create_service`
-   i.e. python3 manage.py create_service -c "Worship" -ds "Worship team" -dt "2020-07-30" -nt "New heart ministry"
+    i.e. Create specific service: python3 manage.py create_service -c "Worship" -ds "Worship team" -dt "2020-07-30" -nt "New heart ministry"
+    i.e. Create services: python3 manage.py create_service
 
   ** Create member `python3 manage.py create_user`
     i.e. Specific user: python3 manage.py create_user 1 -u yayun -e "krashilili0915@gmail.com" -p liu -n "Aaron Liu"
     i.e. Random users: python3 manage.py create_user 4
 
-  e. Create superuser `python3 manage.py createsuperuser`
-
+  e. Create superuser with command `python3 manage.py createsuperuser`
 
 #################################
 # Pycharm Dockerization setting #

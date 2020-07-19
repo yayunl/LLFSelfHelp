@@ -3,16 +3,33 @@ from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django import forms
+from django.forms import ModelForm
+from bootstrap_datepicker_plus import DatePickerInput
 # Project imports
 from catalog.utils import ActivationMailFormMixin
 from .models import User
 
 
-class UserForm(BSModalModelForm):
+class UserForm(ModelForm):
     class Meta:
         model = User
-        # fields = ['name','english_name', 'gender','email', 'group']
-        exclude = ['id', 'username', 'password', 'slug']
+        exclude = ('id', 'username', 'password', 'slug', 'last_login', 'is_superuser',
+                   'groups', 'user_permissions', 'is_staff')
+        # labels = {
+        #     'name': 'Chinese Name',
+        # }
+
+        help_texts ={
+            'name': 'Required field',
+            'email': 'Required field'
+        }
+
+        widgets = {
+            'first_time_visit': DatePickerInput(),
+            'date_joined': DatePickerInput(),
+            'birthday': DatePickerInput(),
+            # 'service_category': widgets.Select(attrs={'class': 'select'}),
+        }
 
 
 class UserCreationForm(

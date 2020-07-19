@@ -1,18 +1,15 @@
 import django_tables2 as tables2
 from django_tables2 import tables, TemplateColumn
 import django_filters
-from datetime import datetime as dt
 from django.utils.html import format_html
 from django.urls import reverse
 from bootstrap_datepicker_plus import DatePickerInput
-from .utils import service_dates
 from .models import Service
-# from users.models import User
 
 
 class ServiceTable(tables.Table):
 
-    action = TemplateColumn(template_name='catalog/_service_table_update_column.html', orderable=False)
+    action = TemplateColumn(template_name='helpers/_table_update_column.html', orderable=False)
     note = tables2.Column(orderable=False)
     categories = tables2.Column(orderable=False, verbose_name='Category')
     service_date = tables2.Column(verbose_name='Date')
@@ -20,6 +17,7 @@ class ServiceTable(tables.Table):
     class Meta:
         model = Service
         fields = ('service_date',  'categories', 'servants',  'note', 'action')
+        order_by = '-service_date' # Order by the column of service date in desc
         row_attrs = {
             'data-id': 0,
             # 'data-id': lambda record: '1'  if record.objects.filter(service_dates__service_date)
@@ -40,7 +38,6 @@ class ServiceTable(tables.Table):
     def render_categories(self, value, record):
         categories = record.categories.all()
         return categories[0].name
-
 
 
 class ServiceFilter(django_filters.FilterSet):

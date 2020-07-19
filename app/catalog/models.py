@@ -48,6 +48,20 @@ class Group(models.Model):
         """
         return reverse('group_detail', args=[self.slug])
 
+    def get_absolute_delete_url(self):
+        """
+        Used in urls and delete template.
+        :return:
+        """
+        return reverse('group_delete', args=[self.slug])
+
+    def get_absolute_update_url(self):
+        """
+        Used in urls and update template.
+        :return:
+        """
+        return reverse('group_update', args=[self.slug])
+
     def _get_unique_slug(self):
         slug = pinyin.get(self.name,format='strip',delimiter='')
         # slug = slugify(f"{self.name}")
@@ -72,8 +86,9 @@ class Group(models.Model):
 
 class Category(models.Model):
     # id = models.IntegerField(unique=True, primary_key=True)
-    name = models.CharField(max_length=40, unique=True, primary_key=True)
+    name = models.CharField(max_length=40, unique=True)
     description = models.CharField(max_length=100, null=True, blank=True)
+    slug = models.SlugField(max_length=31, null=True)
 
     class Meta:
         verbose_name = 'Category'
@@ -88,10 +103,33 @@ class Category(models.Model):
         Used in urls and details template.
         :return:
         """
-        return reverse('category_detail', args=[self.name])
+        return reverse('category_detail', args=[self.slug])
+
+    def get_absolute_delete_url(self):
+        """
+        Used in urls and delete template.
+        :return:
+        """
+        return reverse('category_delete', args=[self.slug])
+
+    def get_absolute_update_url(self):
+        """
+        Used in urls and update template.
+        :return:
+        """
+        return reverse('category_update', args=[self.slug])
+
+    def _get_unique_slug(self):
+        unique_slug = self.name
+        num = 1
+        while Category.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(unique_slug, num)
+            num += 1
+        return unique_slug
 
     def save(self, *args, **kwargs):
-        # print("here")
+        if not self.slug:
+            self.slug = self._get_unique_slug()
         super().save(*args, **kwargs)
 
 
@@ -124,6 +162,20 @@ class Service(models.Model):
     def get_absolute_url(self):
         """
         Used in urls and detail template.
+        :return:
+        """
+        return reverse('service_update', args=[self.slug])
+
+    def get_absolute_delete_url(self):
+        """
+        Used in urls and delete template.
+        :return:
+        """
+        return reverse('service_delete', args=[self.slug])
+
+    def get_absolute_update_url(self):
+        """
+        Used in urls and update template.
         :return:
         """
         return reverse('service_update', args=[self.slug])

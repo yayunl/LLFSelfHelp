@@ -1,5 +1,5 @@
 {% extends parent_template|default:"users/base_users.html" %}
 
 {% block content %}
-    {% include 'helpers/_delete.html' with item_type='User' item_name=user.slug %}
+    {% include 'helpers/_form.html' with id='userForm' %}
 {% endblock %}

@@ -1,28 +1,25 @@
 import logging, traceback, datetime as dt, pandas as pd
-from tablib import Dataset
 from logging import CRITICAL, ERROR
 from smtplib import SMTPException
 from django.conf import settings
 from django.contrib.auth import get_user
-from django.contrib.auth.tokens import \
-    default_token_generator as token_generator
-from django.contrib.sites.shortcuts import \
-    get_current_site
+from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import (BadHeaderError)
-from django.template.loader import \
-    render_to_string
+from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
-from django.utils.http import \
-    urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_encode
 from django.core.mail import EmailMessage, send_mail
 from datetime import datetime as dt
 import datetime
-
+# Project imports
 from .models import Service
 from users.models import User
 
 logger = logging.getLogger(__name__)
+
+
 
 
 class ActivationMailFormMixin:
