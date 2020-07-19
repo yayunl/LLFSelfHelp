@@ -1,0 +1,44 @@
+ <div class="modal fade" tabindex="-1" role="dialog" id="modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
+
+<h1>
+    {{item_type}}
+    <a href='{{ create_url}}' class="create-group btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+</h1>
+
+{% if item_list %}
+    {% for item in item_list %}
+        <div class="ui special cards">
+            <div class="card">
+                <div class="content">
+                    <a class="header" href="{{ item.get_absolute_url }}">{{ item.slug}}</a>
+                    <div class="meta">
+                        <span class="date">Created in Sep 2014</span>
+                    </div>
+                </div>
+                <div class="extra content">
+                    <a>
+                        <i class="users icon"></i>
+                        {#              {{ group.users.count }}Users#}
+                    </a>
+                    <a href="{{item.get_absolute_update_url}}">
+                        <i class=""></i>
+                        Update
+                    </a>
+                    </a>
+                    <a href="{{item.get_absolute_delete_url}}">
+                        <i class=""></i>
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+{% else %}
+    <p>There are no {{item_type}}s in the library.</p>
+{% endif %}
