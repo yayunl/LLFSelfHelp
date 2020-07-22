@@ -9,8 +9,8 @@ def main():
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
     elif os.environ.get('ENV') == 'prod':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.prod")
-    # else:
-    #     os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings")
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
 
     try:
         from django.core.management import execute_from_command_line

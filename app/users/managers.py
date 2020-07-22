@@ -1,5 +1,6 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
+from django.template.defaultfilters import slugify
 
 
 class CustomUserManager(BaseUserManager):
@@ -18,6 +19,13 @@ class CustomUserManager(BaseUserManager):
         user = self.model(email=email, username=username, name=name, **extra_fields)
         user.set_password(password)
         user.save()
+        from users.models import Profile
+        Profile.objects.update_or_create(
+            user=user,
+            defaults={
+                'slug': slugify(user.get_name()),
+            }
+        )
         return user
 
     def create_superuser(self, username='admin', password='password',

@@ -1,10 +1,9 @@
 {% extends parent_template|default:"users/base_users.html" %}
 
 {% block title %}
-    {{ block.super }} -
-    {{ user.name }}'s Detail
+    {{ block.super }} - Update Profile
 {% endblock %}
 
 {% block content %}
-    {% include 'users/_user_detail.html' %}
+    {% include 'helpers/_form.html' with id='profileForm' %}
 {% endblock %}

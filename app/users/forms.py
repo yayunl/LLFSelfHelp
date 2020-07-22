@@ -4,10 +4,12 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from django import forms
 from django.forms import ModelForm
+from django.template.defaultfilters import slugify
 from bootstrap_datepicker_plus import DatePickerInput
 # Project imports
 from catalog.utils import ActivationMailFormMixin
-from .models import User
+from .models import User, Profile
+from .utils import GENDER
 
 
 class UserForm(ModelForm):
@@ -32,7 +34,7 @@ class UserForm(ModelForm):
         }
 
 
-class UserCreationForm(
+class RegisterationForm(
         ActivationMailFormMixin,
         BaseUserCreationForm):
 
@@ -87,6 +89,12 @@ class UserCreationForm(
             send_mail = False
         user.save()
         self.save_m2m()
+        Profile.objects.update_or_create(
+            user=user,
+            defaults={
+                'slug': slugify(user.get_name()),
+            }
+        )
         # Member.objects.update_or_create(
         #     username=user,
         #     defaults={
@@ -96,6 +104,14 @@ class UserCreationForm(
         if send_mail:
             self.send_mail(user=user, **kwargs)
         return user
+
+
+class ProfileForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'name', 'english_name', 'phone_number',
+                  'job', 'hometown', 'habits', 'birthday', 'gender', 'facebook',
+                  'wechat', 'twitter', 'group')
 
 
 class ResendActivationEmailForm(

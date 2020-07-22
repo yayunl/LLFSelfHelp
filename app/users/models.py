@@ -6,9 +6,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 from .managers import CustomUserManager
-
-GENDER = (('Male', 'Male'),
-          ('Female', 'Female'))
+from .utils import GENDER
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -16,7 +14,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # required fields
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=128, null=False, blank=False)
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(unique=True)
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
     # optional fields
     english_name = models.CharField(max_length=50, null=True, blank=True)
@@ -55,6 +53,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     # Methods
     def __str__(self):
         return f"<User: {self.name}>"
+
+    def get_name(self):
+        return self.name
 
     def get_absolute_url(self):
         """
@@ -100,3 +101,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    slug = models.SlugField(max_length=30, unique=True)
+
+    def __str__(self):
+        return f"<Profile: %s>"%self.user.get_name()
+
+    def get_absolute_url(self):
+        return reverse('profile_detail', args=[self.slug])
+
+    def get_absolute_update_url(self):
+        return reverse('profile_update', args=[self.slug])

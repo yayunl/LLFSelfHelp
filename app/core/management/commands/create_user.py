@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.crypto import get_random_string
-from datetime import datetime as dt
-from users.models import User
+from django.template.defaultfilters import slugify
+from users.models import User, Profile
 from catalog.models import Group
 
 
@@ -32,6 +32,13 @@ class Command(BaseCommand):
                 # User model uses `set_password` to hash the password
                 usr.set_password('password')
                 usr.save()
+                # update profile
+                Profile.objects.update_or_create(
+                    user=usr,
+                    defaults={
+                        'slug': slugify(usr.get_name()),
+                    }
+                )
             #     records.append(usr)
             # User.objects.bulk_create(records)
             self.stdout.write('User records saved successfully.')
@@ -42,5 +49,13 @@ class Command(BaseCommand):
                        group=grp)
             usr.set_password(password)
             usr.save()
+
+            Profile.objects.update_or_create(
+                user=usr,
+                defaults={
+                    'slug': slugify(usr.get_name()),
+                }
+            )
+
             self.stdout.write('User record saved successfully.')
 

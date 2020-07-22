@@ -21,9 +21,10 @@ import django_tables2
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
 from catalog.utils import MailContextViewMixin
-from .models import User
+from .models import User, Profile
+from .utils import ProfileGetObjectMixin, UserGetObjectMixin
 from .tables import UserTable, UserTableFilter
-from .forms import UserForm, UserCreationForm, ResendActivationEmailForm
+from .forms import UserForm, ProfileForm, RegisterationForm, ResendActivationEmailForm
 from .resources import UserResource
 
 # Create your views here.
@@ -76,6 +77,31 @@ class UserDeleteView(DeleteView):
     success_message = 'Success: User was deleted.'
 
 
+@class_login_required
+class ProfileDetailView(ProfileGetObjectMixin, DetailView):
+    model = Profile
+    template_name = 'users/profile_detail.html'
+
+
+@class_login_required
+class ProfileUpdateView(UserGetObjectMixin, UpdateView):
+    model = User
+    form_class = ProfileForm
+    queryset = User.objects.filter()
+    template_name = 'users/profile_update.html'
+
+    success_message = 'Success: Profile was updated.'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = reverse_lazy('group_create')
+        return context
+
+    def get_success_url(self):
+        profile_slug = self.kwargs['slug']
+        return reverse_lazy('profile_detail', args=[profile_slug])
+
+
 # User account creation and activation
 class ActivateAccount(View):
     success_url = reverse_lazy('login')
@@ -110,7 +136,7 @@ class ActivateAccount(View):
 
 
 class CreateAccount(MailContextViewMixin, View):
-    form_class = UserCreationForm
+    form_class = RegisterationForm
     success_url = reverse_lazy('create_done')
     template_name = 'users/user_create.html'
 

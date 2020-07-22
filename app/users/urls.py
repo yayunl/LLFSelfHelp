@@ -5,13 +5,14 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth.views import AuthenticationForm
 
 from .views import UserListView, UserDetailView,  UserCreateView, UserDeleteView, UserUpdateView, CreateAccount
+from .views import ProfileDetailView, ProfileUpdateView
 from .views import ResendActivationEmail, ActivateAccount
 # from django.contrib.auth.decorators import login_required
 from .views import user_export,  user_import
 
 user_urls = [
-    # url patterns:
-    path('users/', UserListView.as_view(), name='user_list'),
+    # url patterns: /user/list/, /user/create/, /user/<slug>/detail, ...,
+    path('list/', UserListView.as_view(), name='user_list'),
     path('create/', UserCreateView.as_view(), name='user_create'),
     path('<slug>/detail', UserDetailView.as_view(), name='user_detail'),
     path('<slug>/delete', UserDeleteView.as_view(), name='user_delete'),
@@ -64,5 +65,8 @@ auth_urls = [
 
     # Incorporate password_urls to password/
     path('password/', include(_password_urls)),
+    # profile
+    path('profile/<slug>', ProfileDetailView.as_view(), name='profile_detail'),
+    path('profile/update/<slug>', ProfileUpdateView.as_view(), name='profile_update'),
 
 ]
