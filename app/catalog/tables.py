@@ -43,7 +43,7 @@ class ServiceTable(tables.Table):
 class ServiceFilter(django_filters.FilterSet):
     class Meta:
         model = Service
-        fields = ['service_date']
+        fields = ['service_date', 'note']
         widgets = {
             'service_date': DatePickerInput(),  # default date-format %m/%d/%Y will be used
         }

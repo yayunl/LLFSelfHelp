@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 from celery.schedules import crontab
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
@@ -148,7 +149,7 @@ REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 # Login redirect
 LOGIN_URL = '/auth/login'
 # Redirect on a successful login
-LOGIN_REDIRECT_URL = '/user/users'
+LOGIN_REDIRECT_URL = '/user/list'
 
 
 # CELERY

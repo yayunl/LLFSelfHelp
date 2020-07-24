@@ -89,8 +89,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return unique_slug
 
     def _get_unique_id(self):
-        members = User.objects.all()
-        return len(members) + 1
+        member_with_largest_id = User.objects.all().order_by('-id').first()
+        if member_with_largest_id:
+            return member_with_largest_id.id + 1
+        else: return 1
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -98,7 +100,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if not self.id:
             self.id = self._get_unique_id()
 
-        super().save(*args, **kwargs)
+        super(User, self).save(*args, **kwargs)
 
 
 class Profile(models.Model):

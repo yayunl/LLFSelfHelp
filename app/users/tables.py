@@ -3,7 +3,6 @@ from django_tables2 import tables, TemplateColumn
 import django_filters
 from django.utils.html import format_html
 from django.urls import reverse
-from bootstrap_datepicker_plus import DatePickerInput
 from .models import User
 
 
@@ -15,9 +14,9 @@ class UserTable(tables.Table):
     class Meta:
         model = User
         fields = ('name',  'gender', 'group',  'email', 'action')
-        # row_attrs = {
-        #     'data-id': 0,
-        # }
+        row_attrs = {
+            'data-id': 0,
+        }
 
     def render_name(self, value, record):
         user_detail_link = reverse('user_detail', args=[record.slug])
@@ -28,8 +27,8 @@ class UserTable(tables.Table):
         return record.group.name
 
 
-class UserTableFilter(django_filters.FilterSet):
+class UserFilter(django_filters.FilterSet):
     class Meta:
         model = User
-        fields = ['name', 'group']
+        fields = ['name', 'group', 'gender']
 

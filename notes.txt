@@ -197,3 +197,22 @@ python3 manage.py makemigrations APP --dry-run --verbosity 3
 Details: https://stackoverflow.com/questions/53753612/pycharm-no-manage-py-file-specified-in-settings-django-support-after-refactori/53782056
 2. Setup pycharm to debug Django
 Detials: https://testdriven.io/blog/django-debugging-pycharm/
+
+###############################
+#
+#  Run Unit test
+#
+################################
+python3 manage.py test
+
+# Run the specified module
+python3 manage.py test users.tests
+
+# Run the specified module
+python3 manage.py test catalog.tests.test_models
+
+# Run the specified class
+python3 manage.py test catalog.tests.test_models.YourTestClass
+
+# Run the specified method
+python3 manage.py test catalog.tests.test_models.YourTestClass.test_one_plus_one_equals_two

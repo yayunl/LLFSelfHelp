@@ -34,7 +34,7 @@ class UserForm(ModelForm):
         }
 
 
-class RegisterationForm(
+class RegistrationForm(
         ActivationMailFormMixin,
         BaseUserCreationForm):
 

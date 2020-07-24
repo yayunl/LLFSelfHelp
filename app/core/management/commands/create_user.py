@@ -24,11 +24,12 @@ class Command(BaseCommand):
         if not un and not email and not password and not name:
             records = list()
             for i in range(total):
-                username = 'user%s'%str(i)
-                name = 'User%s'%str(i)
-                usr = User(username=username,
-                           email=username+'@gmail.com',
-                           name=name)
+                rdstr = get_random_string(5)
+                username = 'user%s'%str(i) + rdstr
+                name = 'User%s'%str(i)  + rdstr
+                usr = User.objects.create(username=username,
+                                          email=username+'@gmail.com',
+                                          name=name)
                 # User model uses `set_password` to hash the password
                 usr.set_password('password')
                 usr.save()

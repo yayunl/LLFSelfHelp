@@ -17,14 +17,15 @@ from tablib import Dataset
 import datetime as dt1
 from django_filters.views import FilterView
 import django_tables2
+from django_tables2.paginators import LazyPaginator
 
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
 from catalog.utils import MailContextViewMixin
 from .models import User, Profile
 from .utils import ProfileGetObjectMixin, UserGetObjectMixin
-from .tables import UserTable, UserTableFilter
-from .forms import UserForm, ProfileForm, RegisterationForm, ResendActivationEmailForm
+from .tables import UserTable, UserFilter
+from .forms import UserForm, ProfileForm, RegistrationForm, ResendActivationEmailForm
 from .resources import UserResource
 
 # Create your views here.
@@ -48,17 +49,23 @@ class UserDetailView(DetailView):
 class UserListView(django_tables2.SingleTableMixin, FilterView):
     model = User
     table_class = UserTable
-    filterset_class = UserTableFilter
-    context_object_name = 'user_list'
+    filterset_class = UserFilter
+    # context_object_name = 'user_list'
 
-    queryset = User.objects.filter()
+    queryset = User.objects.all()
     template_name = 'users/user_list.html'
-
+    # paginator_class = LazyPaginator
     table_pagination = {"per_page": 10}
 
     def get_table_kwargs(self):
         return {"template_name": "django_tables2/bootstrap.html"}
 
+    def get_context_data(self, *args, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(UserListView, self).get_context_data(*args, **kwargs)
+        # add whatever to your context:
+        # context['whatever'] = "MORE STUFF"
+        return context
 
 @require_authenticated_permission('users.user_update')
 class UserUpdateView(UpdateView):
@@ -136,7 +143,7 @@ class ActivateAccount(View):
 
 
 class CreateAccount(MailContextViewMixin, View):
-    form_class = RegisterationForm
+    form_class = RegistrationForm
     success_url = reverse_lazy('create_done')
     template_name = 'users/user_create.html'
 
