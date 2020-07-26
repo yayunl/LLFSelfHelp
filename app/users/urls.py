@@ -12,7 +12,7 @@ from .views import user_export,  user_import
 
 user_urls = [
     # url patterns: /user/list/, /user/create/, /user/<slug>/detail, ...,
-    path('list/', UserListView.as_view(), name='user_list'),
+    path('users/', UserListView.as_view(), name='user_list'),
     path('create/', UserCreateView.as_view(), name='user_create'),
     path('<slug>/detail', UserDetailView.as_view(), name='user_detail'),
     path('<slug>/delete', UserDeleteView.as_view(), name='user_delete'),

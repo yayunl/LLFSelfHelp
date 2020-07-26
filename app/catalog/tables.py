@@ -36,8 +36,8 @@ class ServiceTable(tables.Table):
         return format_html(servant_names_html)
 
     def render_categories(self, value, record):
-        categories = record.categories.all()
-        return categories[0].name
+        categories = record.categories.all().first()
+        return categories.name if categories else None
 
 
 class ServiceFilter(django_filters.FilterSet):

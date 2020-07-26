@@ -1,14 +1,13 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
-    <h1>Team name: {{ service.service_category }}</h1>
+    <h1>Service Detail</h1>
+    <p>Service category: {{ service.category_names }}</p>
     <p>Serve date: {{ service.service_date|date:'m/d/Y'}}</p>
-    <p>Coordinator(s):</p>
-    {% for cdr in  service.coordinator.all %}
-        {{ cdr.name}}
-    {% endfor %}
+    <p>Note: {{ service.note }}</p>
     <p>Servant(s):</p>
-    {% for server in service.servants.all %}
-        {{ server.name}}
+    {% for ser in  service.servants.all %}
+        {{ ser.name}}
     {% endfor %}
+
 {% endblock %}

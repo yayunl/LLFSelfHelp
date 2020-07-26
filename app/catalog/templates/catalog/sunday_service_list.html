@@ -1,0 +1,10 @@
+{% extends parent_template|default:"catalog/base_catalog.html" %}
+
+{% block content %}
+    <h1>Sunday Sermons
+        <a href="{% url 'sunday_service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+    </h1>
+
+    {% include 'helpers/_table_list.html' %}
+
+{% endblock %}

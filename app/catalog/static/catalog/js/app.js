@@ -4,6 +4,10 @@ $(document).ready(function(){
 
     $( "#id_service_date" ).datepicker();
 
+    // Dropdown
+    $('.ui.dropdown')
+        .dropdown()
+    ;
     $("#clear_table").click(function () {
         var filter_button =$("#id_service_date");
         filter_button.attr('value', '').trigger("click");

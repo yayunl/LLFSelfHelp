@@ -12,7 +12,7 @@ from .utils import GENDER
 class User(AbstractBaseUser, PermissionsMixin):
     id = models.IntegerField(unique=True, primary_key=True)
     # required fields
-    username = models.CharField(max_length=50, unique=True)
+    username = models.CharField(max_length=50, unique=True, blank=True, null=True)
     password = models.CharField(max_length=128, null=False, blank=False)
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=50, null=False, blank=False, unique=True)
@@ -21,7 +21,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     job = models.CharField(max_length=50, null=True, blank=True)
     hometown = models.CharField(max_length=50, null=True, blank=True)
-    first_time_visit = models.DateField(null=True)
+    first_time_visit = models.DateField(null=True, blank=True)
     habits = models.TextField(null=True, blank=True)
     birthday = models.DateField(null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)

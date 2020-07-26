@@ -8,6 +8,7 @@ venv
 .env.prod
 notes.txt
 .env
+_data
 *.bat
 app/suorganizer/__pycache__/
 user/__pycache__/

@@ -1,11 +1,9 @@
 from django.db import models
-# from django.conf import settings
 from django.urls import reverse
 from django.template.defaultfilters import slugify
-from django.utils.html import format_html
-
 import django_filters, datetime, pinyin
 # from users.models import User
+from .managers import ServiceManager, GroupAndCategoryManager
 
 SERVICE_GROUP = (("Chairman-of-week", "Chairman-of-week"),
                   ("Clean-up", "Clean-up"),
@@ -37,6 +35,8 @@ class Group(models.Model):
     name = models.CharField(max_length=20, null=True)
     description = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(max_length=31, null=True)
+
+    objects = GroupAndCategoryManager()
 
     def __str__(self):
         return f"<Group: {self.name}>"
@@ -89,6 +89,8 @@ class Category(models.Model):
     name = models.CharField(max_length=40, unique=True)
     description = models.CharField(max_length=100, null=True, blank=True)
     slug = models.SlugField(max_length=31, null=True)
+
+    objects = GroupAndCategoryManager()
 
     class Meta:
         verbose_name = 'Category'
@@ -145,13 +147,16 @@ class Service(models.Model):
     categories = models.ManyToManyField(Category)
     servants = models.ManyToManyField('users.User')
 
+    objects = ServiceManager()
+
     @property
     def servant_names(self):
         return ', '.join([s.name for s in self.servants.all()])
 
     @property
     def category_names(self):
-        return self.categories.all()[0].name
+        categories = self.categories.all().first()
+        return categories.name if categories else None
 
     def __str__(self):
         return f"<Service: {self.id}-{self.date_to_str()}>"
@@ -164,7 +169,7 @@ class Service(models.Model):
         Used in urls and detail template.
         :return:
         """
-        return reverse('service_update', args=[self.slug])
+        return reverse('service_detail', args=[self.slug])
 
     def get_absolute_delete_url(self):
         """

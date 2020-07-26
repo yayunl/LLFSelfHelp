@@ -10,6 +10,41 @@ $(document).ready(function(){
         $("#filter_button").trigger("click");
     });
 
+    $('.ui.dropdown')
+      .dropdown()
+    ;
+
+    // log in & sign up buttons
+
+          // create book button
+          $(".create-user").modalForm({
+            formURL: "{% url 'user_create' %}",
+            // modalContent: ".modal-content-dbmf",
+            // modalForm: ".modal-content-dbmf form"
+          });
+
+
+
+          // delete book buttons
+          $(".delete-user").each(function () {
+
+            $(this).modalForm({
+              formURL: $(this).data('id'),
+              // modalContent: ".modal-content-dbmf",
+              // modalForm: ".modal-content-dbmf form"
+            });
+          });
+
+          // hide message
+          $(".alert").fadeTo(2000, 500).slideUp(500, function(){
+            $(".alert").slideUp(500);
+          });
+
+          // autofocus to first input field of a modal
+          $('.modal').on('shown.bs.modal', function () {
+            $('form').find('input[type=text]').filter(':visible:first').focus();
+          });
+
 
 });
 

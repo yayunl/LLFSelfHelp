@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import IndexView
 from .views import ServiceListView, ServiceDetailView, ServiceCreateView, ServiceDeleteView, ServiceUpdateView
+from .views import SundayServiceCreateView, SundayServiceListView
 from .views import GroupCreateView, GroupDetailView, GroupListView, GroupDeleteView, GroupUpdateView
 from .views import CategoryCreateView, CategoryListView, CategoryDetailView, CategoryUpdateView, CategoryDeleteView
 from .views import test_email, service_export, service_import, load_services
@@ -31,7 +32,13 @@ urlpatterns = [
     path('service/<slug>/detail', ServiceDetailView.as_view(), name='service_detail'),
     path('service/<slug>/update', ServiceUpdateView.as_view(), name='service_update'),
     path('service/<slug>/delete', ServiceDeleteView.as_view(), name='service_delete'),
+
     # load services
     path('ajax/load-services/', load_services, name='ajax_load_services'),
+
+    # Sunday service path
+    path('sunday-services', SundayServiceListView.as_view(), name='sunday_service_list'),
+    path('sunday-service/create/', SundayServiceCreateView.as_view(), name='sunday_service_create'),
+
 
 ]

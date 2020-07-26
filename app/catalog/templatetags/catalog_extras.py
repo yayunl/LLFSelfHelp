@@ -11,3 +11,8 @@ def absolute_create_url(obj):
     :return:
     """
     return obj._meta.absolute_create_url
+
+
+@register.filter
+def class_name(value):
+    return value.__class__.__name__

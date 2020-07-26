@@ -1,6 +1,7 @@
 from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 from django.template.defaultfilters import slugify
+from django.db.models import Q
 
 
 class CustomUserManager(BaseUserManager):
@@ -42,3 +43,19 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(username, password, name, email, **extra_fields)
+
+    def search(self, query=None):
+        """
+        Define a search function for the query to call and returns proper results.
+        :param query:
+        :return: QuerySet
+        """
+        qs = self.get_queryset()
+        if query is not None:
+            or_lookup = (Q(username__icontains=query) |
+                         Q(name__icontains=query) |
+                         Q(english_name__icontains=query) |
+                         Q(hometown__icontains=query) |
+                         Q(email__icontains=query))
+            qs = qs.filter(or_lookup).distinct()
+        return qs

@@ -41,15 +41,49 @@
 <!-- Nav bar -->
 <div class="ui borderless main menu">
     <div class="ui text container">
-        <a class="item" href="{% url 'catalog_index' %}">Home</a>
-        <a class="item" href="{% url 'service_list'%}">Services</a>
-        <a class="item" href="{% url 'user_list' %}">Members</a>
-        <a class="item" href="{% url 'group_list'%}">Groups</a>
-        <a class="item" href="{% url 'category_list'%}">Categories</a>
-        <a class="item" href="{{ user.profile.get_absolute_url }}">Profile</a>
-        {% if user.is_authenticated %}
-            <a class="item" href="{% url 'logout' %}">Log Out</a>
-        {% endif %}
+        <div class="ui secondary  menu">
+            <a class="active item" href="{% url 'catalog_index' %}">Home</a>
+
+            <div class="ui dropdown item">
+
+                Services
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="header">Breakdown</div>
+                    <a class="item" href="{% url 'service_list'%}">Services</a>
+                    <a class="item" href="{% url 'category_list'%}">Service Categories</a>
+                    <a class="item" href="{% url 'sunday_service_list'%}">Sunday Sermons</a>
+                </div>
+            </div>
+
+            <div class="ui dropdown item">
+                Members
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                    <div class="header">Breakdown</div>
+                    <a class="item" href="{% url 'user_list' %}">Members</a>
+                    <a class="item" href="{% url 'group_list' %}">Small Groups</a>
+                </div>
+            </div>
+
+            <div class="right menu">
+                <div class="item">
+                    <div class="ui icon input">
+{#                        <input type="text" placeholder="Search...">#}
+                        <form action="{% url 'search_results' %}" method="get">
+                            <input name="q" type="text" placeholder="Search...">
+                        </form>
+                        <i class="search link icon"></i>
+                    </div>
+                </div>
+
+                <a class="ui item" href="{{ user.profile.get_absolute_url }}">Profile</a>
+
+                {% if user.is_authenticated %}
+                    <a class="ui item" href="{% url 'logout' %}">Log Out</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 

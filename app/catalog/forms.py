@@ -18,12 +18,12 @@ class GroupForm(ModelForm):
             'description': 'Group description',
         }
 
-    def clean_name(self):
-        """
-        Clean_fieldname method to sanitize the input name.
-        :return:
-        """
-        return self.cleaned_data['name'].lower()
+    # def clean_name(self):
+    #     """
+    #     Clean_fieldname method to sanitize the input name.
+    #     :return:
+    #     """
+    #     return self.cleaned_data['name'].lower()
 
     def save(self, commit=True):
         instance = super().save(commit=False)

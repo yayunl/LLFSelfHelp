@@ -1,15 +1,10 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
-  <h1>LLF Admin Portal</h1>
-{#  <h2>Active members and groups</h2>#}
-{#  <ul>#}
-{#    <li><strong>Members:</strong> {{ num_members }}</li>#}
-{#    <li><strong>Small groups:</strong> {{ num_groups }}</li>#}
-{#  </ul>#}
 
-  <h2>Service teams</h2>
-  <h3>This week ({{ this_week_service_date }})</h3>
+
+  <h2>Service overview</h2>
+  <h3>{{ this_week_service_date }}</h3>
   <table class="table table-bordered">
     <thead>
     <tr>
@@ -21,9 +16,14 @@
     <tbody>
 
 
-    {% for service in services %}
+    {% for service in this_week_services %}
     <tr>
-      <td>{{ service.category_names }}</td>
+        {% if service.category_names == 'Sunday sermons' %}
+            <td>{{ service.category_names }} ({{ service.date_to_str }})</td>
+        {% else %}
+            <td>{{ service.category_names }}</td>
+        {% endif %}
+
       <td>{{ service.servant_names }}</td>
       <td>{{ service.note }}</td>
     </tr>
@@ -31,7 +31,7 @@
     </tbody>
   </table>
 
-  <h3>Next week ({{ next_week_service_date }})</h3>
+  <h3>{{ next_week_service_date }}</h3>
   <table class="table table-bordered">
     <thead>
     <tr>
@@ -50,6 +50,27 @@
     {% endfor %}
     </tbody>
   </table>
+
+    <h3>Birthday of this month</h3>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Birthday</th>
+            <th>Name</th>
+            <th>Group</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for member in member_birthday_of_month %}
+            <tr>
+                <td>{{ member.birthday|date:"m/d" }}</td>
+                <td>{{ member.name }}</td>
+                <td>{{ member.group.name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 
 
 {% endblock %}

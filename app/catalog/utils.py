@@ -20,8 +20,6 @@ from users.models import User
 logger = logging.getLogger(__name__)
 
 
-
-
 class ActivationMailFormMixin:
     mail_validation_error = ''
 
@@ -273,7 +271,8 @@ def service_dates():
     Get the service dates in string of this week and the next week.
     :return: tuple. (this_week_service_date_str in YYYY-MM-DD format,
                      following_week_service_date_str in YYYY-MM-DD format,
-                     this_week_sunday_date_str in YYYY-MM-DD format)
+                     this_week_sunday_date_str in YYYY-MM-DD format,
+                     following_week_sunday_date_str in YYYY-MM-DD)
     """
     today_full_date = dt.today()
 
@@ -296,12 +295,15 @@ def service_dates():
 
     # This week's Sunday date
     this_week_sunday_date = service_date + datetime.timedelta(2)
+    # Next weeks' Sunday date
+    following_week_sunday_date = following_service_date + datetime.timedelta(2)
 
     this_week_service_date_str = service_date.strftime('%Y-%m-%d')
     following_week_service_date_str = following_service_date.strftime('%Y-%m-%d')
     this_week_sunday_date_str = this_week_sunday_date.strftime('%Y-%m-%d')
+    following_week_sunday_date_str = following_week_sunday_date.strftime('%Y-%m-%d')
 
-    return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str
+    return this_week_service_date_str, following_week_service_date_str, this_week_sunday_date_str, following_week_sunday_date_str
 
 
 def date2str(date):
@@ -309,4 +311,10 @@ def date2str(date):
 
 
 def str2date(date_str):
-    return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+    try:
+        if '/' in date_str:
+            return datetime.datetime.strptime(date_str, '%m/%d/%Y').date()
+        else:
+            return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
+    except:
+        return None

@@ -148,8 +148,8 @@ REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 
 # Login redirect
 LOGIN_URL = '/auth/login'
-# Redirect on a successful login
-LOGIN_REDIRECT_URL = '/user/list'
+# Redirect on a successful login to the home page
+LOGIN_REDIRECT_URL = '/service/'
 
 
 # CELERY

@@ -17,9 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
 
+
 from catalog.urls import urlpatterns as catalogurls
 from users.urls import user_urls as userurls
 from users.urls import auth_urls as authurls
+
+from catalog.views import SearchListView
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -27,7 +30,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='catalog_index', permanent=False)),
     path('admin/', admin.site.urls),
-    path('catalog/', include(catalogurls)),
+    path('service/', include(catalogurls)),
     path('user/', include(userurls)),
-    path('auth/', include(authurls))
+    path('auth/', include(authurls)),
+    path('search/', SearchListView.as_view(), name='search_results'),
+
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

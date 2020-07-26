@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.messages import error, success
 from django.template.response import TemplateResponse
 from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import (get_user_model)
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
@@ -23,7 +24,7 @@ from django_tables2.paginators import LazyPaginator
 from catalog.decorators import class_login_required, require_authenticated_permission
 from catalog.utils import MailContextViewMixin
 from .models import User, Profile
-from .utils import ProfileGetObjectMixin, UserGetObjectMixin
+from .utils import ProfileGetObjectMixin, UserGetObjectMixin, SERMON_GROUP
 from .tables import UserTable, UserFilter
 from .forms import UserForm, ProfileForm, RegistrationForm, ResendActivationEmailForm
 from .resources import UserResource
@@ -46,13 +47,12 @@ class UserDetailView(DetailView):
 
 
 @class_login_required
-class UserListView(django_tables2.SingleTableMixin, FilterView):
+class UserListView(django_tables2.SingleTableMixin, FilterView, LoginRequiredMixin):
     model = User
     table_class = UserTable
     filterset_class = UserFilter
-    # context_object_name = 'user_list'
+    context_object_name = 'user_list'
 
-    queryset = User.objects.all()
     template_name = 'users/user_list.html'
     # paginator_class = LazyPaginator
     table_pagination = {"per_page": 10}
@@ -66,6 +66,16 @@ class UserListView(django_tables2.SingleTableMixin, FilterView):
         # add whatever to your context:
         # context['whatever'] = "MORE STUFF"
         return context
+
+    def get_queryset(self):
+        current_user =self.request.user
+        if current_user.is_superuser:
+            queryset = User.objects.all()
+        else:
+            # Filter out sunday service members for non-superuser users
+            queryset = User.objects.filter().exclude(group__name__in=SERMON_GROUP)
+        return queryset
+
 
 @require_authenticated_permission('users.user_update')
 class UserUpdateView(UpdateView):
