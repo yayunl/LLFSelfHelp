@@ -1,10 +1,8 @@
 from django.forms import ModelForm
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput
-from bootstrap_modal_forms.forms import BSModalModelForm
 
 from .models import Service, Group, Category
-from users.models import User
 
 
 class GroupForm(ModelForm):

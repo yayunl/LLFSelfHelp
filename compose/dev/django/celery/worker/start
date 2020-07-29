@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+# celery -A suorganizer worker -l INFO
+
+# https://www.accordbox.com/blog/how-auto-reload-celery-worker-code-change/
+python3 ./manage.py celery_worker

@@ -7,8 +7,10 @@ venv
 .env.dev
 .env.prod
 notes.txt
+deployment_to_digitalocean.txt
 .env
 _data
+_temp
 *.bat
 app/suorganizer/__pycache__/
 user/__pycache__/

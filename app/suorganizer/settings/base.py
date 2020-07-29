@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "bootstrap3",
     "bootstrap4",
     "django_filters",
-    'bootstrap_modal_forms',
+    # 'bootstrap_modal_forms',
     "bootstrap_datepicker_plus",
     'import_export',
     'django_tables2',
@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'catalog',
     'users',
     'core',
+    'suorganizer',
 ]
 
 MIDDLEWARE = [
@@ -164,7 +165,7 @@ CELERY_TIMEZONE = 'America/Chicago'
 CELERY_BEAT_SCHEDULE = {
     'scheduled_reminders': {
         'task': 'send_reminders',
-        'schedule': crontab(minute='*/10'),
+        'schedule': crontab(minute='*/1'),
         # 'args': (10 , 20)
     },
 }

@@ -1,4 +1,3 @@
-from bootstrap_modal_forms.forms import BSModalModelForm
 from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
@@ -9,7 +8,6 @@ from bootstrap_datepicker_plus import DatePickerInput
 # Project imports
 from catalog.utils import ActivationMailFormMixin
 from .models import User, Profile
-from .utils import GENDER
 
 
 class UserForm(ModelForm):

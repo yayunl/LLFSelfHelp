@@ -17,7 +17,7 @@ from users.models import User
 from .tables import ServiceTable, ServiceFilter
 from .forms import ServiceForm, GroupForm, CategoryForm
 from .resources import ServiceResource
-from .utils import handle_uploaded_schedules, service_dates, str2date
+from .utils import service_dates, str2date #, handle_uploaded_schedules
 from users.utils import SERMON_GROUP, SERMON_CATEGORY
 from .tasks import send_reminders
 
@@ -318,7 +318,9 @@ def service_import(request):
         loaded_file = request.FILES['external-file']
 
         imported_data = dataset.load(loaded_file.read())
-        handle_uploaded_schedules(imported_data, resource)
+        #todo: reopen this function later once figuring out how to install pandas
+        # handle_uploaded_schedules(imported_data, resource)
+
         # imported_data.headers = ['service_date', 'leader_of_week', 'setup_group', 'food_pickup', 'fruit_dessert',\
         #                          'dish_clean', 'child_care', 'newcomer_welcome', 'birthday_celebrate', 'worship', 'bible_study',
         #                          'first visit', 'birthday', 'lunar birthday', 'Habits']
