@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   nginx:
-    build: ./compose/production/nginx
+    build: nginx
     volumes:
       - staticfiles:/app/staticfiles
       - mediafiles:/app/mediafiles

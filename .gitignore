@@ -6,7 +6,7 @@ venv
 *.pyc
 env
 _notes
-heroku_deployment
+_heroku_deployment
 .env
 _data
 _temp
