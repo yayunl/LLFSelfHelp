@@ -165,7 +165,7 @@ CELERY_TIMEZONE = 'America/Chicago'
 CELERY_BEAT_SCHEDULE = {
     'scheduled_reminders': {
         'task': 'send_reminders',
-        'schedule': crontab(minute='*/1'),
+        'schedule': crontab(minute='*/10'), # Send every mins
         # 'args': (10 , 20)
     },
 }

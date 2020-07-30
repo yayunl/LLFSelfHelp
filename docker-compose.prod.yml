@@ -1,67 +1,87 @@
 version: "3.7"
 
 services:
+
+  nginx:
+    build: ./compose/production/nginx
+    volumes:
+      - staticfiles:/app/staticfiles
+      - mediafiles:/app/mediafiles
+    ports:
+      - 80:80
+      - 5555:5555
+    depends_on:
+      - web
+      - flower
+
   web:
     build:
-      context: ./app
-      dockerfile: _data/Dockerfile.prod
-    command: gunicorn suorganizer.wsgi --bind 0.0.0.0:8000
+      context: .
+      dockerfile: ./compose/dev/django/Dockerfile
+    image: llfadmin
+    command: /start
     ports:
       - 8000:8000
     env_file:
-      - .env.prod
+      - env/.env.prod
     depends_on:
       - redis
       - db
-    networks:
-      - backend
-
+    volumes:
+      - staticfiles:/app/staticfiles
+      - mediafiles:/app/mediafiles
 
   worker:
-    build:
-      context: ./app
-      dockerfile: _data/Dockerfile.prod
-    command: celery -A suorganizer worker -l info -P solo
+    image: llfadmin
+    command: /start-celeryworker
     env_file:
-      - .env.prod
+      - env/.env.prod
     depends_on:
       - redis
-    networks:
-      - backend
+      - db
+    volumes:
+      - staticfiles:/app/staticfiles
+      - mediafiles:/app/mediafiles
+
 
   beat:
-    build:
-      context: ./app
-      dockerfile: _data/Dockerfile.prod
-    command: celery -A suorganizer beat -l info
+    image: llfadmin
+    command: /start-celerybeat
     env_file:
-      - .env.prod
+      - env/.env.prod
     depends_on:
       - redis
-    networks:
-      - backend
+      - db
+    volumes:
+      - staticfiles:/app/staticfiles
+      - mediafiles:/app/mediafiles
 
+
+  flower:
+    image: llfadmin
+    command: /start-flower
+    volumes:
+      - staticfiles:/app/staticfiles
+      - mediafiles:/app/mediafiles
+    env_file:
+      - env/.env.prod
+    depends_on:
+      - redis
+      - db
 
   db:
     image: postgres:12.0-alpine
     env_file:
-      - .env.prod
-    networks:
-      - backend
+      - env/.env.prod
+    volumes:
+      - ./init_prod.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data/
 
   redis:
     image: redis:latest
-    expose:
-      - 6379
-    networks:
-      - backend
 
-  nginx:
-    build: ./nginx
-    ports:
-      - 1337:80
-    depends_on:
-      - web
 
-networks:
-  backend:
+volumes:
+  postgres_data:
+  staticfiles:
+  mediafiles:

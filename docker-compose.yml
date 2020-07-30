@@ -12,7 +12,7 @@ services:
     ports:
       - 8000:8000
     env_file:
-      - .env.dev
+      - env/.env.dev
     depends_on:
       - redis
       - db
@@ -27,7 +27,7 @@ services:
 #    command: /start-celeryworker
     command: tail -f /dev/null
     env_file:
-      - .env.dev
+      - env/.env.dev
     depends_on:
       - redis
       - db
@@ -42,7 +42,7 @@ services:
     command: /start-celerybeat
 #    command: tail -f /dev/null
     env_file:
-      - .env.dev
+      - env/.env.dev
     depends_on:
       - redis
       - db

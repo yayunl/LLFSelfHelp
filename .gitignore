@@ -4,10 +4,9 @@ tests
 venv
 .idea
 *.pyc
-.env.dev
-.env.prod
-notes.txt
-deployment_to_digitalocean.txt
+env
+_notes
+heroku_deployment
 .env
 _data
 _temp
