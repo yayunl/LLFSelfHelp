@@ -1,14 +1,14 @@
-version: "3.7"
+version: "3.3"
 
 services:
 
   nginx:
-    build: nginx
+    image: llfadmin-nginx
     volumes:
       - staticfiles:/app/staticfiles
       - mediafiles:/app/mediafiles
     ports:
-      - 80:80
+      - 8003:80
       - 5555:5555
     depends_on:
       - web
@@ -17,9 +17,10 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./compose/dev/django/Dockerfile
-    image: llfadmin
+      dockerfile: ./compose/production/django/Dockerfile
+    image: llfadmin-prod
     command: /start
+#    command: tail -f /dev/null
     ports:
       - 8000:8000
     env_file:
@@ -32,8 +33,9 @@ services:
       - mediafiles:/app/mediafiles
 
   worker:
-    image: llfadmin
+    image: llfadmin-prod
     command: /start-celeryworker
+#    command: tail -f /dev/null
     env_file:
       - env/.env.prod
     depends_on:
@@ -45,7 +47,7 @@ services:
 
 
   beat:
-    image: llfadmin
+    image: llfadmin-prod
     command: /start-celerybeat
     env_file:
       - env/.env.prod
@@ -58,8 +60,9 @@ services:
 
 
   flower:
-    image: llfadmin
+    image: llfadmin-prod
     command: /start-flower
+#    command: tail -f /dev/null
     volumes:
       - staticfiles:/app/staticfiles
       - mediafiles:/app/mediafiles
@@ -71,17 +74,21 @@ services:
 
   db:
     image: postgres:12.0-alpine
-    env_file:
-      - env/.env.prod
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=p@ssword
+      - POSTGRES_DB=llfdb_prod
     volumes:
       - ./init_prod.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data_prod:/var/lib/postgresql/data/
 
   redis:
     image: redis:latest
 
 
 volumes:
-  postgres_data:
+  postgres_data_prod:
   staticfiles:
   mediafiles:

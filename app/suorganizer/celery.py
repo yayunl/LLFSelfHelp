@@ -7,8 +7,7 @@ from django.conf import settings
 if os.environ.get('ENV') == 'dev':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
 else:
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.production")
-
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.prod")
 
 app = Celery('suorganizer')
 

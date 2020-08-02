@@ -52,7 +52,7 @@ RUN mkdir /app/mediafiles
 WORKDIR /app
 
 # copy project code
-COPY . .
+COPY ./app .
 
 RUN chown -R django:django /app
 

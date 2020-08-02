@@ -1,9 +1,10 @@
-import dj_database_url, os
-import django_heroku
+from .base import *
+import os
+# import django_heroku
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_ROOT = os.path.dirname(BASE_DIR)
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# PROJECT_ROOT = os.path.dirname(BASE_DIR)
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -30,11 +31,18 @@ DATABASES = {
 # prod_db = dj_database_url.config(conn_max_age=500)
 # DATABASES['default'].update(prod_db)
 
-django_heroku.settings(locals())
+###############################
+# Uncommented when using Heroku
+###############################
+
+# django_heroku.settings(locals())
+
+### END###########
+
 
 # Static files
-# STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
 
 ## Amazon Credentials
 

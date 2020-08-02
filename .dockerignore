@@ -1,0 +1,8 @@
+_temp
+_data
+_heroku_deployment
+_notes
+env
+tests
+__pycache__
+*.tar

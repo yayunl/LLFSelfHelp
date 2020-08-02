@@ -15,4 +15,4 @@ done
 
 celery flower \
     --app=suorganizer \
-    --broker="${CELERY_BROKER}"
+    --broker="${CELERY_BROKER_URL}"

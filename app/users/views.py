@@ -170,11 +170,12 @@ class CreateAccount(MailContextViewMixin, View):
     def post(self, request):
         bound_form = self.form_class(request.POST)
         if bound_form.is_valid():
-            email = bound_form.cleaned_data.get('email')
-            valid_user = User.objects.filter(email=email).count()
-            if not valid_user:
-                error(request, 'Not a valid user.')
-                return HttpResponse('<h1>Not a valid user.</h1>')
+            # email = bound_form.cleaned_data.get('email')
+            # valid_user = User.objects.filter(email=email).count()
+            # if not valid_user:
+            #     error(request, 'Not a valid user.')
+            #     return HttpResponse('<h1>Not a valid user.</h1>')
+
             # not catching returned user
             bound_form.save(
                 **self.get_save_kwargs(request))
