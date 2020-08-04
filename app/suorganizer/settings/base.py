@@ -145,6 +145,7 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = os.environ.get('OFFICIAL_NO_REPLY_EMAIL')
 EMAIL_SUBJECT_PREFIX = os.environ.get('OFFICIAL_EMAIL_SUBJECT_PREFIX')
 
+ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
 REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 
 # Login redirect
@@ -165,7 +166,7 @@ CELERY_TIMEZONE = 'America/Chicago'
 CELERY_BEAT_SCHEDULE = {
     'scheduled_reminders': {
         'task': 'send_reminders',
-        'schedule': crontab(minute='*/10'), # Send every mins
+        'schedule': crontab(minute='*/60'), # Send every mins
         # 'args': (10 , 20)
     },
 }

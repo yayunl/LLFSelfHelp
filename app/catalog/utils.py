@@ -6,15 +6,13 @@ from django.contrib.auth import get_user
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
-from django.core.mail import (BadHeaderError)
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.core.mail import EmailMessage, send_mail
+from django.core.mail import EmailMessage, send_mail, BadHeaderError
 from datetime import datetime as dt
 import datetime
 # Project imports
-from .models import Service
 from users.models import User
 
 logger = logging.getLogger(__name__)
@@ -64,6 +62,8 @@ class ActivationMailFormMixin:
         email_template_name = kwargs.get(
             'email_template_name')
         context = kwargs.get('context')
+        if 'request_submitter' in kwargs:
+            context['request_submitter'] = kwargs.get('request_submitter')
         return render_to_string(
             email_template_name, context)
 
@@ -71,6 +71,9 @@ class ActivationMailFormMixin:
         subject_template_name = kwargs.get(
             'subject_template_name')
         context = kwargs.get('context')
+        if 'request_submitter' in kwargs:
+            context['request_submitter'] = kwargs.get('request_submitter')
+
         subject = render_to_string(
             subject_template_name, context)
         # subject *must not* contain newlines
@@ -99,21 +102,25 @@ class ActivationMailFormMixin:
         })
         return context
 
-    def _send_mail(self, request, recipients, **kwargs):
+    def _send_mail(self, request, recipient, **kwargs):
         kwargs['context'] = self.get_context_data(
-            request, recipients)
+            request, recipient)
 
         mail_kwargs = {
             "subject": self.get_subject(**kwargs),
             "message": self.get_message(**kwargs),
             "from_email": (
                 settings.DEFAULT_FROM_EMAIL),
-            "recipient_list": [recipient.email for recipient in recipients],
+            "recipient_list": [recipient.email],
         }
 
         try:
+            # from catalog.tasks import send_mail_async
+
+            # number_sent = send_mail_async.delay(kwargs=mail_kwargs)
             # number_sent will be 0 or 1
             number_sent = send_mail(**mail_kwargs)
+
         except Exception as error:
             self.log_mail_error(
                 error=error, **mail_kwargs)
@@ -130,10 +137,10 @@ class ActivationMailFormMixin:
         self.log_mail_error(**mail_kwargs)
         return (False, 'unknownerror')
 
-    def send_mail(self, recipients, **kwargs):
+    def send_mail(self, recipient, **kwargs):
         """
         Send email to recipients
-        :param recipients:
+        :param recipient:
         :param kwargs:
         :return:
         """
@@ -147,9 +154,10 @@ class ActivationMailFormMixin:
                     ''.join(tb)))
             self._mail_sent = False
             return self.mail_sent
-
+        kwargs['request_submitter'] = User.objects.filter(email=request.POST['email']).first()
+        # print('')
         self._mail_sent, error = (
-            self._send_mail(request, recipients, **kwargs)
+            self._send_mail(request, recipient, **kwargs)
         )
 
         if not self.mail_sent:

@@ -5,6 +5,8 @@ from django import forms
 from django.forms import ModelForm
 from django.template.defaultfilters import slugify
 from bootstrap_datepicker_plus import DatePickerInput
+from django.conf import settings
+import os
 # Project imports
 from catalog.utils import ActivationMailFormMixin
 from .models import User, Profile
@@ -80,6 +82,8 @@ class RegistrationForm(
 
     def save(self, **kwargs):
         user = super().save(commit=False)
+        admin = User.objects.filter(email=settings.ADMIN_EMAIL).first()
+
         # valid_member = Member.objects.filter(email=user.email).count()
 
         # if not valid_member:
@@ -104,8 +108,10 @@ class RegistrationForm(
         #         'username': self.cleaned_data['username'],
         #         'slug': slugify(f"{self.cleaned_data['username']}-{self.cleaned_data['email'].split('@')[0]}"),
         #     })
-        if send_mail:
-            self.send_mail(recipients=user, **kwargs)
+
+        # Send email to admin for approval
+        if send_mail and admin:
+            self.send_mail(recipient=admin, **kwargs)
         return user
 
 
@@ -128,6 +134,8 @@ class ResendActivationEmailForm(
 
     def save(self, **kwargs):
         User = get_user_model()
+        admin = User.objects.filter(email=settings.ADMIN_EMAIL).first()
+
         try:
             user = User.objects.get(
                 email=self.cleaned_data['email'])
@@ -137,5 +145,9 @@ class ResendActivationEmailForm(
             #     'email: {} .'.format(
             #         self.cleaned_data['email']))
             return None
-        self.send_mail(recipients=user, **kwargs)
+
+        # Notify the admin
+        if admin:
+            self.send_mail(recipient=admin, **kwargs)
+
         return user

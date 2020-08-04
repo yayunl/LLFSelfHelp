@@ -3,8 +3,8 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 import os
 # project imports
-from .models import Service
-from .utils import service_dates, str2date
+from catalog.models import Service
+from catalog.utils import service_dates, str2date
 
 
 @task(name='send_reminders')
@@ -36,3 +36,9 @@ def send_reminders():
     )
 
     return "Reminder email sent."
+
+
+@task(name='send_email')
+def send_mail_async(kwargs):
+    number_sent = send_mail(**kwargs)
+    return number_sent

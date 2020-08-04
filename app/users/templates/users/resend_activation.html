@@ -1,14 +1,14 @@
 {% extends parent_template|default:"users/base_users.html" %}
 
 {% block title %}
-{{ block.super }} - Resend Activation E-Mail
+{{ block.super }} - Resend Activation Request to Admin
 {% endblock %}
 
 {% block content %}
   <div class="row">
     <div class="offset-by-two eight columns">
       <div class="center">
-        <p>Resend your account activation email.</p>
+        <p>Resend your account activation email to admin for approval.</p>
       </div>
       <form
           action="{% url 'resend_activation' %}"

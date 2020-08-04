@@ -14,6 +14,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django.conf import settings
 from tablib import Dataset
 import datetime as dt1
 from django_filters.views import FilterView
@@ -23,6 +24,7 @@ from django_tables2.paginators import LazyPaginator
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
 from catalog.utils import MailContextViewMixin
+from catalog.tasks import send_mail_async
 from .models import User, Profile
 from .utils import ProfileGetObjectMixin, UserGetObjectMixin, SERMON_GROUP
 from .tables import UserTable, UserFilter
@@ -120,9 +122,10 @@ class ProfileUpdateView(UserGetObjectMixin, UpdateView):
 
 
 # User account creation and activation
-class ActivateAccount(View):
+class ActivateAccount(MailContextViewMixin, View):
     success_url = reverse_lazy('login')
     template_name = 'users/user_activate_fail.html'
+    # form_class = RegistrationForm
 
     @method_decorator(never_cache)
     def get(self, request, uidb64, token):
@@ -143,8 +146,21 @@ class ActivateAccount(View):
             user.save()
             success(
                 request,
-                'User Activated! '
-                'You may now login.')
+                'The request from the user is approved. '
+                'An email notification is sent to the user. ')
+
+            # Send an email notification to the user
+            mail_kwargs = {
+                "subject": 'Request Approved!',
+                "message": 'Hello, your request is approved by the admin.',
+                "from_email": (
+                    settings.ADMIN_EMAIL),
+                "recipient_list": [user.email],
+            }
+
+            #todo: The user is still the admin.
+            send_mail_async.delay(kwargs=mail_kwargs)
+
             return redirect(self.success_url)
         else:
             return TemplateResponse(
