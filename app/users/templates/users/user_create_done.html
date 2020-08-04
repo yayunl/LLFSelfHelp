@@ -1,15 +1,19 @@
 {% extends parent_template|default:"users/base_users.html" %}
 
 {% block title %}
-{{ block.super }} - Account Created
+{{ block.super }} - Acknowledge Request
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="offset-by-two eight columns">
-      <p>Your account has been created!</p>
-      <p>Please check your email for
-        the activation link.</p>
+    <div class="row">
+        <div class="offset-by-two eight columns">
+            <p>Your request has been sent to the admin team for approval.
+                Due to security concern, you are not allowed to use the account
+                until the administrator approves the request.
+                You will receive an email notification when the request is approved!
+            </p>
+            <p>Thanks for your patience!</p>
+            <p>{{ site.name }} Admin Team</p>
     </div>
   </div>
 {% endblock %}

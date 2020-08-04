@@ -1,0 +1,17 @@
+Hello from {{ site_name }}!
+
+We've received a request to create an account for {{ }}.
+
+
+Three steps help you to work through the activation process:
+
+1. Spam User: Verify if this request is from a valid member from the group. If you believe this is a spam, please ignore this request.
+2. Known User: If the submitter's identity is confirmed, please use the following link to activate the account.
+2. Uncertain User: If you are uncertain about the submitter's identity, you can send him/her an email to further clarification. Depending on the results, you can either ignore
+if the identity is still unclear or approve the request if the submitter is a known member.
+
+
+!! Important Note !!
+!! PLEASE VERIFY THE IDENTIFY FIRST BEFORE CLICKING !!
+Use the link to activate the user's request for using the website.
+{{ protocol }}://{{ domain }}{% url 'activate' uid token %}

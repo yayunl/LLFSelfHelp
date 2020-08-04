@@ -36,6 +36,11 @@ class RegistrationForm(
         ActivationMailFormMixin,
         BaseUserCreationForm):
 
+    name = forms.CharField(
+        max_length=255,
+        help_text=(
+            "Your real name.")
+    )
     username = forms.CharField(
         max_length=255,
         help_text=(
@@ -54,7 +59,7 @@ class RegistrationForm(
 
     class Meta(BaseUserCreationForm.Meta):
         model = get_user_model()
-        fields = ('username', 'email')
+        fields = ('username', 'email', 'name')
 
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -100,7 +105,7 @@ class RegistrationForm(
         #         'slug': slugify(f"{self.cleaned_data['username']}-{self.cleaned_data['email'].split('@')[0]}"),
         #     })
         if send_mail:
-            self.send_mail(user=user, **kwargs)
+            self.send_mail(recipients=user, **kwargs)
         return user
 
 
@@ -132,5 +137,5 @@ class ResendActivationEmailForm(
             #     'email: {} .'.format(
             #         self.cleaned_data['email']))
             return None
-        self.send_mail(user=user, **kwargs)
+        self.send_mail(recipients=user, **kwargs)
         return user

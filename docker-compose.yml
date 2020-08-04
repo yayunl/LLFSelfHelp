@@ -1,11 +1,11 @@
-version: "3.7"
+version: "3.3"
 
 services:
   web:
-    build:
-      context: .
-      dockerfile: ./compose/dev/django/Dockerfile
-    image: llfadmin
+#    build:
+#      context: .
+#      dockerfile: ./compose/dev/django/Dockerfile
+    image: llfadmin-dev
     command: /start
 #    command: tail -f /dev/null
 #    command: python3 manage.py runserver 0.0.0.0:8000
@@ -15,29 +15,29 @@ services:
       - env/.env.dev
     depends_on:
       - redis
-      - db
-#    networks:
-#      - backend
+      - db_dev
+    networks:
+      - backend
     volumes:
       - ./app:/app
 
   worker:
-    image: llfadmin
+    image: llfadmin-dev
 #    command: celery -A suorganizer worker -l info -P solo
-#    command: /start-celeryworker
-    command: tail -f /dev/null
+    command: /start-celeryworker
+#    command: tail -f /dev/null
     env_file:
       - env/.env.dev
     depends_on:
       - redis
-      - db
+      - db_dev
     volumes:
       - ./app:/app
-#    networks:
-#      - backend
+    networks:
+      - backend
 
   beat:
-    image: llfadmin
+    image: llfadmin-dev
 #    command: celery -A suorganizer beat -l info
     command: /start-celerybeat
 #    command: tail -f /dev/null
@@ -45,15 +45,15 @@ services:
       - env/.env.dev
     depends_on:
       - redis
-      - db
+      - db_dev
     volumes:
       - ./app:/app
-#    networks:
-#      - backend
+    networks:
+      - backend
 
 
 #  flower:
-#    image: llfadmin
+#    image: llfadmin-dev
 #    command: /start-flower
 #    volumes:
 #      - ./app:/app
@@ -63,27 +63,27 @@ services:
 #      - 5555:5555
 #    depends_on:
 #      - redis
-#      - db
+#      - db_dev
 
-  db:
+  db_dev:
     image: postgres:12.0-alpine
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=llfdb_dev
     ports:
-      - 5434:5432
-#    networks:
-#      - backend
+      - 5436:5432
+    networks:
+      - backend
     volumes:
-    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   redis:
     image: redis:latest
-    expose:
-      - 6379
-#    networks:
-#      - backend
+    ports:
+      - 6380:6379
+    networks:
+      - backend
 
-#networks:
-#  backend:
+networks:
+  backend:

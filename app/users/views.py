@@ -122,7 +122,7 @@ class ProfileUpdateView(UserGetObjectMixin, UpdateView):
 # User account creation and activation
 class ActivateAccount(View):
     success_url = reverse_lazy('login')
-    template_name = 'users/user_activate.html'
+    template_name = 'users/user_activate_fail.html'
 
     @method_decorator(never_cache)
     def get(self, request, uidb64, token):
@@ -195,8 +195,7 @@ class CreateAccount(MailContextViewMixin, View):
             {'form': bound_form})
 
 
-class ResendActivationEmail(
-        MailContextViewMixin, View):
+class ResendActivationEmail(MailContextViewMixin, View):
     form_class = ResendActivationEmailForm
     success_url = reverse_lazy('login')
     template_name = 'users/resend_activation.html'
@@ -221,15 +220,12 @@ class ResendActivationEmail(
                 for err in errs:
                     error(request, err)
                 if errs:
-                    bound_form.errors.pop(
-                        '__all__')
+                    bound_form.errors.pop('__all__')
                 return TemplateResponse(
                     request,
                     self.template_name,
                     {'form': bound_form})
-        success(
-            request,
-            'Activation Email Sent!')
+        success(request, 'Activation Email Sent!')
         return redirect(self.success_url)
 
 

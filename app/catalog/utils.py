@@ -99,16 +99,18 @@ class ActivationMailFormMixin:
         })
         return context
 
-    def _send_mail(self, request, user, **kwargs):
+    def _send_mail(self, request, recipients, **kwargs):
         kwargs['context'] = self.get_context_data(
-            request, user)
+            request, recipients)
+
         mail_kwargs = {
             "subject": self.get_subject(**kwargs),
             "message": self.get_message(**kwargs),
             "from_email": (
                 settings.DEFAULT_FROM_EMAIL),
-            "recipient_list": [user.email],
+            "recipient_list": [recipient.email for recipient in recipients],
         }
+
         try:
             # number_sent will be 0 or 1
             number_sent = send_mail(**mail_kwargs)
@@ -128,7 +130,13 @@ class ActivationMailFormMixin:
         self.log_mail_error(**mail_kwargs)
         return (False, 'unknownerror')
 
-    def send_mail(self, user, **kwargs):
+    def send_mail(self, recipients, **kwargs):
+        """
+        Send email to recipients
+        :param recipients:
+        :param kwargs:
+        :return:
+        """
         request = kwargs.pop('request', None)
         if request is None:
             tb = traceback.format_stack()
@@ -139,9 +147,11 @@ class ActivationMailFormMixin:
                     ''.join(tb)))
             self._mail_sent = False
             return self.mail_sent
+
         self._mail_sent, error = (
-            self._send_mail(
-                request, user, **kwargs))
+            self._send_mail(request, recipients, **kwargs)
+        )
+
         if not self.mail_sent:
             self.add_error(
                 None,  # no field - form error
@@ -152,9 +162,9 @@ class ActivationMailFormMixin:
 
 
 class MailContextViewMixin:
-    email_template_name = 'users/email_create.txt'
+    email_template_name = 'users/_email_create.txt'
     subject_template_name = (
-        'users/subject_create.txt')
+        'users/_subject_create.txt')
 
     def get_save_kwargs(self, request):
         return {

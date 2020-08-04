@@ -1,0 +1,15 @@
+本周({{ this_week_date }})的服事团队如下:
+{{ emails }}
+
+{% for service in services.all %}
+
+   {{ service.name}}:
+        {% spaceless %}
+        {% for server in service.servants.all %}
+        {{ server.name}}
+        {% endfor %}
+        {% endspaceless %}
+{% endfor %}
+
+Blessings,
+Sent via LLFAdmin
