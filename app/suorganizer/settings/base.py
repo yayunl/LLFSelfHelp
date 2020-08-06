@@ -173,3 +173,14 @@ CELERY_BEAT_SCHEDULE = {
 
 # Django-table2 settings
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'
+
+# Message
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.DEBUG: 'alert-info',
+    messages.INFO: 'alert-info',
+    messages.SUCCESS: 'alert-success',
+    messages.WARNING: 'alert-warning',
+    messages.ERROR: 'alert-danger',
+}

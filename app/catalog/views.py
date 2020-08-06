@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from .decorators import class_login_required, require_authenticated_permission
 from datetime import datetime as dt
 from itertools import chain
+from django.contrib.messages.views import SuccessMessageMixin
 
 # sub-level imports
 from .models import Group, Service, Category
@@ -38,6 +39,7 @@ class IndexView(ListView):
 
     context_object_name = 'this_week_services'
     template_name = "catalog/index.html"
+    success_message = 'Welcome!'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -55,11 +57,11 @@ class IndexView(ListView):
 
 # Groups
 @class_login_required
-class GroupCreateView(CreateView):
+class GroupCreateView(SuccessMessageMixin, CreateView):
     model = Group
     template_name = 'catalog/group_form.html'
     form_class = GroupForm
-    success_message = 'Success: Group was created.'
+    success_message = 'Group %(name)s was created.'
     success_url = reverse_lazy('group_list')
 
 
@@ -87,10 +89,11 @@ class GroupListView(ListView):
 
 
 @class_login_required
-class GroupUpdateView(UpdateView):
+class GroupUpdateView(SuccessMessageMixin, UpdateView):
     model = Group
     form_class = GroupForm
     success_url = reverse_lazy('group_list')
+    success_message = 'Group: %(name)s was updated.'
 
 
 @class_login_required
@@ -99,18 +102,20 @@ class GroupDetailView(DetailView):
 
 
 @class_login_required
-class GroupDeleteView(DeleteView):
+class GroupDeleteView(SuccessMessageMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('group_list')
+    success_message = 'Group was deleted.'
 
 
 # Categories
 @class_login_required
-class CategoryCreateView(CreateView):
+class CategoryCreateView(SuccessMessageMixin, CreateView):
+
     model = Category
     template_name = 'catalog/group_form.html'
     form_class = CategoryForm
-    success_message = 'Success: Category was created.'
+    success_message = 'Category %(name)s was created.'
     success_url = reverse_lazy('category_list')
 
 
@@ -137,10 +142,11 @@ class CategoryListView(ListView):
 
 
 @class_login_required
-class CategoryUpdateView(UpdateView):
+class CategoryUpdateView(SuccessMessageMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     success_url = reverse_lazy('category_list')
+    success_message = 'Category %(name)s was updated.'
 
 
 @class_login_required
@@ -149,17 +155,19 @@ class CategoryDetailView(DetailView):
 
 
 @class_login_required
-class CategoryDeleteView(DeleteView):
+class CategoryDeleteView(SuccessMessageMixin, DeleteView):
     model = Category
     success_url = reverse_lazy('category_list')
+    success_message = 'Category %(name)s was deleted.'
 
 
 # Services
 @require_authenticated_permission('catalog.service_create')
-class ServiceCreateView(CreateView):
+class ServiceCreateView(SuccessMessageMixin, CreateView):
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
+    success_message = 'Service %(name)s was created.'
 
     def get_form(self):
         form = super(ServiceCreateView, self).get_form()
@@ -202,10 +210,11 @@ class ServiceListView(django_tables2.SingleTableMixin, FilterView):
 
 
 @require_authenticated_permission('catalog.service_update')
-class ServiceUpdateView(UpdateView):
+class ServiceUpdateView(SuccessMessageMixin, UpdateView):
     model = Service
     form_class = ServiceForm
     success_url = reverse_lazy('service_list')
+    success_message = 'Service %(name)s was updated.'
 
 
 @require_authenticated_permission('catalog.service_delete')
@@ -216,11 +225,12 @@ class ServiceDeleteView(DeleteView):
 
 # Sunday sermons
 @require_authenticated_permission('catalog.sunday_service_create')
-class SundayServiceCreateView(CreateView):
+class SundayServiceCreateView(SuccessMessageMixin, CreateView):
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
-
+    success_message = "A new sermon was created."
+    success_url = reverse_lazy('service_list')
     queryset = Service.objects.filter()
 
     def get_form(self):
@@ -231,8 +241,6 @@ class SundayServiceCreateView(CreateView):
         # Sunday service servants are specific to users of this service category.
         form.fields['servants'].queryset = User.objects.filter(group__name__in=SERMON_GROUP)
         return form
-
-    success_url = reverse_lazy('service_list')
 
 
 @class_login_required
@@ -249,6 +257,30 @@ class SundayServiceListView(django_tables2.SingleTableMixin, FilterView):
 
     def get_table_kwargs(self):
         return {"template_name": "django_tables2/bootstrap.html"}
+
+
+@require_authenticated_permission('catalog.sunday_service_update')
+class SundayServiceUpdateView(SuccessMessageMixin, UpdateView):
+    model = Service
+    form_class = ServiceForm
+    template_name = 'catalog/service_form.html'
+    success_url = reverse_lazy('sunday_service_list')
+    success_message = 'Sunday Service was updated.'
+
+    def get_form(self):
+        form = super(SundayServiceUpdateView, self).get_form()
+        form.fields['service_date'].widget.attrs.update({'class': 'datepicker'})
+        # Sunday service category is single and unique.
+        form.fields['categories'].queryset = Category.objects.filter(name__in=SERMON_CATEGORY)
+        # Sunday service servants are specific to users of this service category.
+        form.fields['servants'].queryset = User.objects.filter(group__name__in=SERMON_GROUP)
+        return form
+
+
+@require_authenticated_permission('catalog.sunday_service_create')
+class SundayServiceDeleteView(DeleteView):
+    model = Service
+    success_url = reverse_lazy('service_list')
 
 
 # Search view

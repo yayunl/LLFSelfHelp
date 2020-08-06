@@ -3,12 +3,8 @@ from django.contrib.auth import get_user
 GENDER = (('Male', 'Male'),
           ('Female', 'Female'))
 
-SERMON_CATEGORY = ('sunday service', 'sunday services',
-                'Sunday Service', 'Sunday Services',
-                'Sunday service', 'Sunday services',
-                '主日安排', '周日安排', 'Sunday sermons')
-
-SERMON_GROUP = ('Sermon group', 'Sermon Group')
+SERMON_CATEGORY = ('Sermon', 'sermon')
+SERMON_GROUP = ('Sermon', 'sermon')
 
 
 class ProfileGetObjectMixin:

@@ -89,16 +89,20 @@ class ActivationMailFormMixin:
             protocol = 'https'
         else:
             protocol = 'http'
-        token = token_generator.make_token(user)
+
+        requester = User.objects.filter(email=request.POST['email']).first()
+        token = token_generator.make_token(requester)
         uid = urlsafe_base64_encode(
-            force_bytes(user.pk))
+            force_bytes(requester.pk))
+
         context.update({
             'domain': current_site.domain,
             'protocol': protocol,
             'site_name': current_site.name,
             'token': token,
             'uid': uid,
-            'user': user,
+            # 'user': user,
+            'requester': requester,
         })
         return context
 
@@ -154,7 +158,7 @@ class ActivationMailFormMixin:
                     ''.join(tb)))
             self._mail_sent = False
             return self.mail_sent
-        kwargs['request_submitter'] = User.objects.filter(email=request.POST['email']).first()
+        # kwargs['request_submitter'] = User.objects.filter(email=request.POST['email']).first()
         # print('')
         self._mail_sent, error = (
             self._send_mail(request, recipient, **kwargs)

@@ -4,28 +4,7 @@ from django.template.defaultfilters import slugify
 import django_filters, datetime, pinyin
 # from users.models import User
 from .managers import ServiceManager, GroupAndCategoryManager
-
-SERVICE_GROUP = (("Chairman-of-week", "Chairman-of-week"),
-                  ("Clean-up", "Clean-up"),
-                  ("Food-pickup", "Food-pickup"),
-                  ("Fruit-dessert", "Fruit-dessert"),
-                  ("Dish-wash", "Dish-wash"),
-                  ("Child-care", "Child-care"),
-                  ("Newcomer-welcome", "Newcomer-welcome"),
-                  ("Birthday-celebrate", "Birthday-celebrate"),
-                  ("Worship-leader", "Worship-leader"),
-                  ("Worship", "Worship"),
-                  ("Content", "Content"),
-                  ("Prayer-meeting", "Prayer-meeting"),
-                  ("Sharing", "Sharing"),
-                  ("BS-designer", "BS-designer"),
-                  ("BS-advisor", "BS-advisor"),
-                  ("Reminder", "Reminder"),
-                  ("Bible-study-servants", "Bible-study-servants"))
-
-GENDER = (('Male', 'Male'),
-          ('Female', 'Female'))
-
+from users.utils import SERMON_GROUP
 
 class Group(models.Model):
     """
@@ -169,6 +148,7 @@ class Service(models.Model):
         Used in urls and detail template.
         :return:
         """
+        # url = 'sunday_service_detail' if self.category_names.lower() in SERMON_GROUP else 'service_detail'
         return reverse('service_detail', args=[self.slug])
 
     def get_absolute_delete_url(self):
@@ -176,14 +156,16 @@ class Service(models.Model):
         Used in urls and delete template.
         :return:
         """
-        return reverse('service_delete', args=[self.slug])
+        url = 'sunday_service_delete' if self.category_names.lower() in SERMON_GROUP else 'service_delete'
+        return reverse(url, args=[self.slug])
 
     def get_absolute_update_url(self):
         """
         Used in urls and update template.
         :return:
         """
-        return reverse('service_update', args=[self.slug])
+        url = 'sunday_service_update' if self.category_names.lower() in SERMON_GROUP else 'service_update'
+        return reverse(url, args=[self.slug])
 
     def _get_unique_slug(self):
         slug = slugify(f"service{self.id}-on-{self.date_to_str()}")

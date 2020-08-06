@@ -14,23 +14,23 @@ $(document).ready(function(){
     });
 
     // create book button
-    $(".create-group").modalForm({
-        formURL: "{% url 'group_create' %}",
-        // modalContent: ".modal-content-dbmf",
-        // modalForm: ".modal-content-dbmf form"
-    });
+    // $(".create-group").modalForm({
+    //     formURL: "{% url 'group_create' %}",
+    //     // modalContent: ".modal-content-dbmf",
+    //     // modalForm: ".modal-content-dbmf form"
+    // });
 
 
 
-    // delete book buttons
-    $(".delete-user").each(function () {
-
-        $(this).modalForm({
-            formURL: $(this).data('id'),
-            // modalContent: ".modal-content-dbmf",
-            // modalForm: ".modal-content-dbmf form"
-        });
-    });
+    // delete  buttons
+    // $(".delete-user").each(function () {
+    //
+    //     $(this).modalForm({
+    //         formURL: $(this).data('id'),
+    //         // modalContent: ".modal-content-dbmf",
+    //         // modalForm: ".modal-content-dbmf form"
+    //     });
+    // });
 
     // hide message
     $(".alert").fadeTo(2000, 500).slideUp(500, function(){

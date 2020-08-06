@@ -5,6 +5,7 @@ from django.views.generic import View, ListView, DeleteView, DetailView, CreateV
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.messages import error, success
+from django.contrib.messages.views import SuccessMessageMixin
 from django.template.response import TemplateResponse
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,6 +15,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
 from tablib import Dataset
 import datetime as dt1
@@ -149,16 +151,22 @@ class ActivateAccount(MailContextViewMixin, View):
                 'The request from the user is approved. '
                 'An email notification is sent to the user. ')
 
-            # Send an email notification to the user
+            # Send an email notification to the requester
+            current_site = get_current_site(request)
+            if request.is_secure():
+                protocol = 'https'
+            else:
+                protocol = 'http'
+
             mail_kwargs = {
-                "subject": 'Request Approved!',
-                "message": 'Hello, your request is approved by the admin.',
+                "subject": f'Your account on {current_site.name} is activated!',
+                "message": f'Hello {user.name}, \n Your request is approved by the {current_site.name} admin. Logon to the site and enjoy! \n'
+                           f'{current_site.name} website: { protocol }://{ current_site.domain }\n\n{current_site.name} admin',
                 "from_email": (
                     settings.ADMIN_EMAIL),
                 "recipient_list": [user.email],
             }
 
-            #todo: The user is still the admin.
             send_mail_async.delay(kwargs=mail_kwargs)
 
             return redirect(self.success_url)

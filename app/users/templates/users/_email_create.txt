@@ -1,9 +1,9 @@
 Hello {{ site_name }} Admin,
 
-We've received a request from the following user for account activation. Is the user a known member to your group?
+We've received a request from the following user for account activation. Is the user a known member of your group?
 
-Name: {{ request_submitter.name}}
-Email: {{ request_submitter.email}}
+Name: {{ requester.name}}
+Email: {{ requester.email}}
 
 
 

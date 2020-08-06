@@ -38,7 +38,7 @@ def send_reminders():
     return "Reminder email sent."
 
 
-@task(name='send_email')
+@task(name='send_email_async')
 def send_mail_async(kwargs):
     number_sent = send_mail(**kwargs)
     return number_sent

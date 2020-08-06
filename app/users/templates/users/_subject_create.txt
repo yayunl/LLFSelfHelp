@@ -1,1 +1,1 @@
-{{ site_name }}, {{ request_submitter.email}} Is Awaiting Account Activation
+{{ site_name }} admin, {{ requester.name}} Is Awaiting Account Activation
