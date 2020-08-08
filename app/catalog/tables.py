@@ -4,7 +4,9 @@ import django_filters
 from django.utils.html import format_html
 from django.urls import reverse
 from bootstrap_datepicker_plus import DatePickerInput
+# import from apps
 from .models import Service
+from .utils import service_dates, str2date
 
 
 class ServiceTable(tables.Table):
@@ -38,6 +40,13 @@ class ServiceTable(tables.Table):
     def render_categories(self, value, record):
         categories = record.categories.all().first()
         return categories.name if categories else None
+
+    def get_top_pinned_data(self):
+        """
+        Returns the matched services on the top of the table.
+        :return:
+        """
+        return Service.objects.filter(service_date=str2date(service_dates()[0]))
 
 
 class ServiceFilter(django_filters.FilterSet):

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django_filters.views import FilterView
 import django_tables2
@@ -11,7 +11,7 @@ from .decorators import class_login_required, require_authenticated_permission
 from datetime import datetime as dt
 from itertools import chain
 from django.contrib.messages.views import SuccessMessageMixin
-
+from django.contrib import messages
 # sub-level imports
 from .models import Group, Service, Category
 from users.models import User
@@ -61,8 +61,18 @@ class GroupCreateView(SuccessMessageMixin, CreateView):
     model = Group
     template_name = 'catalog/group_form.html'
     form_class = GroupForm
-    success_message = 'Group %(name)s was created.'
-    success_url = reverse_lazy('group_list')
+    # success_message = 'Group %(name)s was created.'
+    # success_url = reverse_lazy('group_list')
+
+    def form_valid(self, form):
+        record = form.cleaned_data
+        group_name, group_desc= record.get('name'), record.get('description')
+        if Group.objects.filter(name=group_name, description=group_desc):
+            messages.warning(self.request, 'Group: %s already existed!'%group_name)
+        else:
+            form.save()
+            messages.success(self.request, 'Group: %s was created.'%group_name)
+        return HttpResponseRedirect(reverse_lazy('group_list'))
 
 
 @class_login_required
@@ -115,8 +125,17 @@ class CategoryCreateView(SuccessMessageMixin, CreateView):
     model = Category
     template_name = 'catalog/group_form.html'
     form_class = CategoryForm
-    success_message = 'Category %(name)s was created.'
-    success_url = reverse_lazy('category_list')
+
+    def form_valid(self, form):
+        record = form.cleaned_data
+        cat = record.get('categories').first()
+        ser_date = record.get('service_date')
+        if not Service.objects.filter(service_date=ser_date, categories__name=cat.name):
+            messages.warning(self.request, 'Category: %s exists in the database!' % cat.name)
+        else:
+            form.save()
+            messages.success(self.request, 'Category: %s was created.' % cat.name)
+        return HttpResponseRedirect(reverse_lazy('category_list'))
 
 
 @class_login_required
@@ -167,7 +186,6 @@ class ServiceCreateView(SuccessMessageMixin, CreateView):
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
-    success_message = 'Service %(name)s was created.'
 
     def get_form(self):
         form = super(ServiceCreateView, self).get_form()
@@ -178,7 +196,17 @@ class ServiceCreateView(SuccessMessageMixin, CreateView):
         form.fields['servants'].queryset = User.objects.filter().exclude(group__name__in=SERMON_GROUP)
         return form
 
-    success_url = reverse_lazy('service_list')
+    def form_valid(self, form):
+        record = form.cleaned_data
+        service_date, service_cat_name = record.get('service_date'), record.get('categories').first().name
+        count = Service.objects.filter(service_date=service_date, categories__name__in=[service_cat_name]).count()
+
+        if count > 0:
+            messages.warning(self.request, 'Service: %s on %s already existed!' % (service_cat_name, service_date))
+        else:
+            form.save()
+            messages.success(self.request, 'Service: %s on %s was created.' % (service_cat_name, service_date))
+        return HttpResponseRedirect(reverse_lazy('service_list'))
 
 
 @class_login_required
@@ -214,7 +242,7 @@ class ServiceUpdateView(SuccessMessageMixin, UpdateView):
     model = Service
     form_class = ServiceForm
     success_url = reverse_lazy('service_list')
-    success_message = 'Service %(name)s was updated.'
+    success_message = 'The service was updated.'
 
 
 @require_authenticated_permission('catalog.service_delete')
@@ -229,18 +257,28 @@ class SundayServiceCreateView(SuccessMessageMixin, CreateView):
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
-    success_message = "A new sermon was created."
-    success_url = reverse_lazy('service_list')
     queryset = Service.objects.filter()
 
     def get_form(self):
-        form = super(SundayServiceCreateView, self).get_form()
+        form = super().get_form()
         form.fields['service_date'].widget.attrs.update({'class': 'datepicker'})
         # Sunday service category is single and unique.
         form.fields['categories'].queryset = Category.objects.filter(name__in=SERMON_CATEGORY)
         # Sunday service servants are specific to users of this service category.
         form.fields['servants'].queryset = User.objects.filter(group__name__in=SERMON_GROUP)
         return form
+
+    def form_valid(self, form):
+        record = form.cleaned_data
+        service_date, service_cat_name = record.get('service_date'), record.get('categories').first().name
+        count = Service.objects.filter(service_date=service_date, categories__name__in=[service_cat_name]).count()
+
+        if count > 0:
+            messages.warning(self.request, 'Sunday service: %s on %s already existed!' % (service_cat_name, service_date))
+        else:
+            form.save()
+            messages.success(self.request, 'Sunday service: %s on %s was created.' % (service_cat_name, service_date))
+        return HttpResponseRedirect(reverse_lazy('sunday_service_list'))
 
 
 @class_login_required
@@ -280,7 +318,7 @@ class SundayServiceUpdateView(SuccessMessageMixin, UpdateView):
 @require_authenticated_permission('catalog.sunday_service_create')
 class SundayServiceDeleteView(DeleteView):
     model = Service
-    success_url = reverse_lazy('service_list')
+    success_url = reverse_lazy('sunday_service_list')
 
 
 # Search view

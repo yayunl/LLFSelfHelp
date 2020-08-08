@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput
+from django.core.exceptions import ValidationError
 
 from .models import Service, Group, Category
 
@@ -24,9 +25,7 @@ class GroupForm(ModelForm):
     #     return self.cleaned_data['name'].lower()
 
     def save(self, commit=True):
-        instance = super().save(commit=False)
-        instance.name = self.cleaned_data['name']
-        instance.description = self.cleaned_data['description']
+        instance = super().save(commit)
         if commit:
             instance.save()
         return instance
@@ -58,10 +57,12 @@ class ServiceForm(ModelForm):
         self.fields['service_date'].required=True
 
     def save(self, commit=True):
+
         instance = super().save(commit)
         # set ServiceNote reverse foreign key from the Service model
         # for servant in self.cleaned_data['servants']:
         #     instance.user_set.add(servant)
+
         return instance
 
     class Meta:

@@ -28,7 +28,9 @@ class UserTable(tables.Table):
 
 
 class UserFilter(django_filters.FilterSet):
+    birthday_month = django_filters.NumberFilter(field_name='birthday', lookup_expr='month__exact')
+
     class Meta:
         model = User
-        fields = ['name', 'group', 'gender']
+        fields = ['name', 'group', 'gender', 'birthday_month']
 

@@ -13,24 +13,7 @@ $(document).ready(function(){
         filter_button.attr('value', '').trigger("click");
     });
 
-    // create book button
-    // $(".create-group").modalForm({
-    //     formURL: "{% url 'group_create' %}",
-    //     // modalContent: ".modal-content-dbmf",
-    //     // modalForm: ".modal-content-dbmf form"
-    // });
 
-
-
-    // delete  buttons
-    // $(".delete-user").each(function () {
-    //
-    //     $(this).modalForm({
-    //         formURL: $(this).data('id'),
-    //         // modalContent: ".modal-content-dbmf",
-    //         // modalForm: ".modal-content-dbmf form"
-    //     });
-    // });
 
     // hide message
     $(".alert").fadeTo(2000, 500).slideUp(500, function(){

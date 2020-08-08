@@ -5,8 +5,11 @@ $(document).ready(function(){
     // $( "#id_service_date" ).datepicker();
 
     $("#clear_table").click(function () {
+        // Clear the filters
         $("#id_name").attr('value', '');
+        $("#id_birthday_month").attr('value', '');
         $("select option:nth-child(1)").prop('selected', 'selected');
+
         $("#filter_button").trigger("click");
     });
 
@@ -26,14 +29,14 @@ $(document).ready(function(){
 
 
           // delete book buttons
-          $(".delete-user").each(function () {
-
-            $(this).modalForm({
-              formURL: $(this).data('id'),
-              // modalContent: ".modal-content-dbmf",
-              // modalForm: ".modal-content-dbmf form"
-            });
-          });
+          // $(".delete-user").each(function () {
+          //
+          //   $(this).modalForm({
+          //     formURL: $(this).data('id'),
+          //     // modalContent: ".modal-content-dbmf",
+          //     // modalForm: ".modal-content-dbmf form"
+          //   });
+          // });
 
           // hide message
           $(".alert").fadeTo(2000, 500).slideUp(500, function(){
