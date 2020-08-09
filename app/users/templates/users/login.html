@@ -5,28 +5,30 @@
 {% endblock %}
 
 {% block content %}
-<div class="sign-in-box">
-    <a href="https://llfadmin.herokuapp.com/">
-        {% load static %}
-        <img class="little-lambs-logo" src="{% static 'users/img/little-lambs.jpg' %}" width="150" height="150">
-    </a>
+    <div class="sign-in-box">
+        {% include 'users/_login_greetings.html' %}
 
-    <p class="loginVerse">"For even the Son of Man came not to be served but to serve, and to give his life as a ransom for many. "  - Mark 10:45</p>
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-6">
+                {% include "users/_login_form.html" %}
+            </div>
+            <div class="col-sm-3"></div>
+        </div>
 
-    <div class="loginBox">
-        {% include "users/_login_form.html" %}
-    </div>
 
-    <div class="offset-by-two five columns"></div>
-    <div class="three columns">
-        <ul class="task-list">
-            <li><a href="{% url 'create' %}">
-                Register New Account</a></li>
-            <li><a href="{% url 'pw_reset_start' %}">
-                Forgotten password?</a></li>
-            <li><a href="{% url 'resend_activation' %}">
-                Lost Activation E-Mail?</a></li>
-        </ul>
-    </div>
-</div>
+        <div class="offset-by-two five columns"></div>
+        <div class="three columns">
+            <ul class="task-list">
+                <li><a href="{% url 'create' %}">
+                    Register New Account</a></li>
+                <li><a href="{% url 'pw_reset_start' %}">
+                    Forgotten password?</a></li>
+                <li><a href="{% url 'resend_activation' %}">
+                    Lost Activation E-Mail?</a></li>
+            </ul>
+        </div>
+
+
+
 {% endblock %}

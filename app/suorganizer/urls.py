@@ -28,7 +28,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', RedirectView.as_view(pattern_name='catalog_index', permanent=False)),
+    path('', RedirectView.as_view(pattern_name='login', permanent=False)),
     path('admin/', admin.site.urls),
     path('service/', include(catalogurls)),
     path('user/', include(userurls)),

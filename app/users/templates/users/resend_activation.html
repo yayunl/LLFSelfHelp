@@ -1,22 +1,22 @@
 {% extends parent_template|default:"users/base_users.html" %}
+{% load display_form %}
 
 {% block title %}
-{{ block.super }} - Resend Activation Request to Admin
+    {{ block.super }} - Resend Activation
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="offset-by-two eight columns">
-      <div class="center">
-        <p>Resend your account activation email to admin for approval.</p>
-      </div>
-      <form
-          action="{% url 'resend_activation' %}"
-          method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">
-          Resend Activation E-Mail</button>
-      </form>
-  </div></div>
+     <div class="sign-in-box">
+         {% include 'users/_login_greetings.html' %}
+
+         <div class="center-message">
+             <p> Resend your account activation email to admin for approval.</p>
+         </div>
+
+         <div class="reset-activation-box">
+             {% url 'resend_activation' as form_url %}
+             {% form form_url 'Resend Activation Email' %}
+         </div>
+     </div>
+
 {% endblock %}

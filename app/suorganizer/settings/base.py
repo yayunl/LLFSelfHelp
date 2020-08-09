@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from celery.schedules import crontab
+from django.urls import reverse_lazy
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -149,9 +150,11 @@ ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL')
 REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 
 # Login redirect
-LOGIN_URL = '/auth/login'
+LOGIN_URL = reverse_lazy('login')
 # Redirect on a successful login to the home page
-LOGIN_REDIRECT_URL = '/service/'
+LOGIN_REDIRECT_URL = reverse_lazy('catalog_index')
+# Logout
+LOGOUT_URL = reverse_lazy('logout')
 
 
 # CELERY
@@ -166,7 +169,7 @@ CELERY_TIMEZONE = 'America/Chicago'
 CELERY_BEAT_SCHEDULE = {
     'scheduled_reminders': {
         'task': 'send_reminders',
-        'schedule': crontab(minute='*/60'), # Send every mins
+        'schedule': crontab(minute='*/120'), # Send every mins
         # 'args': (10 , 20)
     },
 }
@@ -184,3 +187,4 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+

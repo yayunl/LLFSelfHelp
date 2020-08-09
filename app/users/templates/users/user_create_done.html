@@ -1,17 +1,16 @@
 {% extends parent_template|default:"users/base_users.html" %}
 
 {% block title %}
-{{ block.super }} - Acknowledge Request
+    {{ block.super }} - Request Acknowledged
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="offset-by-two eight columns">
-            <p>Your request has been sent to the admin team for approval.
-                You will receive an email notification when the request is approved!
-            </p>
-            <p>Thanks for your patience!</p>
-            <p>{{ site.name }} Admin Team</p>
-    </div>
-  </div>
+     <div class="sign-in-box">
+        {% include 'users/_login_greetings.html' %}
+         <div class="center-message">
+             <p>Your request has been sent to the admin for approval.
+                 You will receive an email notification when the request is approved!</p>
+             <p>Thanks for your patience!</p>
+         </div>
+     </div>
 {% endblock %}

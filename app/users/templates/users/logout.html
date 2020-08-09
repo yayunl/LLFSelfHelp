@@ -5,11 +5,8 @@
 {% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="offset-by-two eight columns">
-      <p>You've successfully logged out.</p>
-      {% include "users/_login_form.html" with login_button='Log Back In' %}
+    <div class="sign-out-box">
+        {% include 'users/_login_greetings.html' %}
+        {% include "users/_login_form.html" with login_button='Log Back In' %}
     </div>
-  </div>
 {% endblock %}
-© 2019 Little Lamb Fellowship, ACC

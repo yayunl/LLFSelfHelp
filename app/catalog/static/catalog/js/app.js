@@ -1,7 +1,41 @@
 // var targetElement = 'none';
 $(document).ready(function(){
-    // var url = $("#serviceForm").attr("data-services-url");  // get the url of the `load_services` view
 
+
+    // Tooltip
+
+    $(".btn").tooltip({
+        show: {
+            effect: "slide",
+            duration: 10
+        },
+        hide: {
+            effect: "slide",
+            duration: 10
+        }
+    });
+
+    function setTooltip(btn, message) {
+      $( btn).tooltip( {
+          content: message,
+      } );
+    }
+
+
+    // clipboard feature
+    var clipboard = new ClipboardJS('.btn');
+
+    clipboard.on('success', function(e) {
+        setTooltip(e.trigger, 'Copied!');
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function(e) {
+        setTooltip(e.trigger, 'Failed!');
+    });
+
+
+    // date picker
     $( "#id_service_date" ).datepicker();
 
     // Dropdown
@@ -21,9 +55,9 @@ $(document).ready(function(){
     });
 
     // autofocus to first input field of a modal
-    $('.modal').on('shown.bs.modal', function () {
-        $('form').find('input[type=text]').filter(':visible:first').focus();
-    });
+    // $('.modal').on('shown.bs.modal', function () {
+    //     $('form').find('input[type=text]').filter(':visible:first').focus();
+    // });
 });
 
 

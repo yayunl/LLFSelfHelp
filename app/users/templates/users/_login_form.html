@@ -1,13 +1,15 @@
-<form action="{% url 'login' %}" method="post">
+{% load bootstrap4 %}
+
+
+<form action="{% url 'login' %}" method="post" class="form">
     {% csrf_token %}
 
-    {{ form.as_p }}
-
-    {% if next %}
-        <input type="hidden" name="next" value="{{ next }}">
+    {% if form %}
+        {% bootstrap_form form %}
     {% endif %}
-
-    <button type="submit">
-        {{ login_button|default:'Sign in' }}
-    </button>
+    {% buttons %}
+        <button type="submit" class="btn btn-primary">
+            {{ login_button|default:'Sign in' }}
+        </button>
+    {% endbuttons %}
 </form>

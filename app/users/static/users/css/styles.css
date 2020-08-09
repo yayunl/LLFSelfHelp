@@ -1,3 +1,4 @@
+/* Users css */
 body {
         background-color: #ffffff;
         -webkit-font-smoothing: antialiased;
@@ -64,14 +65,21 @@ tr[data-id="1"]{
     color: cadetblue;
 }
 
-.little-lambs-logo{
+.logo{
     margin-left: 2%;
     margin-bottom:5%;
 }
-.sign-in-box .loginVerse{
+.sign-in-box .loginVerse, .sign-out-box .loginVerse{
     margin-bottom: 3em;
+    font-family: cursive;
 }
-.sign-in-box {
+
+.center-message {
+    margin-bottom: 3em;
+    font-family: sans-serif;
+}
+
+.sign-in-box, .sign-out-box {
     width: 88%;
     max-width: 1100px;
     /*margin-left: 50%;*/
@@ -80,7 +88,7 @@ tr[data-id="1"]{
     text-align: center;
 }
 
-.reset-email-box{
+.reset-email-box, .reset-activation-box{
     margin-left: 35%;
     margin-top:10%;
 }
@@ -88,4 +96,10 @@ tr[data-id="1"]{
 .errorlist {
     list-style-type: none;
     color:red;
+}
+
+/* Hide the labels */
+label[for="id_username"], label[for="id_password"], label[for="id_email"],
+label[for="id_name"], label[for="id_password1"], label[for="id_password2"]{
+    display: none;
 }

@@ -15,7 +15,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=50, unique=True, blank=True, null=True)
     password = models.CharField(max_length=128, null=False, blank=False)
     email = models.EmailField(unique=True)
-    name = models.CharField(max_length=50, null=False, blank=False, unique=True)
+    name = models.CharField(max_length=50, null=False, blank=False)
     # optional fields
     english_name = models.CharField(max_length=50, null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
@@ -55,7 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return f"<User: {self.name}>"
 
     def get_name(self):
-        return self.name
+        return self.slug
 
     def get_absolute_url(self):
         """

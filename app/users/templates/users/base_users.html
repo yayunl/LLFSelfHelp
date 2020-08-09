@@ -3,9 +3,9 @@
 {% block statics %}
     {% load static %}
 
-    <!-- Add additional CSS in static file -->
-    <link rel="stylesheet" href="{% static 'catalog/css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'catalog/css/bootstrap.min.css' %}">
+    <!-- Add additional CSS in static file for users -->
+    <link rel="stylesheet" href="{% static 'users/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'users/css/bootstrap.min.css' %}">
 {% endblock statics %}
 
 
@@ -13,12 +13,6 @@
     {% load static %}
     <!-- Load additional javascripts for users-->
         <script src="{% static 'users/js/user_app.js' %}"></script>
-{#    <script src="{% static 'users/js/jquery.min.js' %}"></script>#}
-{#    <script src="{% static 'users/js/user_app.js' %}"></script>#}
-{#    <script src="{% static 'users/js/popper.min.js' %}"></script>#}
-{#    <script src="{% static 'users/js/bootstrap.min.js' %}"></script>#}
-{#    <script src="{% static 'users/js/jquery.bootstrap.modal.forms.js' %}"></script>#}
-
     <script type="text/javascript">
     </script>
 {% endblock scripts %}

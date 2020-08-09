@@ -4,73 +4,95 @@
 
 
   <h2>Service overview</h2>
-  <h3>{{ this_week_service_date }}</h3>
-  <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>Service category</th>
-      <th>Servant names</th>
-      <th>Note</th>
-    </tr>
-    </thead>
-    <tbody>
 
+    <div class="overviewBox">
+        <p>{{ this_week_service_date }}
+            <a class="btn" data-clipboard-target="#servicesThisWeek" title="copy to clipboard">
+            <i class="copy outline icon"></i>
+            </a>
+        </p>
 
-    {% for service in this_week_services %}
-    <tr>
-        {% if service.category_names == 'Sunday sermons' %}
-            <td>{{ service.category_names }} ({{ service.date_to_str }})</td>
-        {% else %}
-            <td>{{ service.category_names }}</td>
-        {% endif %}
-
-      <td>{{ service.servant_names }}</td>
-      <td>{{ service.note }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-
-  <h3>{{ next_week_service_date }}</h3>
-  <table class="table table-bordered">
-    <thead>
-    <tr>
-      <th>Service category</th>
-      <th>Servant names</th>
-      <th>Note</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for service in next_week_services %}
-    <tr>
-      <td>{{ service.category_names }}</td>
-      <td>{{ service.servant_names }}</td>
-      <td>{{ service.note }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-
-    <h3>Birthday of this month</h3>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Birthday</th>
-            <th>Name</th>
-            <th>Group</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for member in member_birthday_of_month %}
+        <table class="table table-hover" id="servicesThisWeek">
+            <thead>
             <tr>
-                <td>{{ member.birthday|date:"m/d" }}</td>
-                <td>{{ member.name }}</td>
-                <td>{{ member.group.name }}</td>
+                <th>Service category</th>
+                <th>Servant names</th>
+                <th>Note</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
 
+
+            {% for service in this_week_services %}
+                <tr>
+                    {% if service.category_names == 'Sunday sermons' %}
+                        <td>{{ service.category_names }} ({{ service.date_to_str }})</td>
+                    {% else %}
+                        <td>{{ service.category_names }}</td>
+                    {% endif %}
+
+                    <td>{{ service.servant_names }}</td>
+                    <td>{{ service.note }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Next week -->
+    <div class="overviewBox">
+        <p>{{ next_week_service_date }}
+            <a class="btn" data-clipboard-target="#servicesNextWeek" title="copy to clipboard">
+                <i class="copy outline icon"></i>
+            </a>
+        </p>
+
+        <table class="table table-hover" id="servicesNextWeek">
+            <thead>
+            <tr>
+                <th>Service category</th>
+                <th>Servant names</th>
+                <th>Note</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for service in next_week_services %}
+                <tr>
+                    <td>{{ service.category_names }}</td>
+                    <td>{{ service.servant_names }}</td>
+                    <td>{{ service.note }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Birthday table -->
+    <div class="overviewBox">
+        <p>Birthday of The Month
+            <a class="btn" data-clipboard-target="#birthday" title="copy to clipboard">
+            <i class="copy outline icon"></i>
+            </a>
+        </p>
+
+        <table class="table table-hover" id="birthday">
+            <thead>
+            <tr>
+                <th>Birthday</th>
+                <th>Name</th>
+                <th>Group</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in member_birthday_of_month %}
+                <tr>
+                    <td>{{ member.birthday|date:"m/d" }}</td>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.group.name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 
 {% endblock %}

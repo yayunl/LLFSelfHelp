@@ -1,8 +1,9 @@
-from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
+from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-from django import forms
+
 from django.forms import ModelForm
+from django import forms
 from django.template.defaultfilters import slugify
 from bootstrap_datepicker_plus import DatePickerInput
 from django.conf import settings
@@ -34,6 +35,24 @@ class UserForm(ModelForm):
         }
 
 
+class LoginForm(AuthenticationForm):
+    # username = forms.CharField(widget=forms.Textarea, label='')
+
+    def __init__(self, request, *args, **kwargs):
+        # simply do not pass 'request' to the parent
+        super().__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs['placeholder'] = 'Username'
+        self.fields['password'].widget.attrs['placeholder'] = 'Password'
+
+    class Meta:
+        model = User
+        fields = ('username', 'password')
+        labels = {
+            'username': '',
+            'password': ''
+        }
+
+
 class RegistrationForm(
         ActivationMailFormMixin,
         BaseUserCreationForm):
@@ -45,15 +64,17 @@ class RegistrationForm(
     )
     username = forms.CharField(
         max_length=255,
-        help_text=(
-            "The name displayed on your "
-            "public profile."))
+        # help_text=(
+        #     "The name displayed on your "
+        #     "public profile.")
+    )
 
     email = forms.EmailField(
         max_length=255,
-        help_text=(
-            "The email displayed on your "
-            "public profile."))
+        # help_text=(
+        #     "The email displayed on your "
+        #     "public profile.")
+    )
 
     mail_validation_error = (
         'User created. Could not send activation '

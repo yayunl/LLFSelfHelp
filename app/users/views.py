@@ -1,27 +1,32 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
-from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
+from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.messages import error, success
-from django.contrib.messages.views import SuccessMessageMixin
-from django.template.response import TemplateResponse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator as token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import (get_user_model)
+from django.contrib.auth import get_user_model, login as auth_login
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.messages.views import SuccessMessageMixin
+
+from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
+from django.template.response import TemplateResponse
+
+from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.contrib.sites.shortcuts import get_current_site
+
+from django.urls import reverse_lazy
+from django.shortcuts import render, redirect, HttpResponseRedirect
+from django.http import HttpResponse
 from django.conf import settings
+
+# third-party libraries
 from tablib import Dataset
 import datetime as dt1
 from django_filters.views import FilterView
 import django_tables2
-from django_tables2.paginators import LazyPaginator
 
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
@@ -30,10 +35,23 @@ from catalog.tasks import send_mail_async
 from .models import User, Profile
 from .utils import ProfileGetObjectMixin, UserGetObjectMixin, SERMON_GROUP
 from .tables import UserTable, UserFilter
-from .forms import UserForm, ProfileForm, RegistrationForm, ResendActivationEmailForm
+from .forms import UserForm, ProfileForm, RegistrationForm, ResendActivationEmailForm, LoginForm
 from .resources import UserResource
 
+
 # Create your views here.
+class UserLoginView(LoginView):
+    template_name = 'users/login.html'
+    form_class = LoginForm
+    success_url = reverse_lazy('catalog_index')
+
+    def form_valid(self, form):
+        """Security check complete. Log the user in."""
+        user = form.get_user()
+        member = User.objects.get(username=user)
+        if member.active:
+            auth_login(self.request, form.get_user())
+        return HttpResponseRedirect(self.get_success_url())
 
 
 @require_authenticated_permission('users.user_create')

@@ -4,6 +4,8 @@ from django.contrib.auth.views import (LoginView, LogoutView, PasswordChangeView
     PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView)
 from django.contrib.auth.views import AuthenticationForm
 
+# app imports
+from .views import UserLoginView
 from .views import UserListView, UserDetailView,  UserCreateView, UserDeleteView, UserUpdateView, CreateAccount
 from .views import ProfileDetailView, ProfileUpdateView
 from .views import ResendActivationEmail, ActivateAccount
@@ -31,7 +33,7 @@ _password_urls = [
     path('change/done/', PasswordChangeDoneView.as_view(template_name='users/password_change_done.html'),
          name='pw_change_done'),
 
-    # reset password
+    # forgot and reset password
     path('reset/', PasswordResetView.as_view(
         template_name='users/password_reset_form.html',
         email_template_name='users/password_reset_email.txt',
@@ -52,7 +54,7 @@ _password_urls = [
 auth_urls = [
 
     path('login/', LoginView.as_view(template_name='users/login.html'), name='login'),
-    path('logout/', LogoutView.as_view(template_name='users/logout.html'),name='logout'),
+    path('logout/', LogoutView.as_view(template_name='users/logout.html'), name='logout'),
     # create user
     path('create/', CreateAccount.as_view(), name='create'),
     path('create/done/',
