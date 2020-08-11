@@ -1,8 +1,27 @@
-<h1>Delete {{ item_type }}</h1>
+{% load bootstrap4 %}
 
-<p>Are you sure you want to delete {{ item_type }}: {{ item_name }}?</p>
 
-<form action="" method="POST">
-  {% csrf_token %}
-  <input type="submit" value="Yes, delete.">
-</form>
+<div class="message-box">
+        <div class="center-message">
+            <p>Are you sure you want to delete {{ item_type }}: {{ item_name }}?</p>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-2">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    {% buttons %}
+                        <button type="submit" class="btn btn-danger">
+                            Delete
+                        </button>
+                    {% endbuttons %}
+                </form>
+            </div>
+            <div class="col-sm-2">
+                <a href="{{ view.get_success_url }}" ><button type="button" class="btn btn-primary">Cancel</button></a>
+            </div>
+            <div class="col-sm-4"></div>
+        </div>
+</div>
+

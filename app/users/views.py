@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model, login as auth_login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
@@ -55,11 +56,11 @@ class UserLoginView(LoginView):
 
 
 @require_authenticated_permission('users.user_create')
-class UserCreateView(CreateView):
+class UserCreateView(SuccessMessageMixin, CreateView):
     # model = Member
     template_name = 'users/user_form.html'
     form_class = UserForm
-    success_message = 'Success: User was created.'
+    success_message = 'User %(name)s was created.'
     success_url = reverse_lazy('user_list')
 
 
@@ -100,20 +101,23 @@ class UserListView(django_tables2.SingleTableMixin, FilterView, LoginRequiredMix
 
 
 @require_authenticated_permission('users.user_update')
-class UserUpdateView(UpdateView):
+class UserUpdateView(SuccessMessageMixin, UpdateView):
     model = User
-    # template_name = 'users/user_update.html'
+    template_name = 'users/user_form.html'
     form_class = UserForm
-    success_message = 'Success: User was updated.'
+    success_message = 'User %(name)s was updated.'
     success_url = reverse_lazy('user_list')
 
 
 @require_authenticated_permission('users.user_delete')
-class UserDeleteView(DeleteView):
+class UserDeleteView(SuccessMessageMixin, DeleteView):
     model = User
     # template_name = 'users/user_confirm_delete.html'
     success_url = reverse_lazy('user_list')
-    success_message = 'Success: User was deleted.'
+
+    def post(self, request, *args, **kwargs):
+        messages.warning(self.request, 'User: %s was removed.'%kwargs.get('slug'))
+        return super(UserDeleteView, self).post(request, *args, **kwargs)
 
 
 @class_login_required

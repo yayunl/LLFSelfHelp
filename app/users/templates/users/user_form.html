@@ -1,5 +1,18 @@
 {% extends parent_template|default:"users/base_users.html" %}
 
 {% block content %}
-    {% include 'helpers/_form.html' with id='userForm' %}
+
+        <div class="center-message">
+            <p>User Form</p>
+        </div>
+
+    <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10">
+                {% include 'helpers/_form.html' with id='userForm' %}
+            </div>
+            <div class="col-sm-1"></div>
+        </div>
+    </div>
+
 {% endblock %}

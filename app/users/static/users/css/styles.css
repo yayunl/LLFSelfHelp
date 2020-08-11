@@ -79,7 +79,7 @@ tr[data-id="1"]{
     font-family: sans-serif;
 }
 
-.sign-in-box, .sign-out-box {
+.sign-in-box, .sign-out-box, .message-box {
     width: 88%;
     max-width: 1100px;
     /*margin-left: 50%;*/

@@ -4,7 +4,7 @@
 {% block content %}
     <div class='row title-row my-5'>
         <div class='col-12 py-0'>
-            <h3 class='my-0 py-0'>{{ count }} results for <b>{{ query }}</b></h3>
+            <h3 class='my-0 py-0'>{{ count }} results for <b>{{ query }}</b>...</h3>
         </div>
     </div>
 
@@ -18,17 +18,10 @@
                     </div>
                 </div>
 
-            {% elif klass == 'Group' or klass == 'Category' %}
+            {% elif klass == 'Group' or klass == 'Category' or klass == 'User' %}
                 <div class='row'>
                     <div class='col-12'>
-                        Group: <a href='{{ object.get_absolute_url }}'>{{ object.name }}</a>
-                    </div>
-                </div>
-                
-            {% elif klass == 'User' %}
-                <div class='row'>
-                    <div class='col-12'>
-                       User: <a href='{{ object.get_absolute_url }}'>{{ object.name }}</a>
+                        {{klass}}: <a href='{{ object.get_absolute_url }}'>{{ object.name }}</a>
                     </div>
                 </div>
 
