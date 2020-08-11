@@ -24,4 +24,5 @@ catalog/migrations/*.py
 test_data/*
 *.xlsx
 *.ipynb
+auto_deploy_do.sh
 staticfiles/*
