@@ -7,7 +7,9 @@
 
 <h1>
     {{item_type}}
-    <a href='{{ create_url}}' class="create-group btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+    {% if user.is_staff %}
+        <a href='{{ create_url}}' class="create-group btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+    {% endif %}
 </h1>
 
 {% if item_list %}
@@ -43,5 +45,5 @@
     {% endfor %}
 
 {% else %}
-    <p>There are no {{item_type}}s in the library.</p>
+    <p>There are no {{item_type}}s .</p>
 {% endif %}

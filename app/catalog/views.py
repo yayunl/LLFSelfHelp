@@ -4,23 +4,28 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django_filters.views import FilterView
-import django_tables2
-from tablib import Dataset
+
 from django.contrib.auth.decorators import login_required
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib import messages
+
 from .decorators import class_login_required, require_authenticated_permission
 from datetime import datetime as dt
 from itertools import chain
-from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib import messages
+import django_tables2
+from tablib import Dataset
+
 # sub-level imports
 from .models import Group, Service, Category
-from users.models import User
 from .tables import ServiceTable, ServiceFilter
 from .forms import ServiceForm, GroupForm, CategoryForm
 from .resources import ServiceResource
 from .utils import service_dates, str2date #, handle_uploaded_schedules
-from users.utils import SERMON_GROUP, SERMON_CATEGORY
 from .tasks import send_reminders
+
+from users.models import User
+from users.utils import SERMON_GROUP, SERMON_CATEGORY
 
 
 def test_email(request):
@@ -56,8 +61,8 @@ class IndexView(ListView):
 
 
 # Groups
-@class_login_required
-class GroupCreateView(SuccessMessageMixin, CreateView):
+# @class_login_required
+class GroupCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Group
     template_name = 'catalog/group_form.html'
     form_class = GroupForm
@@ -73,6 +78,13 @@ class GroupCreateView(SuccessMessageMixin, CreateView):
             form.save()
             messages.success(self.request, 'Group: %s was created.'%group_name)
         return HttpResponseRedirect(reverse_lazy('group_list'))
+
+    # def test_func(self):
+    #     if self.request.user.is_staff:
+    #         return True
+    #     else:
+    #         # messages.warning(self.request, "You are not allowed to edit.")
+    #         return False
 
 
 @class_login_required

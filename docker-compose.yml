@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.3"
 
 services:
   web:
@@ -76,7 +76,7 @@ services:
     networks:
       - backend
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./compose/dev/django/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   redis:
     image: redis:latest

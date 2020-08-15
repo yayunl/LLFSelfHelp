@@ -2,7 +2,9 @@
 
 {% block content %}
     <h1>Sunday Sermons
-        <a href="{% url 'sunday_service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+        {% if user.is_staff %}
+            <a href="{% url 'sunday_service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+        {% endif %}
     </h1>
 
     {% include 'helpers/_table_list.html' %}

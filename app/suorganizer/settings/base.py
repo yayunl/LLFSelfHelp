@@ -166,13 +166,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/Chicago'
 
 # Celery beat
-CELERY_BEAT_SCHEDULE = {
-    'scheduled_reminders': {
-        'task': 'send_reminders',
-        'schedule': crontab(minute='*/120'), # Send every mins
-        # 'args': (10 , 20)
-    },
-}
+# CELERY_BEAT_SCHEDULE = {
+#     'scheduled_reminders': {
+#         'task': 'send_reminders',
+#         'schedule': crontab(minute='*/120'), # Send every mins
+#         # 'args': (10 , 20)
+#     },
+# }
 
 # Django-table2 settings
 DJANGO_TABLES2_TEMPLATE = 'django_tables2/semantic.html'

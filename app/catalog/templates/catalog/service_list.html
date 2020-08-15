@@ -2,8 +2,10 @@
 
 {% block content %}
     <h1>Services
-        <a href="{% url 'service_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
-        <a href="{% url 'service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+        {% if user.is_staff %}
+            <a href="{% url 'service_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
+            <a href="{% url 'service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+        {% endif %}
     </h1>
 
     {% include 'helpers/_table_list.html' %}
