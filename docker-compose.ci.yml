@@ -5,8 +5,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
-      cache_from:
-        - "${WEB_IMAGE}"
+#      cache_from:
+#        - "${WEB_IMAGE}"
     image: "${WEB_IMAGE}"
     command: /start
     volumes:
