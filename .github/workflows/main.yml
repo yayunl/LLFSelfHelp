@@ -3,7 +3,7 @@ name: Continuous Integration and Delivery
 on: [push]
 
 env:
-  WEB_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/llfselfhelp:latest
+  WEB_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/llfadmin:latest
   NGINX_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/nginx:latest
 
 jobs:
@@ -39,7 +39,9 @@ jobs:
           docker pull ${{ env.NGINX_IMAGE }} || true
       - name: Build images
         run: |
-          docker-compose -f docker-compose.ci.yml build
+          docker build -f compose/production/django/Dockerfile -t ${{ env.WEB_IMAGE}} .
+          docker build -f nginx/Dockerfile -t ${{ env.NGINX_IMAGE }} ./nginx
+
       - name: Push images
         run: |
           docker push ${{ env.WEB_IMAGE }}
