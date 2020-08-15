@@ -3,7 +3,7 @@ version: "3.3"
 services:
 
   nginx:
-    image: docker.pkg.github.com/yayunl/llfselfhelp/nginx:latest
+    image: "${NGINX_IMAGE}"
     volumes:
       - staticfiles:/app/staticfiles
       - mediafiles:/app/mediafiles
@@ -15,7 +15,7 @@ services:
       - flower
 
   web:
-    image: docker.pkg.github.com/yayunl/llfselfhelp/llfadmin:0.2
+    image: "${WEB_IMAGE}"
     command: /start
 #    command: tail -f /dev/null
     ports:
@@ -30,7 +30,7 @@ services:
       - mediafiles:/app/mediafiles
 
   worker:
-    image: docker.pkg.github.com/yayunl/llfselfhelp/llfadmin:0.2
+    image: "${WEB_IMAGE}"
     command: /start-celeryworker
 #    command: tail -f /dev/null
     env_file:
@@ -44,7 +44,7 @@ services:
 
 
   beat:
-    image: docker.pkg.github.com/yayunl/llfselfhelp/llfadmin:0.2
+    image: "${WEB_IMAGE}"
     command: /start-celerybeat
     env_file:
       - env/.env.prod
@@ -57,7 +57,7 @@ services:
 
 
   flower:
-    image: docker.pkg.github.com/yayunl/llfselfhelp/llfadmin:0.2
+    image: "${WEB_IMAGE}"
     command: /start-flower
 #    command: tail -f /dev/null
     volumes:

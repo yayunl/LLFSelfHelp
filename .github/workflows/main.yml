@@ -63,7 +63,7 @@ jobs:
           echo DEBUG=0 >> .env
           echo ENV=prod >> .env
           echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
-          echo DJANGO_ALLOWED_HOSTS=* >> .env
+          echo DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
 
           echo CELERY_BROKER_URL=${{ secrets.CELERY_BROKER_URL }} >> .env
           echo CELERY_RESULT_BACKEND=${{ secrets.CELERY_RESULT_BACKEND }} >> .env
