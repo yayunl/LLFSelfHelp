@@ -59,6 +59,7 @@ jobs:
         run: |
           echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
+          echo GITHUB_PAT=${{ secrets.GITHUB_TOKEN }} >> .env
 
           echo DEBUG=0 >> .env
           echo ENV=prod >> .env
@@ -104,7 +105,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
             cd /app
             source .env
-            docker login docker.pkg.github.com -u yayunl -p ce70f1d4a3a906ce8ac24caa6870fd29f2273d30
+            docker login docker.pkg.github.com -u yayunl -p $GITHUB_PAT
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
             docker-compose -f docker-compose.prod.yml up -d
