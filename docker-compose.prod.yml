@@ -71,14 +71,14 @@ services:
 
   db:
     image: postgres:12.0-alpine
-#    ports:
-#      - 5433:5432
+    ports:
+      - 5433:5432
     environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=p@ssword
-      - POSTGRES_DB=llfdb_prod
+      - POSTGRES_USER=${SQL_USER}
+      - POSTGRES_PASSWORD=${SQL_PASSWORD}
+      - POSTGRES_DB=${SQL_DATABASE}
     volumes:
-      - init_prod.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init_prod.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data/
 
   redis:
