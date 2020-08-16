@@ -3,8 +3,8 @@ name: Continuous Integration and Delivery
 on: [push]
 
 env:
-  WEB_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/llfadmin:latest
-  NGINX_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/nginx:latest
+  WEB_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/llfadmin:0.3
+  NGINX_IMAGE: docker.pkg.github.com/$GITHUB_REPOSITORY/nginx:0.3
 
 jobs:
 
@@ -59,7 +59,7 @@ jobs:
         run: |
           echo WEB_IMAGE=${{ env.WEB_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
-          echo GITHUB_PAT=${{ secrets.GITHUB_TOKEN }} >> .env
+          echo GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} >> .env
 
           echo DEBUG=0 >> .env
           echo ENV=prod >> .env
@@ -105,7 +105,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
             cd /app
             source .env
-            docker login docker.pkg.github.com -u yayunl -p $GITHUB_PAT
+            docker login docker.pkg.github.com -u yayunl -p $GITHUB_TOKEN
             docker pull $WEB_IMAGE
             docker pull $NGINX_IMAGE
             docker-compose -f docker-compose.prod.yml up -d
