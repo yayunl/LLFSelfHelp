@@ -46,7 +46,9 @@ class ServiceTable(tables.Table):
         Returns the matched services on the top of the table.
         :return:
         """
-        return Service.objects.filter(service_date=str2date(service_dates()[0]))
+
+        services = self.data.data.filter(service_date=str2date(service_dates()[0]))
+        return services
 
 
 class ServiceFilter(django_filters.FilterSet):

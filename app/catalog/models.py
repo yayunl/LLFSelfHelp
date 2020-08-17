@@ -156,7 +156,9 @@ class Service(models.Model):
         Used in urls and delete template.
         :return:
         """
-        url = 'sunday_service_delete' if self.category_names.lower() in SERMON_GROUP else 'service_delete'
+        url = 'service_delete'
+        if self.category_names:
+            url = 'sunday_service_delete' if self.category_names.lower() in SERMON_GROUP else 'service_delete'
         return reverse(url, args=[self.slug])
 
     def get_absolute_update_url(self):
@@ -164,7 +166,10 @@ class Service(models.Model):
         Used in urls and update template.
         :return:
         """
-        url = 'sunday_service_update' if self.category_names.lower() in SERMON_GROUP else 'service_update'
+        url = 'service_update'
+        if self.category_names:
+            url = 'sunday_service_update' if self.category_names.lower() in SERMON_GROUP else 'service_update'
+
         return reverse(url, args=[self.slug])
 
     def _get_unique_slug(self):

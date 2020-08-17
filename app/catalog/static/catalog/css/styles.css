@@ -90,3 +90,9 @@ tr[data-id="1"]{
     list-style-type: none;
     color:red;
 }
+
+.pinned-row {
+    border-color: red;
+    border-style: dotted;
+
+}

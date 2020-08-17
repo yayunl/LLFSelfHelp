@@ -140,13 +140,17 @@ class CategoryCreateView(SuccessMessageMixin, CreateView):
 
     def form_valid(self, form):
         record = form.cleaned_data
-        cat = record.get('categories').first()
-        ser_date = record.get('service_date')
-        if not Service.objects.filter(service_date=ser_date, categories__name=cat.name):
-            messages.warning(self.request, 'Category: %s exists in the database!' % cat.name)
-        else:
+        try:
+            cat = record.get('categories').first()
+            ser_date = record.get('service_date')
+            if not Service.objects.filter(service_date=ser_date, categories__name=cat.name):
+                messages.warning(self.request, 'Category: %s exists in the database!' % cat.name)
+            else:
+                form.save()
+                messages.success(self.request, 'Category: %s was created.' % cat.name)
+        except:
             form.save()
-            messages.success(self.request, 'Category: %s was created.' % cat.name)
+            messages.success(self.request, 'Category: %s was created.' % record.get('name'))
         return HttpResponseRedirect(reverse_lazy('category_list'))
 
 
@@ -299,11 +303,15 @@ class SundayServiceListView(django_tables2.SingleTableMixin, FilterView):
     table_class = ServiceTable
     filterset_class = ServiceFilter
 
-    queryset = Service.objects.filter(categories__name__in=SERMON_CATEGORY)
+    # queryset = Service.objects.filter(categories__name__in=SERMON_CATEGORY)
 
     template_name = "catalog/sunday_service_list.html"
 
     table_pagination = {"per_page": 10}
+
+    def get_queryset(self):
+        qs = Service.objects.filter(categories__name__in=SERMON_CATEGORY)
+        return qs
 
     def get_table_kwargs(self):
         return {"template_name": "django_tables2/bootstrap.html"}
