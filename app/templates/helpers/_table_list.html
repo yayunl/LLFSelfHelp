@@ -1,14 +1,18 @@
 
 {% load django_tables2 %}
-<!--{% load bootstrap3 %}-->
+{% load bootstrap3 %}
 
-{% if filter %}
-    <form action="" method="get" class="form form-inline">
-        {% bootstrap_form filter.form layout='inline' %}
-        {% bootstrap_button 'filter' id='filter_button'%}
-        <button class="btn btn-default" id="clear_table">clear</button>
-    </form>
-{% endif %}
+<div class="ui container table-container">
+    {% if filter %}
+        <form action="" method="get" class="form form-inline">
 
-<br>
-{% render_table table 'django_tables2/bootstrap.html' %}
+{#            <div class="col-sm-12">#}
+                {% bootstrap_form filter.form layout='inline' %}
+                {% bootstrap_button 'filter' id='filter_button'%}
+                <button class="btn btn-default" id="clear_table">clear</button>
+{#            </div>#}
+        </form>
+    {% endif %}
+</div>
+
+{% render_table table 'django_tables2/semantic.html' %}

@@ -6,8 +6,8 @@ set -o nounset
 
 
 python /app/manage.py collectstatic --noinput
-python /app/manage.py makemigration users
-python /app/manage.py makemigration catalog
+python /app/manage.py makemigrations users
+python /app/manage.py makemigrations catalog
 python /app/manage.py migrate
 
 exec /usr/local/bin/gunicorn suorganizer.wsgi --bind 0.0.0.0:8000 --chdir=/app
