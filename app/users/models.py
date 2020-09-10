@@ -79,6 +79,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         return reverse('user_update', args=[self.slug])
 
     def _get_unique_slug(self):
+        """
+        Get a unique slug.
+        :return: email-int
+        """
         email = self.email.split('@')[0]
         slug = slugify(f"{email}")
         unique_slug = slug

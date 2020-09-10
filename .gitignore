@@ -1,6 +1,6 @@
 *.sqlite3
 *.csv
-tests
+app/tests
 venv
 .idea
 *.pyc

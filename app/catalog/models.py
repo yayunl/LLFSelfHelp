@@ -114,6 +114,27 @@ class Category(models.Model):
         super().save(*args, **kwargs)
 
 
+class ServicesOfWeek(models.Model):
+    id = models.IntegerField(unique=True, primary_key=True)
+    services_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"<ServicesOfWeek: {self.id}-{self.date_to_str()}>"
+
+    def date_to_str(self):
+        return datetime.datetime.strftime(self.services_date, '%Y-%m-%d')
+
+    def _get_unique_id(self):
+        servicesofweek = ServicesOfWeek.objects.all()
+        return len(servicesofweek) + 1
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.id = self._get_unique_id()
+
+        super().save(*args, **kwargs)
+
+
 class Service(models.Model):
     id = models.IntegerField(unique=True, primary_key=True)
     description = models.CharField(max_length=100, null=True, blank=True)
@@ -125,6 +146,8 @@ class Service(models.Model):
     # Many-to-many relationship
     categories = models.ManyToManyField(Category)
     servants = models.ManyToManyField('users.User')
+    # One-to-many, defined on `many` side
+    services_of_week = models.ForeignKey(ServicesOfWeek, on_delete=models.CASCADE)
 
     objects = ServiceManager()
 
@@ -196,4 +219,5 @@ class Service(models.Model):
             self.slug = self._get_unique_slug()
 
         super().save(*args, **kwargs)
+
 

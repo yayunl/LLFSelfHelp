@@ -4,14 +4,17 @@ MAINTAINER "krashilili0915@gmail.com"
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 RUN apt-get update -y && \
-    apt-get install -y python3-pip python3-dev redis-server build-essential libpq-dev locales netcat && \
-    locale-gen en_US.UTF-8
+    apt-get install -y python3-pip python3-dev redis-server build-essential libpq-dev locales netcat \
+    && locale-gen en_US en_US.UTF-8
 
 # Requirements are installed here to ensure they will be cached.
+#RUN pip3 install pytest-factoryboy
 COPY ./requirements.txt /requirements.txt
 RUN pip3 install -r /requirements.txt
+
 
 COPY ./compose/dev/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint

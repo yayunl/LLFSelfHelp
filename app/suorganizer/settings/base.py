@@ -43,15 +43,16 @@ INSTALLED_APPS = [
     "bootstrap3",
     "bootstrap4",
     "django_filters",
+    "crispy_forms",
     # 'bootstrap_modal_forms',
     "bootstrap_datepicker_plus",
     'import_export',
     'django_tables2',
     # user defined apps
-    'catalog',
-    'users',
-    'core',
-    'suorganizer',
+    'catalog', # new
+    'users', # new
+    'core', # new
+    'suorganizer', # new
 ]
 
 MIDDLEWARE = [

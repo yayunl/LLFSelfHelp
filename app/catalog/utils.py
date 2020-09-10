@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.core.mail import EmailMessage, send_mail, BadHeaderError
+from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from datetime import datetime as dt
 import datetime
 # Project imports
@@ -340,3 +341,18 @@ def str2date(date_str):
             return datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
     except:
         return None
+
+
+#Formset for bulk create use
+class Formset(LayoutObject):
+    template = "catalog/formset.html"
+
+    def __init__(self, formset_name_in_context, template=None):
+        self.formset_name_in_context = formset_name_in_context
+        self.fields = []
+        if template:
+            self.template = template
+
+    def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
+        formset = context[self.formset_name_in_context]
+        return render_to_string(self.template, {'formset': formset})

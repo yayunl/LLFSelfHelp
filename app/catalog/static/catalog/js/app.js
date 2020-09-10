@@ -4,16 +4,16 @@ $(document).ready(function(){
 
     // Tooltip
 
-    $(".btn").tooltip({
-        show: {
-            effect: "slide",
-            duration: 10
-        },
-        hide: {
-            effect: "slide",
-            duration: 10
-        }
-    });
+    // $(".btn").tooltip({
+    //     show: {
+    //         effect: "slide",
+    //         duration: 10
+    //     },
+    //     hide: {
+    //         effect: "slide",
+    //         duration: 10
+    //     }
+    // });
 
     function setTooltip(btn, message) {
       $( btn).tooltip( {
@@ -34,20 +34,18 @@ $(document).ready(function(){
         setTooltip(e.trigger, 'Failed!');
     });
 
-
-    // date picker
-    $( "#id_service_date" ).datepicker();
-
-    // Dropdown
+// Dropdown
     $('.ui.dropdown')
         .dropdown()
     ;
+    // date picker
+    $( "#id_service_date" ).datepicker();
+
+
     $("#clear_table").click(function () {
         var filter_button =$("#id_service_date");
         filter_button.attr('value', '').trigger("click");
     });
-
-
 
     // hide message
     $(".alert").fadeTo(2000, 500).slideUp(500, function(){

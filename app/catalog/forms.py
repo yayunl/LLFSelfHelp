@@ -1,9 +1,15 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, formset_factory
+from django.forms.models import inlineformset_factory
+
 from django import forms
 from bootstrap_datepicker_plus import DatePickerInput
-from django.core.exceptions import ValidationError
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Field, Fieldset, Div, HTML, ButtonHolder, Submit
 
-from .models import Service, Group, Category
+from django.core.exceptions import ValidationError
+from .utils import Formset
+from .models import Service, Group, Category, ServicesOfWeek
+from users.models import User
 
 
 class GroupForm(ModelForm):
@@ -54,7 +60,7 @@ class ServiceForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ServiceForm, self).__init__(*args, **kwargs)
-        self.fields['service_date'].required=True
+        # self.fields['service_date'].required=False
 
     def save(self, commit=True):
 
@@ -101,6 +107,36 @@ class ServiceUpdateForm(ModelForm):
         }
 
 
+# Bulk form
+class ServicesOfWeekForm(ModelForm):
+
+    class Meta:
+        model = ServicesOfWeek
+        exclude = ('id',)
+        widgets = {
+            'services_date': DatePickerInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ServicesOfWeekForm, self).__init__(*args, **kwargs)
+        # self.fields['services_date'].required=True
+        self.helper = FormHelper()
+        self.helper.form_tag = True
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-md-2 create-label'
+        self.helper.field_class = 'col-md-10'
+        self.helper.layout = Layout(
+            Div(
+                Field('services_date'),
+                Fieldset('Add services',
+                         Formset('services')),
+                HTML("<br>"),
+                ButtonHolder(Submit('submit', 'Save')),
+            )
+        )
 
 
+ServiceFormSet = inlineformset_factory(ServicesOfWeek, Service, form=ServiceForm,
+                                       fields=['categories', 'servants', 'note'], #'service_date',
+                                       extra=1, can_delete=True)
 

@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import IndexView
 from .views import ServiceListView, ServiceDetailView, ServiceCreateView, ServiceDeleteView, ServiceUpdateView
+from .views import ServiceBulkCreateView
 from .views import SundayServiceCreateView, SundayServiceListView, SundayServiceUpdateView, SundayServiceDeleteView
 from .views import GroupCreateView, GroupDetailView, GroupListView, GroupDeleteView, GroupUpdateView
 from .views import CategoryCreateView, CategoryListView, CategoryDetailView, CategoryUpdateView, CategoryDeleteView
@@ -29,6 +30,7 @@ urlpatterns = [
     path('services/export', service_export, name='service_export'),
     path('services/import', service_import, name='service_import'),
     path('service/create/', ServiceCreateView.as_view(), name='service_create'),
+    path('servicebulk/create/',ServiceBulkCreateView.as_view(), name='service_bulk_create'),
     path('service/<slug>/detail', ServiceDetailView.as_view(), name='service_detail'),
     path('service/<slug>/update', ServiceUpdateView.as_view(), name='service_update'),
     path('service/<slug>/delete', ServiceDeleteView.as_view(), name='service_delete'),

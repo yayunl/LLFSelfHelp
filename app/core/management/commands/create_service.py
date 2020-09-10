@@ -42,6 +42,7 @@ class Command(BaseCommand):
                             )
                 s.save()
                 s.categories.add(cat)
+            # todo: create services of the week
 
             self.stdout.write('Service records are saved successfully.')
 

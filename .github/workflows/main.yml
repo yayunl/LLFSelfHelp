@@ -79,7 +79,8 @@ jobs:
           echo SQL_PASSWORD=${{ secrets.SQL_PASSWORD }} >> .env
           echo SQL_HOST=${{ secrets.SQL_HOST }} >> .env
           echo SQL_PORT=${{ secrets.SQL_PORT }} >> .env
-
+          echo PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }} >> .env
+          echo PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }} >> .env
 
           echo OFFICIAL_NO_REPLY_EMAIL=no-reply@agape-at-acc.com >> .env
           echo OFFICIAL_EMAIL_SUBJECT_PREFIX=[Agape Fellowship Admin] >> .env

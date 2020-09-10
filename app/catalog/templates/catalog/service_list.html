@@ -5,6 +5,7 @@
         {% if user.is_staff %}
             <a href="{% url 'service_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
             <a href="{% url 'service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+            <a href="{% url 'service_bulk_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Bulk Create</a>
         {% endif %}
     </h1>
 

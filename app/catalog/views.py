@@ -3,6 +3,7 @@ from django.views.generic import View, ListView, DeleteView, DetailView, CreateV
 from django.urls import reverse_lazy
 from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
+from django.db import transaction
 from django_filters.views import FilterView
 
 from django.contrib.auth.decorators import login_required
@@ -17,9 +18,9 @@ import django_tables2
 from tablib import Dataset
 
 # sub-level imports
-from .models import Group, Service, Category
+from .models import Group, Service, Category, ServicesOfWeek
 from .tables import ServiceTable, ServiceFilter
-from .forms import ServiceForm, GroupForm, CategoryForm
+from .forms import ServiceForm, GroupForm, CategoryForm, ServicesOfWeekForm, ServiceFormSet
 from .resources import ServiceResource
 from .utils import service_dates, str2date #, handle_uploaded_schedules
 from .tasks import send_reminders
@@ -194,6 +195,36 @@ class CategoryDeleteView(SuccessMessageMixin, DeleteView):
     model = Category
     success_url = reverse_lazy('category_list')
     success_message = 'Category %(name)s was deleted.'
+
+
+# Bulk services
+class ServiceBulkCreateView(CreateView):
+    model = ServicesOfWeek
+    form_class = ServicesOfWeekForm
+    template_name = 'catalog/service_bulk_create.html'
+    success_url = reverse_lazy('service_list')
+
+    def get_context_data(self, **kwargs):
+        data = super(ServiceBulkCreateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['services'] = ServiceFormSet(self.request.POST)
+        else:
+            data['services'] = ServiceFormSet()
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        services = context['services']
+        record = form.cleaned_data
+        service_date = record.get('services_date')
+        with transaction.atomic():
+            self.object = form.save()
+            if services.is_valid():
+                for service_form in services.forms:
+                    service_form.instance.service_date = service_date
+                services.instance = self.object
+                services.save()
+        return super(ServiceBulkCreateView, self).form_valid(form)
 
 
 # Services
