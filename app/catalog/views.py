@@ -217,13 +217,31 @@ class ServiceBulkCreateView(CreateView):
         services = context['services']
         record = form.cleaned_data
         service_date = record.get('services_date')
+        service_forms = list()
+        unique_cats = list()
+        initial_forms_cnt = len(services.forms)
         with transaction.atomic():
             self.object = form.save()
             if services.is_valid():
+
                 for service_form in services.forms:
-                    service_form.instance.service_date = service_date
+                    cat_name = service_form.cleaned_data.get('categories').first().name
+                    count = Service.objects.filter(service_date=service_date,
+                                                   categories__name__in=[cat_name]).count()
+                    # Ensure the service in the bulk does not exist in db.
+                    if count == 0 and cat_name not in unique_cats:
+                        service_forms.append(service_form)
+                        service_form.instance.service_date = service_date
+                    # Ensure the same service bulk does not have duplicates.
+                    unique_cats.append(cat_name)
+                services.forms = service_forms
                 services.instance = self.object
                 services.save()
+        if len(service_forms) != initial_forms_cnt:
+            messages.warning(self.request, 'Found some services already existed in the database. '
+                                           'Duplicates are not saved.')
+        else:
+            messages.success(self.request, 'Services on %s were created.' % service_date)
         return super(ServiceBulkCreateView, self).form_valid(form)
 
 
