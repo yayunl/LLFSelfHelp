@@ -35,3 +35,4 @@ CACHES = {
     }
 }
 CACHE_MIDDLEWARE_ALIAS = 'default'
+

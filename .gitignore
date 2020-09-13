@@ -1,6 +1,5 @@
 *.sqlite3
 *.csv
-app/tests
 venv
 .idea
 *.pyc
@@ -11,6 +10,7 @@ _digitalocean
 .env
 _data
 _temp
+_output_htmls
 *.bat
 *.tar
 app/suorganizer/__pycache__/

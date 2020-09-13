@@ -6,6 +6,7 @@ import django_filters, datetime, pinyin
 from .managers import ServiceManager, GroupAndCategoryManager
 from users.utils import SERMON_GROUP
 
+
 class Group(models.Model):
     """
     A group class. Each member belongs to a group.
