@@ -182,7 +182,7 @@ class CategoryUpdateView(SuccessMessageMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     success_url = reverse_lazy('category_list')
-    success_message = 'Category %(name)s was updated.'
+    success_message = 'Category: %(name)s was updated.'
 
 
 @class_login_required
