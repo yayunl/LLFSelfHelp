@@ -49,8 +49,7 @@ class ServiceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Service
 
-    name = factory.Sequence(lambda n: f'Service {n}')
-    description = factory.Sequence(lambda n: f'service {n}')
+    description = factory.Sequence(lambda n: f'Service {n}')
     note = factory.Sequence(lambda n: f'note {n}')
     service_date = factory.LazyFunction(datetime.datetime.now)
 
@@ -64,8 +63,8 @@ class ServiceFactory(factory.django.DjangoModelFactory):
 
         if extracted:
             # A list of categories were passed in, use them
-            for cat in extracted:
-                self.categories.add(cat)
+            # for cat in extracted:
+            self.categories.add(cat)
 
     @factory.post_generation
     def servants(self, create, extracted, **kwargs):

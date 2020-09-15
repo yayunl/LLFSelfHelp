@@ -128,7 +128,7 @@ class GroupDetailView(DetailView):
 class GroupDeleteView(SuccessMessageMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('group_list')
-    success_message = 'Group was deleted.'
+    success_message = 'Group %(name)s was deleted.'
 
 
 # Categories

@@ -3,9 +3,10 @@ from pytest_factoryboy import register
 from .factories import UserFactory, GroupFactory, CategoryFactory, \
     ServiceFactory, ServicesOfWeekFactory, ProfileFactory
 
-register(UserFactory)
+register(UserFactory, "default_user")
 register(GroupFactory)
-register(CategoryFactory)
+register(CategoryFactory, "default_category")
+register(CategoryFactory, "non_default_category", name='Category non-default', description='category non-default')
 register(ServiceFactory)
 register(ServicesOfWeekFactory)
 register(ProfileFactory)

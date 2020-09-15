@@ -1,7 +1,8 @@
 # tests/catalog/test_views.py
+# This module is to test group and category views.
 
 import pytest
-from pytest_factoryboy import LazyFixture
+# from pytest_factoryboy import LazyFixture
 from django.urls import reverse
 from tests.utils import export_to_html, str2bytes
 
@@ -81,7 +82,28 @@ def test_detail_group_view(auto_login_user, group_factory):
     assert str2bytes(test_group.name) in resp.content
     assert str2bytes(test_group.description) in resp.content
 
-    
+
+@pytest.mark.django_db
+def test_delete_group_view(auto_login_user, group_factory):
+    client, user = auto_login_user() # create auto logon user
+    test_group = group_factory.create(name='Delete group',
+                                      description='delete group')
+    test_group_slug = test_group.slug
+    # Assert the test group is added
+    url = reverse('group_list')
+    resp = client.get(url)
+    assert str2bytes(test_group.name) in resp.content
+
+    # Delete the group and ensure everything is correct
+    url = reverse('group_delete', kwargs={'slug' : test_group_slug})
+    resp = client.get(url, follow=True)
+
+    # Assert the delete
+    assert resp.status_code == 200
+    export_to_html(resp, 'delete_group_view.html')
+    assert b"Are you sure you want to delete group: Delete group?" in resp.content
+
+
 # Test category views
 @pytest.mark.django_db
 def test_list_category_view(auto_login_user, category_factory):
@@ -126,7 +148,7 @@ def test_update_category_view(auto_login_user, category_factory):
     assert str2bytes(test_category.name) in resp.content
 
     # Update the test group
-    url = reverse('group_update', kwargs={'slug': test_category_slug})
+    url = reverse('category_update', kwargs={'slug': test_category_slug})
     resp = client.post(url,
                        data=dict(name='Update Category',
                                  description='update category'),
@@ -161,3 +183,26 @@ def test_detail_category_view(auto_login_user, category_factory):
     export_to_html(resp, 'detail_category_view.html')
     assert str2bytes(test_cat.name) in resp.content
     assert str2bytes(test_cat.description) in resp.content
+
+
+@pytest.mark.django_db
+def test_delete_category_view(auto_login_user, category_factory):
+    client, user = auto_login_user() # create auto logon user
+    # Create a test category
+    test_cat = category_factory.create(name='Delete category',
+                                       description='delete category')
+    test_cat_slug = test_cat.slug
+
+    # Assert the test category is added
+    url = reverse('category_list')
+    resp = client.get(url)
+    assert str2bytes(test_cat.name) in resp.content
+
+    # Delete the group and ensure everything is correct
+    url = reverse('category_delete', kwargs={'slug': test_cat_slug})
+    resp = client.get(url, follow=True)
+
+    # Assert the delete
+    assert resp.status_code == 200
+    export_to_html(resp, 'delete_category_view.html')
+    assert b"Are you sure you want to delete group: Delete category?" in resp.content
