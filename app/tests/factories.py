@@ -64,7 +64,7 @@ class ServiceFactory(factory.django.DjangoModelFactory):
         if extracted:
             # A list of categories were passed in, use them
             # for cat in extracted:
-            self.categories.add(cat)
+                self.categories.add(extracted)
 
     @factory.post_generation
     def servants(self, create, extracted, **kwargs):
@@ -74,5 +74,5 @@ class ServiceFactory(factory.django.DjangoModelFactory):
 
         if extracted:
             # A list of servants were passed in, use them
-            for ser in extracted:
-                self.servants.add(ser)
+            # for ser in extracted:
+                self.servants.add(extracted)
