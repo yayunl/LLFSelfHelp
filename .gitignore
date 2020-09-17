@@ -20,6 +20,7 @@ user/migrations/__pycache__/
 *.bak
 *.dat
 *.dir
+_chrome_driver
 catalog/migrations/*.py
 test_data/*
 *.xlsx

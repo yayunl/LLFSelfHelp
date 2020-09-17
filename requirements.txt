@@ -30,6 +30,7 @@ psycopg2==2.8.3
 #pandas==0.23.4
 pinyin==0.4.0
 pytest-django==3.9.0
+pytest-selenium==2.0.0
 pytest==5.4.1
 pytest-factoryboy==2.0.3
 redis==3.2.1
