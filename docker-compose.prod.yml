@@ -83,7 +83,7 @@ services:
 
   dbAdmin:
     image: dpage/pgadmin4
-    env_fiile:
+    env_file:
       - .env
     volumes:
       - pgadmin:/root/.pgadmin
