@@ -4,3 +4,4 @@ from django.views.generic import \
 
 class UpdateView(BaseUpdateView):
     template_name_suffix = '_form_update'
+

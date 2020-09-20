@@ -1,0 +1,14 @@
+Hello, 很高心你参与查经设计服事！你在下周二将会有查经设计的服事，请和预查设计的辅导沟通并设计好预查材料。
+请在下周二之前和各小组带领的同工分享设计材料。谢谢！
+
+{% for service in services %}
+   {{ service.category_names}}:
+        {% spaceless %}
+            {% for server in service.servants.all %}
+            {{ server.name}}
+            {% endfor %}
+        {% endspaceless %}
+{% endfor %}
+
+Blessings,
+Sent by Agape-at-ACC admin

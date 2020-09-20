@@ -1,9 +1,7 @@
 本周({{ this_week_date }})的服事团队如下:
-{{ emails }}
 
 {% for service in services.all %}
-
-   {{ service.name}}:
+   {{ service.category_names}}:
         {% spaceless %}
         {% for server in service.servants.all %}
         {{ server.name}}
@@ -12,4 +10,4 @@
 {% endfor %}
 
 Blessings,
-Sent via LLFAdmin
+Sent by Agape-at-ACC admin

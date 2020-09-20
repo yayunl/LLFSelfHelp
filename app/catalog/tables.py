@@ -41,14 +41,14 @@ class ServiceTable(tables.Table):
         categories = record.categories.all().first()
         return categories.name if categories else None
 
-    def get_top_pinned_data(self):
-        """
-        Returns the matched services on the top of the table.
-        :return:
-        """
-
-        services = self.data.data.filter(service_date=str2date(service_dates()[0]))
-        return services
+    # def get_top_pinned_data(self):
+    #     """
+    #     Returns the matched services on the top of the table.
+    #     :return:
+    #     """
+    #
+    #     services = self.data.data.filter(service_date=str2date(service_dates()[0]))
+    #     return services
 
 
 class ServiceFilter(django_filters.FilterSet):

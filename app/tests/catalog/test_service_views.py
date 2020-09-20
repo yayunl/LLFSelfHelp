@@ -6,8 +6,6 @@ from tests.utils import export_to_html, str2bytes
 
 # Test service views
 @pytest.mark.django_db
-# @pytest.mark.parametrize("service__servants", [LazyFixture("default_user")])
-# @pytest.mark.parametrize("service__categories", [LazyFixture("default_category")])
 def test_create_service_view(auto_login_user, user_factory, category_factory, service_factory):
     servants = user_factory.create_batch(2)
     cat = category_factory.create()
@@ -64,7 +62,7 @@ def test_detail_service_view(auto_login_user, service):
 #     export_to_html(resp, 'update_service_view.html')
 #     assert resp.status_code == 200
 
-  
+
 @pytest.mark.django_db
 @pytest.mark.parametrize("service__servants", [LazyFixture("default_user")])
 @pytest.mark.parametrize("service__categories", [(LazyFixture("default_category"))])

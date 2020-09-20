@@ -6,11 +6,13 @@ from .views import ServiceBulkCreateView
 from .views import SundayServiceCreateView, SundayServiceListView, SundayServiceUpdateView, SundayServiceDeleteView
 from .views import GroupCreateView, GroupDetailView, GroupListView, GroupDeleteView, GroupUpdateView
 from .views import CategoryCreateView, CategoryListView, CategoryDetailView, CategoryUpdateView, CategoryDeleteView
-from .views import test_email, service_export, service_import, load_services
+from .views import service_export, service_import, load_services, test_prep_email, test_service_email
 
 urlpatterns = [
     path('', IndexView.as_view(), name='catalog_index'),
-    path('email', test_email),
+    # path('service_email', test_service_email),
+    # path('prep_email', test_prep_email),
+
     # Group paths
     path('group/create/', GroupCreateView.as_view(), name='group_create'),
     path('groups/', GroupListView.as_view(), name='group_list'),

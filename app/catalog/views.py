@@ -23,15 +23,20 @@ from .tables import ServiceTable, ServiceFilter
 from .forms import ServiceForm, GroupForm, CategoryForm, ServicesOfWeekForm, ServiceFormSet
 from .resources import ServiceResource
 from .utils import service_dates, str2date #, handle_uploaded_schedules
-from .tasks import send_reminders
+from .tasks import send_prep_reminder, send_service_reminders
 
 from users.models import User
 from users.utils import SERMON_GROUP, SERMON_CATEGORY
 
 
-def test_email(request):
-    send_reminders.delay()
-    return HttpResponse("Email sent.")
+def test_prep_email(request):
+    send_prep_reminder.delay()
+    return HttpResponse("Prep Email sent.")
+
+
+def test_service_email(request):
+    send_service_reminders.delay()
+    return HttpResponse("Service Email sent.")
 
 
 # @login_required()
@@ -296,7 +301,7 @@ class ServiceListView(django_tables2.SingleTableMixin, FilterView):
 
     template_name = "catalog/service_list.html"
 
-    table_pagination = {"per_page": 3}
+    table_pagination = {"per_page": 15}
 
     # def get_table_kwargs(self):
     #     return {"template_name": "django_tables2/bootstrap.html"}

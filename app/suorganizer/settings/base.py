@@ -171,9 +171,14 @@ CELERY_TIMEZONE = 'America/Chicago'
 
 # Celery beat
 # CELERY_BEAT_SCHEDULE = {
-#     'scheduled_reminders': {
-#         'task': 'send_reminders',
-#         'schedule': crontab(minute='*/120'), # Send every mins
+#     'scheduled_services_reminders': {
+#         'task': 'send_service_reminders',
+#         'schedule': crontab(minute='*/3'), # Send every X mins
+#         # 'args': (10 , 20)
+#     },
+#     'scheduled_prep_reminders': {
+#         'task': 'send_prep_reminder',
+#         'schedule': crontab(minute='*/2'), # Send every X mins
 #         # 'args': (10 , 20)
 #     },
 # }
