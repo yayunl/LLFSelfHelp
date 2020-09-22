@@ -27,6 +27,7 @@ test_data/*
 *.ipynb
 auto_deploy_do.sh
 staticfiles/*
+_data/*.json
 *.json
-app/users.json
+app/_data/users.json
 *.pid

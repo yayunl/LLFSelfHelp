@@ -12,6 +12,9 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.template.response import TemplateResponse
+from django.core.files.storage import FileSystemStorage
+from django.core import management
+from django.core.management.commands import loaddata
 
 from django.views.generic import View, ListView, DeleteView, DetailView, CreateView, UpdateView
 from django.views.decorators.cache import never_cache
@@ -27,7 +30,7 @@ from django.conf import settings
 from tablib import Dataset
 import datetime as dt1
 from django_filters.views import FilterView
-import django_tables2
+import django_tables2, os
 
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
@@ -286,48 +289,69 @@ def user_export(request):
 
 
 # Import users from excel
+# @login_required()
+# def user_import(request):
+#     if request.method == 'POST':
+#         resource = UserResource()
+#         dataset = Dataset()
+#         new_persons = request.FILES['external-file']
+#
+#         imported_data = dataset.load(new_persons.read())
+#
+#         imported_data.headers = ['Chinese Name', 'English Name', 'Gender', 'christian', 'Phone Number',\
+#                                  'Email', 'wechat_id', 'address', 'Job', 'Hometown', 'note',
+#                                  'first visit', 'birthday', 'lunar birthday', 'Habits']
+#         convert_first_visit = lambda drow: dt1.datetime(1899,12,30)+dt1.timedelta(days=int(drow[11])) if drow[11] else None
+#         convert_birthday = lambda drow: dt1.datetime(1899,12,30) + dt1.timedelta(days=int(drow[12])) if drow[12] else None
+#         convert_christian_column = lambda drow: True if drow[3]=='是' else False
+#         imported_data.append_col(convert_first_visit, header='First Visit Time')
+#         imported_data.append_col(convert_birthday, header='Birthday')
+#         imported_data.append_col(convert_christian_column, header='Christian')
+#
+#         # add columns
+#         imported_data.append_col(range(len(imported_data['Chinese Name'])), header='id')
+#         imported_data.append_col([True]*len(imported_data['Chinese Name']), header='active')
+#         imported_data.append_col([False]*len(imported_data['Chinese Name']), header='group_leader')
+#         # imported_data.append_col([1]*len(imported_data['Chinese Name']), header='group_id')
+#         imported_data.append_col([None] * len(imported_data['Chinese Name']), header='username')
+#         imported_data.append_col([None] * len(imported_data['Chinese Name']), header='slug')
+#
+#         # remove some columns
+#         del imported_data['first visit']
+#         del imported_data['christian']
+#         del imported_data['birthday']
+#         del imported_data['wechat_id']
+#         del imported_data['address']
+#         del imported_data['note']
+#         del imported_data['lunar birthday']
+#
+#         # Test the data import
+#         result = resource.import_data(imported_data, dry_run=True)
+#
+#         # Actually import now
+#         if not result.has_errors():
+#             results = resource.import_data(imported_data, dry_run=False)
+#             errors = results.has_errors()
+#
+#     return render(request, 'users/simple_upload.html')
+
+
+# Import json files
 @login_required()
-def user_import(request):
-    if request.method == 'POST':
-        resource = UserResource()
-        dataset = Dataset()
-        new_persons = request.FILES['external-file']
+def file_upload(request):
+    if request.method == 'POST' and request.FILES['external-file']:
+        myfile = request.FILES['external-file']
+        # remove existing file
+        fullname = os.path.join(settings.MEDIA_ROOT, myfile.name)
+        if os.path.exists(fullname):
+            os.remove(fullname)
+        fs = FileSystemStorage()
+        filename = fs.save(myfile.name, myfile)
+        uploaded_file_url = fs.url(filename)
+        print(uploaded_file_url)
+        management.call_command('loaddata', fullname, verbosity=0)
 
-        imported_data = dataset.load(new_persons.read())
-
-        imported_data.headers = ['Chinese Name', 'English Name', 'Gender', 'christian', 'Phone Number',\
-                                 'Email', 'wechat_id', 'address', 'Job', 'Hometown', 'note',
-                                 'first visit', 'birthday', 'lunar birthday', 'Habits']
-        convert_first_visit = lambda drow: dt1.datetime(1899,12,30)+dt1.timedelta(days=int(drow[11])) if drow[11] else None
-        convert_birthday = lambda drow: dt1.datetime(1899,12,30) + dt1.timedelta(days=int(drow[12])) if drow[12] else None
-        convert_christian_column = lambda drow: True if drow[3]=='是' else False
-        imported_data.append_col(convert_first_visit, header='First Visit Time')
-        imported_data.append_col(convert_birthday, header='Birthday')
-        imported_data.append_col(convert_christian_column, header='Christian')
-
-        # add columns
-        imported_data.append_col(range(len(imported_data['Chinese Name'])), header='id')
-        imported_data.append_col([True]*len(imported_data['Chinese Name']), header='active')
-        imported_data.append_col([False]*len(imported_data['Chinese Name']), header='group_leader')
-        # imported_data.append_col([1]*len(imported_data['Chinese Name']), header='group_id')
-        imported_data.append_col([None] * len(imported_data['Chinese Name']), header='username')
-        imported_data.append_col([None] * len(imported_data['Chinese Name']), header='slug')
-
-        # remove some columns
-        del imported_data['first visit']
-        del imported_data['christian']
-        del imported_data['birthday']
-        del imported_data['wechat_id']
-        del imported_data['address']
-        del imported_data['note']
-        del imported_data['lunar birthday']
-
-        # Test the data import
-        result = resource.import_data(imported_data, dry_run=True)
-
-        # Actually import now
-        if not result.has_errors():
-            results = resource.import_data(imported_data, dry_run=False)
-            errors = results.has_errors()
-
+        return render(request, 'users/simple_upload.html', {
+            'uploaded_file_url': uploaded_file_url
+        })
     return render(request, 'users/simple_upload.html')

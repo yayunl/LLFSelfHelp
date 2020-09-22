@@ -7,7 +7,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Div, HTML, ButtonHolder, Submit
 
 from django.core.exceptions import ValidationError
-from .utils import Formset
+from .utils import Formset, str2date
 from .models import Service, Group, Category, ServicesOfWeek
 from users.models import User
 
@@ -63,12 +63,24 @@ class ServiceForm(ModelForm):
         # self.fields['service_date'].required=False
 
     def save(self, commit=True):
+        service_date = self.cleaned_data['service_date']
+        services_of_week = ServicesOfWeek(services_date=str2date(service_date))
+        services_of_week.save()
 
-        instance = super().save(commit)
+        instance = super().save(commit=False)
         # set ServiceNote reverse foreign key from the Service model
         # for servant in self.cleaned_data['servants']:
         #     instance.user_set.add(servant)
+        instance.services_of_week = services_of_week
+        instance.save()
 
+        instance.service_date = self.cleaned_data['service_date']
+        instance.categories.add(self.cleaned_data['categories'][0])
+        for ser in self.cleaned_data['servants']:
+            instance.servants.add(ser)
+
+        if commit:
+            instance.save()
         return instance
 
     class Meta:
@@ -96,6 +108,7 @@ class ServiceUpdateForm(ModelForm):
         # set ServiceNote reverse foreign key from the Service model
         # for servant in self.cleaned_data['servants']:
         #     instance.user_set.add(servant)
+
         return instance
 
     class Meta:

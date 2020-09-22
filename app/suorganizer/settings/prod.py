@@ -33,12 +33,12 @@ DATABASES = {
 CELERY_BEAT_SCHEDULE = {
     'scheduled_services_reminders': {
         'task': 'send_service_reminders',
-        'schedule': crontab(hour=9, minute=30, day_of_week='mon') # Send every Monday morning at 9:30 am
+        'schedule': crontab(hour=22, minute=50, day_of_week='mon') # Send every Monday  at 10:50 pm
         # 'args': (10 , 20)
     },
     'scheduled_prep_reminders': {
         'task': 'send_prep_reminder',
-        'schedule': crontab(hour=18, minute=30, day_of_week='mon') # Send every Monday afternoon at 6:30 am
+        'schedule': crontab(hour=23, minute=30, day_of_week='mon') # Send every Monday  at 11:30 pm
         # 'args': (10 , 20)
     },
 }

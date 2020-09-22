@@ -96,3 +96,8 @@ tr[data-id="1"]{
     border-style: dotted;
 
 }
+
+#id_categories, #id_servants{
+    padding-bottom: 50%;
+}
+

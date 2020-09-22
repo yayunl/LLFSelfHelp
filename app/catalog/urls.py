@@ -8,10 +8,11 @@ from .views import GroupCreateView, GroupDetailView, GroupListView, GroupDeleteV
 from .views import CategoryCreateView, CategoryListView, CategoryDetailView, CategoryUpdateView, CategoryDeleteView
 from .views import service_export, service_import, load_services, test_prep_email, test_service_email
 
+
 urlpatterns = [
     path('', IndexView.as_view(), name='catalog_index'),
-    # path('service_email', test_service_email),
-    # path('prep_email', test_prep_email),
+    path('service_email', test_service_email),
+    path('prep_email', test_prep_email),
 
     # Group paths
     path('group/create/', GroupCreateView.as_view(), name='group_create'),
@@ -36,6 +37,7 @@ urlpatterns = [
     path('service/<slug>/detail', ServiceDetailView.as_view(), name='service_detail'),
     path('service/<slug>/update', ServiceUpdateView.as_view(), name='service_update'),
     path('service/<slug>/delete', ServiceDeleteView.as_view(), name='service_delete'),
+
 
     # load services
     path('ajax/load-services/', load_services, name='ajax_load_services'),

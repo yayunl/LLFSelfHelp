@@ -269,11 +269,12 @@ class ServiceCreateView(SuccessMessageMixin, CreateView):
     def form_valid(self, form):
         record = form.cleaned_data
         service_date, service_cat_name = record.get('service_date'), record.get('categories').first().name
-        count = Service.objects.filter(service_date=service_date, categories__name__in=[service_cat_name]).count()
 
+        count = Service.objects.filter(service_date=service_date, categories__name__in=[service_cat_name]).count()
         if count > 0:
             messages.warning(self.request, 'Service: %s on %s already existed!' % (service_cat_name, service_date))
         else:
+            # form.fields['services_of_week']
             form.save()
             messages.success(self.request, 'Service: %s on %s was created.' % (service_cat_name, service_date))
         return HttpResponseRedirect(reverse_lazy('service_list'))
@@ -478,4 +479,7 @@ def service_import(request):
         # convert_first_visit = lambda drow: dt.datetime(1899,12,30)+dt.timedelta(days=int(drow[11])) if drow[11] else None
 
     return render(request, 'catalog/simple_upload.html')
+
+
+
 
