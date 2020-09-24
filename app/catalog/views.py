@@ -23,23 +23,31 @@ from .tables import ServiceTable, ServiceFilter
 from .forms import ServiceForm, GroupForm, CategoryForm, ServicesOfWeekForm, ServiceFormSet
 from .resources import ServiceResource
 from .utils import service_dates, str2date #, handle_uploaded_schedules
-from .tasks import send_prep_reminder, send_service_reminders
+from .tasks import send_prep_reminder, send_service_reminder, send_birthday_reminder
 
 from users.models import User
 from users.utils import SERMON_GROUP, SERMON_CATEGORY
 
 
+@login_required()
 def test_prep_email(request):
     send_prep_reminder.delay()
     return HttpResponse("Prep Email sent.")
 
 
+@login_required()
 def test_service_email(request):
-    send_service_reminders.delay()
+    send_service_reminder.delay()
     return HttpResponse("Service Email sent.")
 
 
-# @login_required()
+@login_required()
+def test_birthday_email(request):
+    send_birthday_reminder.delay()
+    return HttpResponse("Birthday email sent.")
+
+
+@class_login_required
 class IndexView(ListView):
     model = Service
     # table_class = ServiceTable
@@ -62,12 +70,13 @@ class IndexView(ListView):
         context['this_week_service_date'] = this_week_service_date_str
         context['next_week_service_date'] = following_service_date_str
         # dt.month()
-        context['member_birthday_of_month'] = User.objects.filter(birthday__month=dt.now().strftime('%m')).all()
+        context['member_birthday_of_month'] = User.objects.filter(birthday__month=dt.now().strftime('%m'))\
+            .order_by('birthday__day').all()
         return context
 
 
 # Groups
-# @class_login_required
+@class_login_required
 class GroupCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model = Group
     template_name = 'catalog/group_form.html'
@@ -203,6 +212,7 @@ class CategoryDeleteView(SuccessMessageMixin, DeleteView):
 
 
 # Bulk services
+@class_login_required
 class ServiceBulkCreateView(CreateView):
     model = ServicesOfWeek
     form_class = ServicesOfWeekForm

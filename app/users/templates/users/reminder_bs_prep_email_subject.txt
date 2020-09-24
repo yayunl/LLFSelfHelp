@@ -1,1 +1,0 @@
-Aagpe-at-ACC: 下周 ( {{ the_following_week_date }} ) 查经设计提醒

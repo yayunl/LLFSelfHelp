@@ -1,13 +1,28 @@
-本周({{ this_week_date }})的服事团队如下:
+{{ greetings }}
 
+{% spaceless %}
 {% for service in services.all %}
    {{ service.category_names}}:
+        {% if service.note %}
+            Note: {{ service.note }}
+        {% endif %}
         {% spaceless %}
-        {% for server in service.servants.all %}
-        {{ server.name}}
-        {% endfor %}
+            {% for server in service.servants.all %}
+                {{ server.name}}
+            {% endfor %}
         {% endspaceless %}
 {% endfor %}
+{% endspaceless %}
+
+{% if birthday_of_day_users %}
+    今天是谁过生日？他们是：
+    {% spaceless %}
+    {% for m in birthday_of_day_users %}
+        {{ m.name }} ({{ m.group.name}})
+    {% endfor %}
+    {% endspaceless %}
+{% endif %}
 
 Blessings,
 Sent by Agape-at-ACC admin
+http://www.agape-at-acc.com

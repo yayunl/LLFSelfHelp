@@ -39,7 +39,10 @@ CELERY_BEAT_SCHEDULE = {
     'scheduled_prep_reminders': {
         'task': 'send_prep_reminder',
         'schedule': crontab(hour=23, minute=30, day_of_week='mon') # Send every Monday  at 11:30 pm
-        # 'args': (10 , 20)
+    },
+    'scheduled_birthday_reminders': {
+        'task': 'send_birthday_reminder',
+        'schedule': crontab(hour=7, minute=30, day_of_week='mon-sun') # Send every day at 7:30 am
     },
 }
 

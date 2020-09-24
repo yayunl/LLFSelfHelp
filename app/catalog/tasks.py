@@ -1,31 +1,38 @@
 from celery import task
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from datetime import datetime as dt
 import os
+
 # project imports
 from catalog.models import Service
 from catalog.utils import service_dates, str2date
+from users.models import User
 
 
 # Send reminders of the services of the upcoming week
-@task(name='send_service_reminders')
-def send_service_reminders():
+@task(name='send_service_reminder')
+def send_service_reminder():
     sender_email = os.environ.get('EMAIL_HOST_USER')
-    # recipient_emails = os.environ.get('REMINDER_RECIPIENTS_EMAIL').split(',')
 
     this_week_service_date_str, _, _, _ = service_dates()
     this_week_services_query = Service.objects.filter(service_date=str2date(this_week_service_date_str))
 
+    # coordinators
+    coordinator_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
+
     # Send email reminder to servants who have services in this week.
-    unique_emails = set([servant.email for service in this_week_services_query.all() for servant in service.servants.all()])
+    recipients = [servant.email for service in this_week_services_query.all() for servant in service.servants.all()] + coordinator_emails
+    unique_emails = set(recipients)
     recipient_emails_str = ';'.join(list(unique_emails))
     recipient_emails = unique_emails
     # print(recipient_emails_str)
 
     # Build email content
     context = {'services': this_week_services_query,
-               'this_week_date': this_week_service_date_str,
-               'emails': recipient_emails_str}
+               'emails': recipient_emails_str,
+               'subject': f'本周 ( {this_week_service_date_str} ) 团契服事提醒',
+               'greetings': f"Hello, 很高兴你参与本周的团契服事！本周({this_week_service_date_str})服事团队如下:"}
 
     email_subject = render_to_string('users/reminder_email_subject.txt', context).replace('\n', '')
     email_body = render_to_string('users/reminder_email_body.txt', context)
@@ -48,19 +55,25 @@ def send_prep_reminder():
     _, following_service_date_str, _, _ = service_dates()
     bible_study_prep_service = Service.objects.filter(service_date=str2date(following_service_date_str),
                                                       categories__name__in=('查经设计', '查经设计协助')).all()
-    # create recipient emails
-    unique_emails = set([servant.email for service in bible_study_prep_service for servant in service.servants.all()])
+    # get coordinators' emails
+    coordinator_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
+    # Send email reminder to servants who have services in this week.
+    recipients = [servant.email for service in bible_study_prep_service for servant in service.servants.all()] + coordinator_emails
+    unique_emails = set(recipients)
     recipient_emails_str = ';'.join(list(unique_emails))
     recipient_emails = unique_emails
     # print(recipient_emails_str)
 
     # Build email content
     context = {'services': bible_study_prep_service,
-               'the_following_week_date': following_service_date_str,
-               'emails': recipient_emails_str}
+               'emails': recipient_emails_str,
+               'subject': f'下周 ( {following_service_date_str} ) 查经设计提醒',
+               'greetings': "Hello, 很高兴你参与查经设计服事！你在下周二将会有查经设计的服事，"
+                            "请和预查设计的辅导沟通并设计好预查材料。"
+                            "请在下周二之前和各小组带领的同工分享设计材料。谢谢！"}
 
-    email_subject = render_to_string('users/reminder_bs_prep_email_subject.txt', context).replace('\n', '')
-    email_body = render_to_string('users/reminder_bs_prep_email_body.txt', context)
+    email_subject = render_to_string('users/reminder_email_subject.txt', context).replace('\n', '')
+    email_body = render_to_string('users/reminder_email_body.txt', context)
 
     # Send email
     send_mail(
@@ -72,6 +85,49 @@ def send_prep_reminder():
     )
 
     return "Prep reminder email sent."
+
+
+@task(name='send_birthday_reminder')
+def send_birthday_reminder():
+    sender_email = os.environ.get('EMAIL_HOST_USER')
+    _, following_service_date_str, _, _ = service_dates()
+
+    birthday_celebration_service = Service.objects.filter(categories__name='庆生').first()
+    birthday_of_day_users = User.objects.filter(birthday__day='24').all()
+    if not birthday_of_day_users:
+        return "No birthday of the day is found."
+
+    # Get coordinators' emails
+    coord_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
+    # Get servants' emails
+    servant_emails = [servant.email for servant in birthday_celebration_service.servants.all()]
+    unique_emails = set(servant_emails + coord_emails)
+    recipient_emails_str = ';'.join(list(unique_emails))
+    recipient_emails = unique_emails
+
+    # Build email content
+    context = {'services': birthday_celebration_service,
+               'birthday_of_day_users': birthday_of_day_users,
+               'emails': recipient_emails_str,
+               'subject': f'今日庆生提醒',
+               'greetings': "Hello, 很高兴你参与团契庆生服事！请在群里为今天过生日的成员发送生日祝福。谢谢！"}
+
+    email_subject = render_to_string('users/reminder_email_subject.txt', context).replace('\n', '')
+    email_body = render_to_string('users/reminder_email_body.txt', context)
+
+    print(recipient_emails)
+    print(birthday_of_day_users)
+    print(email_body)
+    # Send email
+    send_mail(
+        email_subject,
+        email_body,
+        sender_email,
+        recipient_emails,
+        fail_silently=False,
+    )
+
+    return "Birthday of the day reminder email sent."
 
 
 def send_mail_async(kwargs):
