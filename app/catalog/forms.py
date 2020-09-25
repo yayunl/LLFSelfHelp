@@ -63,7 +63,7 @@ class ServiceForm(ModelForm):
         # self.fields['service_date'].required=False
 
     def save(self, commit=True):
-        service_date = self.cleaned_data['service_date']
+        service_date = self.instance.service_date
         services_of_week = ServicesOfWeek(services_date=str2date(service_date))
         services_of_week.save()
 
@@ -74,8 +74,9 @@ class ServiceForm(ModelForm):
         instance.services_of_week = services_of_week
         instance.save()
 
-        instance.service_date = self.cleaned_data['service_date']
+        # instance.service_date = self.cleaned_data['service_date']
         instance.categories.add(self.cleaned_data['categories'][0])
+        instance.servants.set(list())
         for ser in self.cleaned_data['servants']:
             instance.servants.add(ser)
 

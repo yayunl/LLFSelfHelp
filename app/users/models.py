@@ -94,9 +94,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def _get_unique_id(self):
         member_with_largest_id = User.objects.all().order_by('-id').first()
-        if member_with_largest_id:
-            return member_with_largest_id.id + 1
-        else: return 1
+        return member_with_largest_id.id + 1 if member_with_largest_id else 1
 
     def save(self, *args, **kwargs):
         if not self.slug:

@@ -3,14 +3,15 @@
 {% block content %}
 
 
-  <h2>Service overview</h2>
-
+  <h2>服事一览 (Service Overview)</h2>
+    <br>
     <div class="overviewBox">
-        <p>{{ this_week_service_date }}
-            <a class="btn" data-clipboard-target="#servicesThisWeek" title="copy to clipboard">
-            <i class="copy outline icon"></i>
-            </a>
-        </p>
+        <h4>
+            <div class="overview-title">
+                This week ({{ this_week_service_date }})
+                <a class="btn" data-clipboard-target="#servicesThisWeek" title="copy to clipboard"><i class="copy outline icon"></i></a>
+            </div>
+        </h4>
 
         <table class="table table-hover" id="servicesThisWeek">
             <thead>
@@ -32,7 +33,7 @@
                     {% endif %}
 
                     <td>{{ service.servant_names }}</td>
-                    <td>{{ service.note }}</td>
+                    <td>{% if service.note %} {{ service.note }} {% endif %}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -40,11 +41,12 @@
     </div>
     <!-- Next week -->
     <div class="overviewBox">
-        <p>{{ next_week_service_date }}
+        <h4><div class="overview-title">Next week ({{ next_week_service_date }})
             <a class="btn" data-clipboard-target="#servicesNextWeek" title="copy to clipboard">
                 <i class="copy outline icon"></i>
             </a>
-        </p>
+            </div>
+        </h4>
 
         <table class="table table-hover" id="servicesNextWeek">
             <thead>
@@ -59,7 +61,7 @@
                 <tr>
                     <td>{{ service.category_names }}</td>
                     <td>{{ service.servant_names }}</td>
-                    <td>{{ service.note }}</td>
+                    <td>{% if service.note %} {{ service.note }} {% endif %}</td>
                 </tr>
             {% endfor %}
             </tbody>
@@ -68,11 +70,12 @@
 
     <!-- Birthday of the month -->
     <div class="overviewBox">
-        <p>Birthday of The Month
-            <a class="btn" data-clipboard-target="#birthday" title="copy to clipboard">
-            <i class="copy outline icon"></i>
-            </a>
-        </p>
+        <h4>
+            <div class="overview-title">
+                Birthday of The Month
+                <a class="btn" data-clipboard-target="#birthday" title="copy to clipboard"><i class="copy outline icon"></i></a>
+            </div>
+        </h4>
 
         <table class="table table-hover" id="birthday">
             <thead>

@@ -1,19 +1,10 @@
 // var targetElement = 'none';
 $(document).ready(function(){
 
-
-    // Tooltip
-
-    // $(".btn").tooltip({
-    //     show: {
-    //         effect: "slide",
-    //         duration: 10
-    //     },
-    //     hide: {
-    //         effect: "slide",
-    //         duration: 10
-    //     }
-    // });
+    // Dropdown
+    $('.ui.dropdown')
+        .dropdown()
+    ;
 
     function setTooltip(btn, message) {
       $( btn).tooltip( {
@@ -21,8 +12,7 @@ $(document).ready(function(){
       } );
     }
 
-
-    // clipboard feature
+    // Clipboard
     var clipboard = new ClipboardJS('.btn');
 
     clipboard.on('success', function(e) {
@@ -34,10 +24,6 @@ $(document).ready(function(){
         setTooltip(e.trigger, 'Failed!');
     });
 
-// Dropdown
-    $('.ui.dropdown')
-        .dropdown()
-    ;
     // date picker
     $( "#id_service_date" ).datepicker();
 

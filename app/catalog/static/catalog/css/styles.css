@@ -101,3 +101,8 @@ tr[data-id="1"]{
     padding-bottom: 50%;
 }
 
+.overview-title {
+    color:darkslategray;
+    font-family: sans-serif;
+}
+

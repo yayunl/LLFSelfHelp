@@ -238,7 +238,6 @@ class ServiceBulkCreateView(CreateView):
         with transaction.atomic():
             self.object = form.save()
             if services.is_valid():
-
                 for service_form in services.forms:
                     cat_name = service_form.cleaned_data.get('categories').first().name
                     count = Service.objects.filter(service_date=service_date,
@@ -312,11 +311,10 @@ class ServiceListView(django_tables2.SingleTableMixin, FilterView):
 
     template_name = "catalog/service_list.html"
 
-    table_pagination = {"per_page": 15}
+    table_pagination = {"per_page": 10}
 
     # def get_table_kwargs(self):
     #     return {"template_name": "django_tables2/bootstrap.html"}
-
 
     # def get_queryset(self):
     #     service_date = str2date(service_dates()[0])

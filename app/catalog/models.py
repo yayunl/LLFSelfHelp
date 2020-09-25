@@ -53,8 +53,8 @@ class Group(models.Model):
         return unique_slug
 
     def _get_unique_id(self):
-        groups = Group.objects.all()
-        return len(groups)+1
+        group = Group.objects.order_by('-id').first()
+        return group.id + 1 if group else 1
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -126,8 +126,8 @@ class ServicesOfWeek(models.Model):
         return datetime.datetime.strftime(self.services_date, '%Y-%m-%d')
 
     def _get_unique_id(self):
-        servicesofweek = ServicesOfWeek.objects.all()
-        return len(servicesofweek) + 1
+        servicesofweek = ServicesOfWeek.objects.order_by('-id').first()
+        return servicesofweek.id + 1 if servicesofweek else 1
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -206,8 +206,8 @@ class Service(models.Model):
         return unique_slug
 
     def _get_unique_id(self):
-        services = Service.objects.all()
-        return len(services) + 1
+        service = Service.objects.order_by('-id').first()
+        return service.id + 1 if service else 1
 
     def save(self, *args, **kwargs):
         # todo: duplicate service exists
