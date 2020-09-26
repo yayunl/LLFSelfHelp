@@ -113,7 +113,7 @@ class Profile(models.Model):
         return f"<Profile: %s>"%self.user.get_name()
 
     def get_absolute_url(self):
-        return reverse('profile_detail', args=[self.slug])
+        return reverse('profile_detail', args=[self.user.slug])
 
     def get_absolute_update_url(self):
-        return reverse('profile_update', args=[self.slug])
+        return reverse('profile_update', args=[self.user.slug])

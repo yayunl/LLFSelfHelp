@@ -77,9 +77,8 @@
                     </div>
                 </div>
 
-                <a class="ui item" href="{{ user.profile.get_absolute_url }}">Profile</a>
-
                 {% if user.is_authenticated %}
+                    <a class="ui item" href="{{ user.profile.get_absolute_url }}">Profile</a>
                     <a class="ui item" href="{% url 'logout' %}">Log Out</a>
                 {% endif %}
             </div>

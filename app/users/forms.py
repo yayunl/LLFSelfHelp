@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm, 
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
-from django.forms import ModelForm
+from django.forms import ModelForm, widgets
 from django import forms
 from django.template.defaultfilters import slugify
 from bootstrap_datepicker_plus import DatePickerInput
@@ -40,17 +40,16 @@ class LoginForm(AuthenticationForm):
 
     def __init__(self, request, *args, **kwargs):
         # simply do not pass 'request' to the parent
-        super().__init__(*args, **kwargs)
-        self.fields['username'].widget.attrs['placeholder'] = 'Username'
-        self.fields['password'].widget.attrs['placeholder'] = 'Password'
+        # super().__init__(*args, **kwargs)
+        super(LoginForm, self).__init__(*args, **kwargs)
+        # self.fields['username'].widget.attrs.update({'placeholder': 'Username1',
+        #                                              'id': 'login_username'})
+        # self.fields['password'].widget.attrs.update({'placeholder': 'Password',
+        #                                              'id': 'login_password'})
 
     class Meta:
         model = User
         fields = ('username', 'password')
-        labels = {
-            'username': '',
-            'password': ''
-        }
 
 
 class RegistrationForm(
@@ -117,10 +116,11 @@ class RegistrationForm(
             send_mail = False
         user.save()
         self.save_m2m()
+        # Create user profile
         Profile.objects.update_or_create(
             user=user,
             defaults={
-                'slug': slugify(user.get_name()),
+                'slug': slugify(user.slug),
             }
         )
         # Member.objects.update_or_create(
@@ -142,6 +142,11 @@ class ProfileForm(ModelForm):
         fields = ('username', 'email', 'name', 'english_name', 'phone_number',
                   'job', 'hometown', 'habits', 'birthday', 'gender', 'facebook',
                   'wechat', 'twitter', 'group')
+        widgets = {
+            'username': forms.TextInput(attrs={'id': 'profile_username'}),
+            'email': forms.TextInput(attrs={'id': 'profile_email'}),
+            'name': forms.TextInput(attrs={'id': 'profile_name'})
+        }
 
 
 class ResendActivationEmailForm(

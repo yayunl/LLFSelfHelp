@@ -5,26 +5,19 @@
     </thead>
 
     <tbody>
-        <tr>
-            <td>Group</td>
+        <td>Small group</td>
             <td>
                 {% if user.group.slug %}
                     <a href="{% url 'group_detail' user.group.slug %}">{{ user.group.name }}</a>
                 {% endif %}
             </td>
         </tr>
-        <tr>
-            <td>Email</td>
-            <td>{{ user.email }}</td>
-        </tr>
+
         <tr>
             <td>Gender</td>
             <td>{{ user.gender }}</td>
         </tr>
         <tr>
-            <td>Phone #</td>
-            <td>{{ user.phone_number }}</td>
-        </tr>
 
         <tr>
             <td>Job</td>
@@ -40,13 +33,30 @@
             <td>Hometown </td>
             <td>{{ user.hometown }}</td>
         </tr>
+
         <tr>
-            <td>First-time visit </td>
-            <td>{{ user.first_time_visit }}</td>
-        </tr>
-        <tr>
-            <td>Habits</td>
+            <td>Hobby</td>
             <td>{{ user.habits }}</td>
         </tr>
+
+        <tr>
+            <td>First time visit on </td>
+            <td>{{ user.first_time_visit }}</td>
+        </tr>
+
+        {% if user.pk == profile.user.pk %}
+            {# Visible only to the user himself #}
+            <tr>
+                <td>Email</td>
+                <td>{{ user.email }}</td>
+            </tr>
+
+            <tr>
+                <td>Phone #</td>
+                <td>{{ user.phone_number }}</td>
+            </tr>
+
+        {% endif %}
+
     </tbody>
 </table>
