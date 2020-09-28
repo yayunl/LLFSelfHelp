@@ -10,23 +10,82 @@ from catalog.utils import service_dates, str2date
 from users.models import User
 
 
+@task(name='send_coordinator_of_week_reminder')
+def send_coordinator_of_week_reminder():
+    """
+    Send reminder to the coordinator of the week.
+    :return:
+    """
+    sender_email = os.environ.get('EMAIL_HOST_USER')
+
+    this_week_service_date_str, _, _, _ = service_dates()
+    this_week_services_query = Service.objects.filter(service_date=str2date(this_week_service_date_str))
+    # Get the service
+    coord_of_week_service = Service.objects.filter(service_date=str2date(this_week_service_date_str),
+                                                   categories__name='事务报告/当周主席')
+    # Get fellowship coordinators' emails
+    coordinator_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
+
+    # Get the email of the coordinator of the week
+    servant_email = [servant.email for service in coord_of_week_service.all() for servant in service.servants.all()]
+    if len(servant_email) == 0:
+        return "No coordinator of the week is found."
+
+    # Build recipients' email list
+    recipients = servant_email + coordinator_emails
+    unique_emails = set(recipients)
+    recipient_emails_str = ';'.join(list(unique_emails))
+    recipient_emails = unique_emails
+
+    # Build email content
+    context = {'services': this_week_services_query,
+               'emails': recipient_emails_str,
+               'subject': f'本周 ( {this_week_service_date_str} ) 团契报告提醒',
+               'greetings': f"Hello, 很高兴你参与团契事务报告的服事！本周({this_week_service_date_str})服事团队如下。"
+                            f"请在周四之前发送团契聚会提醒邮件，并且在周五之前准备好当周团契报告。谢谢！"}
+
+    email_subject = render_to_string('users/reminder_email_subject.txt', context).replace('\n', '')
+    email_body = render_to_string('users/reminder_email_body.txt', context)
+
+    print(email_subject)
+    print(email_body)
+    # # Send email
+    send_mail(
+        email_subject,
+        email_body,
+        sender_email,
+        recipient_emails,
+        fail_silently=False,
+    )
+
+    return "Coordinator reminder email was sent."
+
+
 # Send reminders of the services of the upcoming week
 @task(name='send_service_reminder')
 def send_service_reminder():
+    """
+    Send reminder to servants who have services in the week.
+    :return:
+    """
     sender_email = os.environ.get('EMAIL_HOST_USER')
 
     this_week_service_date_str, _, _, _ = service_dates()
     this_week_services_query = Service.objects.filter(service_date=str2date(this_week_service_date_str))
 
-    # coordinators
+    # Get coordinators' emails
     coordinator_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
 
     # Send email reminder to servants who have services in this week.
-    recipients = [servant.email for service in this_week_services_query.all() for servant in service.servants.all()] + coordinator_emails
+    servants = [servant.email for service in this_week_services_query.all() for servant in service.servants.all()]
+    if len(servants) == 0:
+        return "No servants found for services of the week."
+
+    # Build recipients' email list
+    recipients = servants + coordinator_emails
     unique_emails = set(recipients)
     recipient_emails_str = ';'.join(list(unique_emails))
     recipient_emails = unique_emails
-    # print(recipient_emails_str)
 
     # Build email content
     context = {'services': this_week_services_query,
@@ -51,6 +110,10 @@ def send_service_reminder():
 
 @task(name='send_prep_reminder')
 def send_prep_reminder():
+    """
+    Send the reminder to servants who are design bible study materials for the next week.
+    :return:
+    """
     sender_email = os.environ.get('EMAIL_HOST_USER')
     _, following_service_date_str, _, _ = service_dates()
     bible_study_prep_service = Service.objects.filter(service_date=str2date(following_service_date_str),
@@ -58,11 +121,15 @@ def send_prep_reminder():
     # get coordinators' emails
     coordinator_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
     # Send email reminder to servants who have services in this week.
-    recipients = [servant.email for service in bible_study_prep_service for servant in service.servants.all()] + coordinator_emails
+    servant_emails = [servant.email for service in bible_study_prep_service for servant in service.servants.all()]
+
+    if len(servant_emails) == 0:
+        return "No servants of the study material for the next week are found."
+
+    recipients = servant_emails + coordinator_emails
     unique_emails = set(recipients)
     recipient_emails_str = ';'.join(list(unique_emails))
     recipient_emails = unique_emails
-    # print(recipient_emails_str)
 
     # Build email content
     context = {'services': bible_study_prep_service,
@@ -89,11 +156,16 @@ def send_prep_reminder():
 
 @task(name='send_birthday_reminder')
 def send_birthday_reminder():
+    """
+    Send birthday celebration reminder to servants who are in charge of this service.
+    :return:
+    """
     sender_email = os.environ.get('EMAIL_HOST_USER')
     _, following_service_date_str, _, _ = service_dates()
 
     birthday_celebration_service = Service.objects.filter(categories__name='庆生').first()
     birthday_of_day_users = User.objects.filter(birthday__day='24').all()
+
     if not birthday_of_day_users:
         return "No birthday of the day is found."
 

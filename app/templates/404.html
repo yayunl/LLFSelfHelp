@@ -7,9 +7,17 @@ Page Not Found
 {% block content %}
   <div class="row">
     <div class="offset-by-two eight columns">
-      <h1>Page Not Found</h1>
-      <p>The path {{ request.path }} is not a
-        webpage on this site!</p>
+      <h1>Oops, something's gone wrong!</h1>
+        <p>Error code: 404</p>
+        <p>Here are some helpful links instead:</p>
+        <div>
+            <p><a href="{% url 'catalog_index' %}">Home</a></p>
+            <p><a href="{% url 'service_list' %}">Services</a></p>
+            <p><a href="{% url 'user_list' %}">Members</a></p>
+            <p><a href="{% url 'category_list' %}">Category</a></p>
+        </div>
+
     </div>
+
   </div>
 {% endblock %}

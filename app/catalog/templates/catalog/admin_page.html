@@ -1,0 +1,14 @@
+{% extends parent_template|default:"catalog/base_catalog.html" %}
+
+{% block content %}
+    <h1>Links
+        {% if user.is_superuser %}
+            <a href="{% url 'user_import' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Import Json files</a>
+            <a href="" class="btn btn-default" role="button"><i class="cloud upload icon"></i>Export Json files</a>
+        {% endif %}
+
+    </h1>
+
+{% endblock %}
+
+

@@ -6,11 +6,13 @@ from tests.utils import export_to_html, str2bytes
 
 # Test service views
 @pytest.mark.django_db
-def test_create_service_view(auto_login_user, user_factory, category_factory, service_factory):
+def test_get_services_view(auto_login_user, user_factory, category_factory, service_factory):
+    # create initial test data
     servants = user_factory.create_batch(2)
     cat = category_factory.create()
     service = service_factory.create(categories=[cat], servants=servants)
-    client, user = auto_login_user() # create auto logon user
+    # logon
+    client, user = auto_login_user() # create a regular user
     # get the page
     url = reverse('service_list')
     resp = client.get(url)
@@ -20,6 +22,31 @@ def test_create_service_view(auto_login_user, user_factory, category_factory, se
     for ser in servants:
         assert str2bytes(ser.name) in resp.content
     assert str2bytes(cat.name) in resp.content
+
+
+@pytest.mark.django_db
+def test_create_service_view(auto_login_user, auto_login_staff,
+                             user_factory, category_factory, service_factory):
+    # Create test data
+    servants = user_factory.create_batch(2)
+    cat = category_factory.create()
+    service = service_factory.create(categories=[cat], servants=servants)
+    reg_client, reg_user = auto_login_user() # create a regular user
+    # Get the service create route
+    url = reverse('service_create')
+    resp = reg_client.post(url,
+                           data=dict(note='test note',
+                                     service_date=service.date_to_str,
+                                     categories=cat,
+                                     servants=servants
+                                     ),
+                           follow=True)
+    assert resp.status_code == 200
+    export_to_html(resp, 'create_services_view_by_reg_user.html')
+    # asserts
+    # for ser in servants:
+    #     assert str2bytes(ser.name) in resp.content
+    # assert str2bytes(cat.name) in resp.content
 
 
 @pytest.mark.django_db
@@ -66,13 +93,23 @@ def test_detail_service_view(auto_login_user, service):
 @pytest.mark.django_db
 @pytest.mark.parametrize("service__servants", [LazyFixture("default_user")])
 @pytest.mark.parametrize("service__categories", [(LazyFixture("default_category"))])
-def test_delete_service_view(auto_login_staff, service):
+def test_delete_service_view(auto_login_user, auto_login_staff, service):
     service_slug = service.slug
-    client, staff = auto_login_staff() # create auto logon staff user
-
+    # get delete route
     url = reverse('service_delete', kwargs={'slug': service_slug})
-    resp = client.get(url)
-    export_to_html(resp, 'delete_service_view.html')
+
+    # create regular user
+    reg_client, reg_user = auto_login_user()
+    # actual test
+    resp = reg_client.get(url)
+    export_to_html(resp, 'delete_service_view_by_reg_user.html')
+    assert resp.status_code == 403
+    assert str2bytes("Permission Denied") in resp.content
+
+    # Create staff user
+    staff_client, staff = auto_login_staff()
+    resp = staff_client.get(url)
+    export_to_html(resp, 'delete_service_view_by_staff_user.html')
     assert resp.status_code == 200
     assert str2bytes(f"Are you sure you want to delete Service: {service.slug}") in resp.content
 

@@ -8,7 +8,6 @@ from django_filters.views import FilterView
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 
 from .decorators import class_login_required, require_authenticated_permission
@@ -22,31 +21,42 @@ from .models import Group, Service, Category, ServicesOfWeek
 from .tables import ServiceTable, ServiceFilter
 from .forms import ServiceForm, GroupForm, CategoryForm, ServicesOfWeekForm, ServiceFormSet
 from .resources import ServiceResource
-from .utils import service_dates, str2date #, handle_uploaded_schedules
-from .tasks import send_prep_reminder, send_service_reminder, send_birthday_reminder
+from .utils import service_dates, str2date, UserPassesTestMixinCustom, is_staff_or_supervisor, is_supervisor #, handle_uploaded_schedules
+from .tasks import send_prep_reminder, send_service_reminder, send_birthday_reminder, send_coordinator_of_week_reminder
 
 from users.models import User
 from users.utils import SERMON_GROUP, SERMON_CATEGORY
 
 
 @login_required()
+@is_supervisor
 def test_prep_email(request):
     send_prep_reminder.delay()
     return HttpResponse("Prep Email sent.")
 
 
 @login_required()
+@is_supervisor
 def test_service_email(request):
     send_service_reminder.delay()
     return HttpResponse("Service Email sent.")
 
 
 @login_required()
+@is_supervisor
 def test_birthday_email(request):
     send_birthday_reminder.delay()
     return HttpResponse("Birthday email sent.")
 
 
+@login_required()
+@is_supervisor
+def test_coordinator_report_email(request):
+    send_coordinator_of_week_reminder.delay()
+    return HttpResponse("Coordinator report reminder email sent.")
+
+
+# Home route
 @class_login_required
 class IndexView(ListView):
     model = Service
@@ -77,7 +87,7 @@ class IndexView(ListView):
 
 # Groups
 @class_login_required
-class GroupCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class GroupCreateView(UserPassesTestMixinCustom, SuccessMessageMixin, CreateView):
     model = Group
     template_name = 'catalog/group_form.html'
     form_class = GroupForm
@@ -126,7 +136,7 @@ class GroupListView(ListView):
 
 
 @class_login_required
-class GroupUpdateView(SuccessMessageMixin, UpdateView):
+class GroupUpdateView(UserPassesTestMixinCustom, SuccessMessageMixin, UpdateView):
     model = Group
     form_class = GroupForm
     success_url = reverse_lazy('group_list')
@@ -139,7 +149,7 @@ class GroupDetailView(DetailView):
 
 
 @class_login_required
-class GroupDeleteView(SuccessMessageMixin, DeleteView):
+class GroupDeleteView(UserPassesTestMixinCustom, SuccessMessageMixin, DeleteView):
     model = Group
     success_url = reverse_lazy('group_list')
     success_message = 'Group %(name)s was deleted.'
@@ -147,7 +157,7 @@ class GroupDeleteView(SuccessMessageMixin, DeleteView):
 
 # Categories
 @class_login_required
-class CategoryCreateView(SuccessMessageMixin, CreateView):
+class CategoryCreateView(UserPassesTestMixinCustom, SuccessMessageMixin, CreateView):
 
     model = Category
     template_name = 'catalog/group_form.html'
@@ -192,7 +202,7 @@ class CategoryListView(ListView):
 
 
 @class_login_required
-class CategoryUpdateView(SuccessMessageMixin, UpdateView):
+class CategoryUpdateView(UserPassesTestMixinCustom, SuccessMessageMixin, UpdateView):
     model = Category
     form_class = CategoryForm
     success_url = reverse_lazy('category_list')
@@ -203,9 +213,19 @@ class CategoryUpdateView(SuccessMessageMixin, UpdateView):
 class CategoryDetailView(DetailView):
     model = Category
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object = context.get('object')
+        # services as part of the category
+        services = Service.objects.filter(categories__name=object.name).all()
+        # servants as part of the services
+        servants = set([ser for service in services for ser in service.servants.all() ])
+        context['users_involved'] = servants
+        return context
+
 
 @class_login_required
-class CategoryDeleteView(SuccessMessageMixin, DeleteView):
+class CategoryDeleteView(UserPassesTestMixinCustom, SuccessMessageMixin, DeleteView):
     model = Category
     success_url = reverse_lazy('category_list')
     success_message = 'Category %(name)s was deleted.'
@@ -213,11 +233,12 @@ class CategoryDeleteView(SuccessMessageMixin, DeleteView):
 
 # Bulk services
 @class_login_required
-class ServiceBulkCreateView(CreateView):
+class ServiceBulkCreateView(UserPassesTestMixinCustom, SuccessMessageMixin, CreateView):
     model = ServicesOfWeek
     form_class = ServicesOfWeekForm
     template_name = 'catalog/service_bulk_create.html'
     success_url = reverse_lazy('service_list')
+    success_message = 'Services on %(services_date)s were created.'
 
     def get_context_data(self, **kwargs):
         data = super(ServiceBulkCreateView, self).get_context_data(**kwargs)
@@ -260,8 +281,8 @@ class ServiceBulkCreateView(CreateView):
 
 
 # Services
-@require_authenticated_permission('catalog.service_create')
-class ServiceCreateView(SuccessMessageMixin, CreateView):
+@class_login_required
+class ServiceCreateView(UserPassesTestMixinCustom, SuccessMessageMixin, CreateView):
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
@@ -322,23 +343,23 @@ class ServiceListView(django_tables2.SingleTableMixin, FilterView):
     #     return queryset
 
 
-@require_authenticated_permission('catalog.service_update')
-class ServiceUpdateView(SuccessMessageMixin, UpdateView):
+@class_login_required
+class ServiceUpdateView(UserPassesTestMixinCustom, SuccessMessageMixin, UpdateView):
     model = Service
     form_class = ServiceForm
     success_url = reverse_lazy('service_list')
     success_message = 'The service was updated.'
 
 
-@require_authenticated_permission('catalog.service_delete')
-class ServiceDeleteView(DeleteView):
+@class_login_required
+class ServiceDeleteView(UserPassesTestMixinCustom, DeleteView):
     model = Service
     success_url = reverse_lazy('service_list')
 
 
 # Sunday sermons
-@require_authenticated_permission('catalog.sunday_service_create')
-class SundayServiceCreateView(SuccessMessageMixin, CreateView):
+@class_login_required
+class SundayServiceCreateView(UserPassesTestMixinCustom, SuccessMessageMixin, CreateView):
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
@@ -386,8 +407,8 @@ class SundayServiceListView(django_tables2.SingleTableMixin, FilterView):
         return {"template_name": "django_tables2/bootstrap.html"}
 
 
-@require_authenticated_permission('catalog.sunday_service_update')
-class SundayServiceUpdateView(SuccessMessageMixin, UpdateView):
+@class_login_required
+class SundayServiceUpdateView(UserPassesTestMixinCustom, SuccessMessageMixin, UpdateView):
     model = Service
     form_class = ServiceForm
     template_name = 'catalog/service_form.html'
@@ -404,8 +425,8 @@ class SundayServiceUpdateView(SuccessMessageMixin, UpdateView):
         return form
 
 
-@require_authenticated_permission('catalog.sunday_service_create')
-class SundayServiceDeleteView(DeleteView):
+@class_login_required
+class SundayServiceDeleteView(UserPassesTestMixinCustom, DeleteView):
     model = Service
     success_url = reverse_lazy('sunday_service_list')
 
@@ -448,17 +469,25 @@ class SearchListView(ListView):
         return Service.objects.none()
 
 
-@login_required()
+# Load services. No permission required.
 def load_services(request):
-
     services = set([s.service_category for s in Service.objects.all()])
     return render(request,
                   'catalog/service_category_list_options.html',
                   {'services': services})
 
 
-# Export the services to excel
+# admin page
 @login_required()
+@is_supervisor
+def admin_page(request):
+    return render(request,
+                  'catalog/admin_page.html')
+
+
+# Export services to excel
+@login_required()
+@is_staff_or_supervisor
 def service_export(request):
     resource = ServiceResource()
     dataset = resource.export()
@@ -469,6 +498,7 @@ def service_export(request):
 
 # Import services from excel
 @login_required()
+@is_supervisor
 def service_import(request):
 
     if request.method == 'POST':

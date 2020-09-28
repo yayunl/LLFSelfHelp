@@ -5,12 +5,12 @@ import os, sys
 
 def main():
 
-    if os.environ.get('ENV') == 'dev':
+    if int(os.environ.get('DEBUG', 1)) == 1:
+        print("Environment ==> dev")
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
-    elif os.environ.get('ENV') == 'prod':
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.prod")
     else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.dev")
+        print("Environment ==> production")
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', "suorganizer.settings.prod")
 
     try:
         from django.core.management import execute_from_command_line

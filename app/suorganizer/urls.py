@@ -16,16 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 from catalog.urls import urlpatterns as catalogurls
 from users.urls import user_urls as userurls
 from users.urls import auth_urls as authurls
-
 from catalog.views import SearchListView
+from .error_handlers import *
 
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='login', permanent=False)),
@@ -36,3 +35,9 @@ urlpatterns = [
     path('search/', SearchListView.as_view(), name='search_results'),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Error handlers
+handler400 = bad_request_handler_400
+handler403 = permission_denied_handler_403
+handler404 = page_not_found_handler_404
+handler500 = server_error_handler_500

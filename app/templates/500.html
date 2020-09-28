@@ -8,10 +8,14 @@ Server Error
   <div class="row">
     <div class="offset-by-two eight columns">
       <h1>Server Error</h1>
-      <p>The computer on our end made a
-      mistake. We've been notified, and will fix
-      the problem as soon as possible.</p>
-      <p>Try again later.</p>
+        <p>Error code: 500</p>
+        <p>The computer on our end made a mistake. We've been notified, and will fix
+            the problem as soon as possible.</p>
+        <p>Here are some helpful links instead:</p>
+            <a href="{% url 'catalog_index' %}">Home</a>
+            <a href="{% url 'service_list' %}">Services</a>
+            <a href="{% url 'user_list' %}">Members</a>
+            <a href="{% url 'category_list' %}">Category</a>
     </div>
   </div>
 {% endblock %}

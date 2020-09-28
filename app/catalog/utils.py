@@ -1,18 +1,26 @@
-import logging, traceback, datetime as dt #, pandas as pd
+
 from logging import CRITICAL, ERROR
 from smtplib import SMTPException
 from django.conf import settings
 from django.contrib.auth import get_user
 from django.contrib.auth.tokens import default_token_generator as token_generator
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import  UserPassesTestMixin
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
+
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.urls import reverse_lazy
+
 from django.core.mail import EmailMessage, send_mail, BadHeaderError
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
 from datetime import datetime as dt
+import logging, traceback #, pandas as pd
 import datetime
+
 # Project imports
 from users.models import User
 
@@ -356,3 +364,23 @@ class Formset(LayoutObject):
     def render(self, form, form_style, context, template_pack=TEMPLATE_PACK):
         formset = context[self.formset_name_in_context]
         return render_to_string(self.template, {'formset': formset})
+
+
+# permission decorators and Mixins
+is_staff_or_supervisor = user_passes_test(lambda u: u.is_staff or u.is_superuser, login_url=reverse_lazy('catalog_index'))
+is_supervisor = user_passes_test(lambda u: u.is_superuser, login_url=reverse_lazy('catalog_index'))
+
+
+def staff_or_supervisor_required(view_func):
+    decorated_view_func = login_required(is_staff_or_supervisor(view_func))
+    return decorated_view_func
+
+
+def supervisor_required(view_func):
+    decorated_view_func = login_required(is_supervisor(view_func))
+    return decorated_view_func
+
+
+class UserPassesTestMixinCustom(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser

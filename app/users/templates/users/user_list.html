@@ -2,15 +2,11 @@
 
 {% block content %}
     <h1>Members
-        {% if user.is_staff %}
+        {% if user.is_staff or user.is_superuser %}
             <a href="{% url 'user_export' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
         {% endif %}
 
-        {% if user.is_superuser %}
-            <a href="{% url 'user_import' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Import</a>
-        {% endif %}
-
-        {% if user.is_staff %}
+        {% if user.is_staff or user.is_superuser %}
             <a href="{% url 'user_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
         {% endif %}
     </h1>

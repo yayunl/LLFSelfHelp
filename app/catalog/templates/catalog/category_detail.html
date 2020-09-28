@@ -5,4 +5,11 @@
     <p>Category: {{ category.name }}</p>
     <p>Detail: {{ category.description}}</p>
 
+    <p>Involved Members:</p>
+    <div>
+        {% for u in users_involved %}
+            <p><a href="{% url 'user_detail' u.slug %}">{{ u.name }}</a></p>
+        {% endfor %}
+    </div>
+
 {% endblock %}}

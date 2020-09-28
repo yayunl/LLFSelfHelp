@@ -34,7 +34,7 @@ import django_tables2, os
 
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
-from catalog.utils import MailContextViewMixin
+from catalog.utils import MailContextViewMixin, staff_or_supervisor_required, supervisor_required, UserPassesTestMixinCustom
 from catalog.tasks import send_mail_async
 from .models import User, Profile
 from .utils import ProfileGetObjectMixin, UserGetObjectMixin, SERMON_GROUP
@@ -58,8 +58,8 @@ class UserLoginView(LoginView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-@require_authenticated_permission('users.user_create')
-class UserCreateView(SuccessMessageMixin, CreateView):
+@class_login_required
+class UserCreateView(UserPassesTestMixinCustom, SuccessMessageMixin, CreateView):
     # model = Member
     template_name = 'users/user_form.html'
     form_class = UserForm
@@ -103,8 +103,8 @@ class UserListView(django_tables2.SingleTableMixin, FilterView, LoginRequiredMix
         return queryset
 
 
-@require_authenticated_permission('users.user_update')
-class UserUpdateView(SuccessMessageMixin, UpdateView):
+@class_login_required
+class UserUpdateView(UserPassesTestMixinCustom, SuccessMessageMixin, UpdateView):
     model = User
     template_name = 'users/user_form.html'
     form_class = UserForm
@@ -112,8 +112,8 @@ class UserUpdateView(SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('user_list')
 
 
-@require_authenticated_permission('users.user_delete')
-class UserDeleteView(SuccessMessageMixin, DeleteView):
+@class_login_required
+class UserDeleteView(UserPassesTestMixinCustom, SuccessMessageMixin, DeleteView):
     model = User
     # template_name = 'users/user_confirm_delete.html'
     success_url = reverse_lazy('user_list')
@@ -280,6 +280,7 @@ class ResendActivationEmail(MailContextViewMixin, View):
 
 # Export the users to excel
 @login_required()
+@staff_or_supervisor_required
 def user_export(request):
     person_resource = UserResource()
     dataset = person_resource.export()
@@ -338,6 +339,7 @@ def user_export(request):
 
 # Import json files
 @login_required()
+@supervisor_required
 def file_upload(request):
     if request.method == 'POST' and request.FILES['external-file']:
         myfile = request.FILES['external-file']
@@ -355,3 +357,13 @@ def file_upload(request):
             'uploaded_file_url': uploaded_file_url
         })
     return render(request, 'users/simple_upload.html')
+
+
+# @login_required()
+# @supervisor_required
+# def file_download(request):
+#     if request.method == 'GET':
+#         management.call_command('dumpdata users.user --indent 4')
+#     return render(request, 'users/simple_upload.html')
+
+

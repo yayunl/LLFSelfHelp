@@ -1,18 +1,17 @@
 {{ greetings }}
 
-{% spaceless %}
+
 {% for service in services.all %}
-   {{ service.category_names}}:
-        {% if service.note %}
-            Note: {{ service.note }}
-        {% endif %}
+    {% spaceless %}
+       {{ service.category_names}}:
+        {% for server in service.servants.all %}
         {% spaceless %}
-            {% for server in service.servants.all %}
-                {{ server.name}}
-            {% endfor %}
+            {{ server.name}}{% if service.note %}(Note: {{ service.note }}){% endif %}
         {% endspaceless %}
+        {% endfor %}
+    {% endspaceless %}
 {% endfor %}
-{% endspaceless %}
+
 
 {% if birthday_of_day_users %}
     今天是谁过生日？他们是：

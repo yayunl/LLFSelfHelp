@@ -6,7 +6,6 @@ from django.urls import reverse
 from bootstrap_datepicker_plus import DatePickerInput
 # import from apps
 from .models import Service
-from .utils import service_dates, str2date
 
 
 class ServiceTable(tables.Table):
@@ -22,11 +21,6 @@ class ServiceTable(tables.Table):
         order_by = '-service_date' # Order by the column of service date in desc
         row_attrs = {
             'data-id': 0,
-            # 'data-id': lambda record: '1'  if record.objects.filter(service_dates__service_date)
-            # if dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[0] or
-            #    dt.strftime(record.service_date, '%Y-%m-%d') == service_dates()[-1]
-            # else '0',
-            # 'category': lambda record: record.category
         }
 
     def render_servants(self, value, record):
@@ -39,7 +33,10 @@ class ServiceTable(tables.Table):
 
     def render_categories(self, value, record):
         categories = record.categories.all().first()
-        return categories.name if categories else None
+        if categories:
+            cat_link = reverse('category_detail', args=[categories.slug])
+            return format_html(f'<a href="{cat_link}">{categories.name}</a>')
+        return None
 
     # def get_top_pinned_data(self):
     #     """

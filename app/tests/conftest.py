@@ -30,7 +30,7 @@ def test_password():
 def auto_login_user(db, client, user_factory, test_password):
    def make_auto_login(user=None):
        if user is None:
-           user = user_factory()
+           user = user_factory(username='regular_user')
        client.login(username=user.username, password=test_password)
        return client, user
    return make_auto_login
@@ -40,12 +40,20 @@ def auto_login_user(db, client, user_factory, test_password):
 def auto_login_staff(db, client, user_factory, test_password):
    def make_auto_login(user=None):
        if user is None:
-           user = user_factory.create(is_superuser=True)
+           user = user_factory.create(username='staff_user', is_staff=True)
        client.login(username=user.username, password=test_password)
        return client, user
    return make_auto_login
 
 
+@pytest.fixture
+def auto_login_superuser(db, client, user_factory, test_password):
+   def make_auto_login(user=None):
+       if user is None:
+           user = user_factory.create(username='super_user', is_staff=True, is_superuser=True)
+       client.login(username=user.username, password=test_password)
+       return client, user
+   return make_auto_login
 
 # Do not use fixture data to initialize test data.
 # Recommend to use factory boy to create test data.

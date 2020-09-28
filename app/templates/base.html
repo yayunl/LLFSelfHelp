@@ -63,6 +63,9 @@
                     <div class="header">Breakdown</div>
                     <a class="item" href="{% url 'user_list' %}">Members</a>
                     <a class="item" href="{% url 'group_list' %}">Small Groups</a>
+                    {% if user.is_superuser %}
+                        <a class="item" href="{% url 'admin_page' %}">Admin</a>
+                    {% endif %}
                 </div>
             </div>
 
@@ -78,7 +81,7 @@
                 </div>
 
                 {% if user.is_authenticated %}
-                    <a class="ui item" href="{{ user.profile.get_absolute_url }}">Profile</a>
+                    <a class="ui item" href="{% url 'profile_detail' request.user.slug %}">Profile</a>
                     <a class="ui item" href="{% url 'logout' %}">Log Out</a>
                 {% endif %}
             </div>

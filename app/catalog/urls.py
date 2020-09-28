@@ -6,7 +6,8 @@ from .views import ServiceBulkCreateView
 from .views import SundayServiceCreateView, SundayServiceListView, SundayServiceUpdateView, SundayServiceDeleteView
 from .views import GroupCreateView, GroupDetailView, GroupListView, GroupDeleteView, GroupUpdateView
 from .views import CategoryCreateView, CategoryListView, CategoryDetailView, CategoryUpdateView, CategoryDeleteView
-from .views import service_export, service_import, load_services, test_prep_email, test_service_email, test_birthday_email
+from .views import service_export, service_import, load_services, test_prep_email, test_service_email, test_birthday_email, test_coordinator_report_email
+from .views import admin_page
 
 
 urlpatterns = [
@@ -15,6 +16,8 @@ urlpatterns = [
     path('service_email', test_service_email),
     path('prep_email', test_prep_email),
     path('birthday_email', test_birthday_email),
+    path('report_email', test_coordinator_report_email),
+    path('admin', admin_page, name='admin_page'),
 
     # Group paths
     path('group/create/', GroupCreateView.as_view(), name='group_create'),

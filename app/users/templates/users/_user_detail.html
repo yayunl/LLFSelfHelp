@@ -44,7 +44,8 @@
             <td>{{ user.first_time_visit }}</td>
         </tr>
 
-        {% if user.pk == profile.user.pk %}
+
+        {% if request.user.pk == profile.user.pk or request.user.is_superuser %}
             {# Visible only to the user himself #}
             <tr>
                 <td>Email</td>
@@ -55,7 +56,18 @@
                 <td>Phone #</td>
                 <td>{{ user.phone_number }}</td>
             </tr>
-
+            <tr>
+                <td>Permission group</td>
+                {% if user.is_superuser and user.is_staff %}
+                    <td>super user, staff user</td>
+                {% elif user.is_superuser %}
+                    <td>super user</td>
+                {% elif user.is_staff %}
+                    <td>staff user</td>
+                {% else %}
+                    <td>regular user</td>
+                {% endif %}
+            </tr>
         {% endif %}
 
     </tbody>
