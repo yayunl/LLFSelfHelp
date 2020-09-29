@@ -5,9 +5,10 @@ from datetime import datetime as dt
 import os
 
 # project imports
-from catalog.models import Service
+from catalog.models import Service, Group
 from catalog.utils import service_dates, str2date
 from users.models import User
+from users.utils import SERMON_GROUP
 
 
 @task(name='send_coordinator_of_week_reminder')
@@ -47,8 +48,8 @@ def send_coordinator_of_week_reminder():
     email_subject = render_to_string('users/reminder_email_subject.txt', context).replace('\n', '')
     email_body = render_to_string('users/reminder_email_body.txt', context)
 
-    print(email_subject)
-    print(email_body)
+    # print(email_subject)
+    # print(email_body)
     # # Send email
     send_mail(
         email_subject,
@@ -70,19 +71,25 @@ def send_service_reminder():
     """
     sender_email = os.environ.get('EMAIL_HOST_USER')
 
-    this_week_service_date_str, _, _, _ = service_dates()
-    this_week_services_query = Service.objects.filter(service_date=str2date(this_week_service_date_str))
+    this_week_service_date_str, _, this_week_sunday_date_str, _ = service_dates()
+    this_week_services_query = Service.objects.filter(service_date__in=[str2date(this_week_service_date_str),
+                                                                        str2date(this_week_sunday_date_str)])
 
     # Get coordinators' emails
     coordinator_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
 
     # Send email reminder to servants who have services in this week.
-    servants = [servant.email for service in this_week_services_query.all() for servant in service.servants.all()]
-    if len(servants) == 0:
+    servant_emails = list()
+    for service in this_week_services_query:
+        for servant in service.servants.all():
+            if servant.group.name not in SERMON_GROUP: # exclude preachers
+                servant_emails.append(servant.email)
+    # servants = [servant.email for service in this_week_services_query.all() for servant in service.servants.all()]
+    if len(servant_emails) == 0:
         return "No servants found for services of the week."
 
     # Build recipients' email list
-    recipients = servants + coordinator_emails
+    recipients = servant_emails + coordinator_emails
     unique_emails = set(recipients)
     recipient_emails_str = ';'.join(list(unique_emails))
     recipient_emails = unique_emails
@@ -187,9 +194,10 @@ def send_birthday_reminder():
     email_subject = render_to_string('users/reminder_email_subject.txt', context).replace('\n', '')
     email_body = render_to_string('users/reminder_email_body.txt', context)
 
-    print(recipient_emails)
-    print(birthday_of_day_users)
-    print(email_body)
+    # print(recipient_emails)
+    # print(birthday_of_day_users)
+    # print(email_body)
+
     # Send email
     send_mail(
         email_subject,

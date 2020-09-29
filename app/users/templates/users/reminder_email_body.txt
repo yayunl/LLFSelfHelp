@@ -5,9 +5,9 @@
     {% spaceless %}
        {{ service.category_names}}:
         {% for server in service.servants.all %}
-        {% spaceless %}
-            {{ server.name}}{% if service.note %}(Note: {{ service.note }}){% endif %}
-        {% endspaceless %}
+            {% spaceless %}
+                {{ server.name}}{% if service.note %}(Note: {{ service.note }}){% endif %}
+            {% endspaceless %}
         {% endfor %}
     {% endspaceless %}
 {% endfor %}
@@ -16,9 +16,9 @@
 {% if birthday_of_day_users %}
     今天是谁过生日？他们是：
     {% spaceless %}
-    {% for m in birthday_of_day_users %}
-        {{ m.name }} ({{ m.group.name}})
-    {% endfor %}
+        {% for m in birthday_of_day_users %}
+            {{ m.name }} ({{ m.group.name}})
+        {% endfor %}
     {% endspaceless %}
 {% endif %}
 
