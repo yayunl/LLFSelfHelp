@@ -8,11 +8,11 @@ set -o nounset
 
 python /app/manage.py collectstatic --noinput
 
-python /app/manage.py migrate --fake users zero
+#python /app/manage.py migrate --fake users zero
 python /app/manage.py migrate --fake catalog zero
 
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc"  -delete
+find /app -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find /app -path "*/migrations/*.pyc"  -delete
 
 
 python /app/manage.py makemigrations users
