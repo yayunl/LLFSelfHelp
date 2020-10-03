@@ -10,6 +10,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.2/howto/static-files/
+STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(PROJECT_ROOT, "staticfiles")
+
+MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(PROJECT_ROOT, "mediafiles")
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

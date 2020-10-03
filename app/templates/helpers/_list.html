@@ -14,32 +14,39 @@
 </h1>
 
 {% if item_list %}
-    {% for item in item_list %}
-        <div class="ui special cards">
-            <div class="card">
-                <div class="content">
-                    <a class="header" href="{{ item.get_absolute_url }}">{{ item.name}}</a>
-                    <div class="meta">
-                        {% if item_type == 'Group' %}
-                            <i class="users icon"></i>
-                            <span class="date">{{ item.user_set.count }} Users</span>
-                        {% endif %}
+    <div class="ui three column grid">
+        {% for item in item_list %}
+        <div class="column">
+             <div class="ui fluid cards">
+                <div class="card">
+                    <div class="content">
+                        <a class="header" href="{{ item.get_absolute_url }}">{{ item.name}}</a>
+                        <div class="meta">
+                            {% if item_type == 'Group' %}
+                                <i class="users icon"></i>
+                                <span class="date">{{ item.user_set.count }} Users</span>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-                <div class="extra content">
-                    <a href="{{item.get_absolute_update_url}}">
-                        <i class=""></i>
-                        Update
-                    </a>
+                    <div class="extra content">
+                        <a href="{{item.get_absolute_update_url}}">
+                            <i class=""></i>
+                            Update
+                        </a>
 
-                    <a href="{{item.get_absolute_delete_url}}">
-                        <i class=""></i>
-                        Delete
-                    </a>
+                        <a href="{{item.get_absolute_delete_url}}">
+                            <i class=""></i>
+                            Delete
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    {% endfor %}
+
+        {% endfor %}
+
+    </div>
+
 
 {% else %}
     <p>There are no {{item_type}}s .</p>
