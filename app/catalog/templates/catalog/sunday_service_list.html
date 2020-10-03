@@ -2,8 +2,9 @@
 
 {% block content %}
     <h1>Sunday Sermons
-        {% if user.is_staff %}
+        {% if user.is_staff or user.is_superuser %}
             <a href="{% url 'sunday_service_create' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+            <a href="{% url 'sunday_service_export' %}" class="btn btn-default" role="button"><i class="plus square icon"></i>Export</a>
         {% endif %}
     </h1>
 

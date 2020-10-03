@@ -27,6 +27,23 @@ class ServiceResource(resources.ModelResource):
         return cat_name
 
 
+class SundaySermonResource(resources.ModelResource):
+    servant_name = Field(attribute='servant_names', column_name="Servants")
+
+    class Meta:
+        model = Service
+        exclude = ('slug', 'id', 'servants', 'services_of_week', 'categories', 'description')
+        export_order = ('service_date', 'servant_name', 'note')
+
+    def get_queryset(self):
+        return self._meta.model.objects.filter(categories__name__in=SERMON_GROUP).order_by('service_date')
+
+    def dehydrate_servant_name(self, service):
+        servants = service.servants.all()
+        servant_names = [servant.name for servant in servants]
+        return ','.join(servant_names)
+
+
 class GroupResource(resources.ModelResource):
     members = Field(attribute='members', column_name="Members")
 
@@ -60,6 +77,7 @@ class CategoryResource(resources.ModelResource):
         return ','.join(servants) if servants else None
 
 
+# Admin resources
 class ServiceResourceAdmin(resources.ModelResource):
 
     class Meta:
@@ -76,7 +94,7 @@ class GroupResourceAdmin(resources.ModelResource):
         model = Group
 
     def get_queryset(self):
-        return self._meta.model.objects.order_by('-id')
+        return self._meta.model.objects.order_by('id')
 
 
 class CategoryResourceAdmin(resources.ModelResource):
@@ -85,4 +103,4 @@ class CategoryResourceAdmin(resources.ModelResource):
         model = Category
 
     def get_queryset(self):
-        return self._meta.model.objects.order_by('-id')
+        return self._meta.model.objects.order_by('slug')

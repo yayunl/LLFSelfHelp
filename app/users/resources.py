@@ -1,6 +1,7 @@
 from import_export import resources
-# from import_export.fields import Field
+import datetime
 from .models import User
+from .utils import SERMON_GROUP
 
 
 class UserResource(resources.ModelResource):
@@ -13,7 +14,8 @@ class UserResource(resources.ModelResource):
                         'birthday', 'habits', 'first_time_visit', 'date_joined', 'facebook', 'wechat', 'twitter',)
 
     def get_queryset(self):
-        return self._meta.model.objects.order_by('id')
+        # Oly query the valid members
+        return self._meta.model.objects.exclude(group__name__in=SERMON_GROUP).order_by('id')
 
     def dehydrate_is_christian(self, record):
         return "是" if record.is_christian else "否"
@@ -23,6 +25,11 @@ class UserResource(resources.ModelResource):
 
     def dehydrate_group(self, record):
         return record.group_name
+
+    def dehydrate_birthday(self, record):
+        # Birthday in m/d format
+        birthday = record.birthday
+        return datetime.datetime.strftime(birthday, '%m/%d') if birthday else None
 
 
 class UserResourceAdmin(resources.ModelResource):

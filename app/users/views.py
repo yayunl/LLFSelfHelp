@@ -28,15 +28,17 @@ from django.conf import settings
 
 # third-party libraries
 from tablib import Dataset
-import datetime as dt1
+from datetime import datetime as dtime
 from django_filters.views import FilterView
 import django_tables2, os
 
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
 from catalog.utils import (MailContextViewMixin, UserPassesTestMixinCustom,
-                           staff_or_supervisor_required, supervisor_required, export_data)
+                           staff_or_supervisor_required, supervisor_required, export_data,
+                           date2str)
 from catalog.tasks import send_mail_async
+# Sub-level imports
 from .models import User, Profile
 from .utils import ProfileGetObjectMixin, UserGetObjectMixin, SERMON_GROUP
 from .tables import UserTable, UserFilter
@@ -278,6 +280,12 @@ class ResendActivationEmail(MailContextViewMixin, View):
         success(request, 'Activation Email Sent!')
         return redirect(self.success_url)
 
+##############
+#
+# Export
+#
+##############
+
 
 # Export the users
 @login_required()
@@ -294,12 +302,13 @@ def user_export(request):
         resource = UserResource()
         dataset = resource.export()
         resp = export_data(file_format, dataset,
-                           filename='members_data')
+                           filename=f'members_data-{date2str(dtime.now())}')
         return resp
     return render(request, 'helpers/export.html', {'export_url': reverse_lazy('user_export'),
                                                    'data_category': 'Users'})
 
 
+# Restricted to superuser only
 @login_required()
 @supervisor_required
 def user_export_admin_view(request):
@@ -314,11 +323,17 @@ def user_export_admin_view(request):
         resource = UserResourceAdmin()
         dataset = resource.export()
         resp = export_data(file_format, dataset,
-                           filename='members_data_admin_view')
+                           filename=f'members_data_admin_view-{date2str(dtime.now())}')
         return resp
     return render(request, 'helpers/export.html', {'export_url': reverse_lazy('user_export_admin_view'),
                                                    'data_category': 'Users'})
 
+
+#############
+#
+#  Import
+#
+#############
 
 # Import
 @login_required()

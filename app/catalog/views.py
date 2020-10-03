@@ -20,9 +20,11 @@ from tablib import Dataset
 from .models import Group, Service, Category, ServicesOfWeek
 from .tables import ServiceTable, ServiceFilter
 from .forms import ServiceForm, GroupForm, CategoryForm, ServicesOfWeekForm, ServiceFormSet
-from .resources import ServiceResource, GroupResource, CategoryResource
-from .utils import (service_dates, str2date, UserPassesTestMixinCustom,
-                    is_staff_or_supervisor, is_supervisor, export_data)
+from .resources import ServiceResource, GroupResource, CategoryResource, SundaySermonResource
+from .utils import (service_dates, str2date, date2str,
+                    UserPassesTestMixinCustom,
+                    is_staff_or_supervisor, is_supervisor,
+                    export_data)
 from .tasks import send_prep_reminder, send_service_reminder, send_birthday_reminder, send_coordinator_of_week_reminder
 
 from users.models import User
@@ -48,6 +50,13 @@ def test_service_email(request):
 def test_birthday_email(request):
     send_birthday_reminder.delay()
     return HttpResponse("Birthday email sent.")
+
+
+# admin page
+@login_required()
+@is_supervisor
+def admin_page(request):
+    return render(request, 'catalog/admin_page.html')
 
 
 @login_required()
@@ -124,6 +133,7 @@ class GroupListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['create_url'] = reverse_lazy('group_create')
+        context['export_url'] = reverse_lazy('group_export')
         return context
 
     def get_queryset(self):
@@ -190,6 +200,7 @@ class CategoryListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['create_url'] = reverse_lazy('category_create')
+        context['export_url'] = reverse_lazy('category_export')
         return context
 
     def get_queryset(self):
@@ -478,12 +489,11 @@ def load_services(request):
                   {'services': services})
 
 
-# admin page
-@login_required()
-@is_supervisor
-def admin_page(request):
-    return render(request, 'catalog/admin_page.html')
-
+###########
+#
+#  Export
+#
+###########
 
 # Export services
 @login_required()
@@ -495,10 +505,26 @@ def service_export(request):
         resource = ServiceResource()
         dataset = resource.export()
         resp = export_data(file_format, dataset,
-                           filename='service_data')
+                           filename=f'service_data-{date2str(dt.now())}')
         return resp
     return render(request, 'helpers/export.html', {'export_url': reverse_lazy('service_export'),
                                                    'data_category': 'Services'})
+
+
+# Export Sunday sermons
+@login_required()
+@is_staff_or_supervisor
+def sunday_service_export(request):
+    if request.method == 'POST':
+        # Get selected option from form
+        file_format = request.POST['file-format']
+        resource = SundaySermonResource()
+        dataset = resource.export()
+        resp = export_data(file_format, dataset,
+                           filename=f'Sunday_sermons_data-{date2str(dt.now())}')
+        return resp
+    return render(request, 'helpers/export.html', {'export_url': reverse_lazy('sunday_service_export'),
+                                                   'data_category': 'Sunday Sermons'})
 
 
 # Export group
@@ -511,9 +537,10 @@ def export_group_data(request):
         resource = GroupResource()
         dataset = resource.export()
         resp = export_data(file_format, dataset,
-                           filename='group_data')
+                           filename=f'group_data-{date2str(dt.now())}')
         return resp
-    return render(request, 'helpers/export.html')
+    return render(request, 'helpers/export.html', {'export_url': reverse_lazy('group_export'),
+                                                   'data_category': 'Groups'})
 
 
 # Export category
@@ -527,10 +554,17 @@ def export_category_data(request):
         dataset = resource.export()
         # Invoke export_data function
         resp = export_data(file_format, dataset,
-                           filename='category_data')
+                           filename=f'category_data-{date2str(dt.now())}')
         return resp
-    return render(request, 'helpers/export.html')
+    return render(request, 'helpers/export.html', {'export_url': reverse_lazy('category_export'),
+                                                   'data_category': 'Categories'})
 
+
+############
+#
+# Import
+#
+############
 
 # # Import services from excel
 # @login_required()

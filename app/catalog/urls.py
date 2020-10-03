@@ -7,7 +7,7 @@ from .views import SundayServiceCreateView, SundayServiceListView, SundayService
 from .views import GroupCreateView, GroupDetailView, GroupListView, GroupDeleteView, GroupUpdateView
 from .views import CategoryCreateView, CategoryListView, CategoryDetailView, CategoryUpdateView, CategoryDeleteView
 from .views import (load_services, test_prep_email, test_service_email, test_birthday_email, test_coordinator_report_email,
-                    service_export, export_group_data, export_category_data)
+                    service_export, export_group_data, export_category_data, sunday_service_export)
 from .views import admin_page
 
 
@@ -47,14 +47,14 @@ urlpatterns = [
     path('services/export', service_export, name='service_export'),
     # path('services/import', service_import, name='service_import'),
 
-
-    # load services
-    path('ajax/load-services/', load_services, name='ajax_load_services'),
-
     # Sunday service path
     path('sunday-services', SundayServiceListView.as_view(), name='sunday_service_list'),
     path('sunday-service/create/', SundayServiceCreateView.as_view(), name='sunday_service_create'),
     path('sunday-service/<slug>/update', SundayServiceUpdateView.as_view(), name='sunday_service_update'),
-    path('sunday-service/<slug>/delete', SundayServiceDeleteView.as_view(), name='sunday_service_delete')
+    path('sunday-service/<slug>/delete', SundayServiceDeleteView.as_view(), name='sunday_service_delete'),
+    path('sunday-service/export', sunday_service_export, name='sunday_service_export'),
+
+    # load services
+    path('ajax/load-services/', load_services, name='ajax_load_services'),
 
 ]

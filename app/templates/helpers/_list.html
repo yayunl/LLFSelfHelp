@@ -7,8 +7,9 @@
 
 <h1>
     {{item_type}}
-    {% if user.is_staff %}
+    {% if user.is_staff or user.is_superuser %}
         <a href='{{ create_url}}' class="create-group btn btn-default" role="button"><i class="plus square icon"></i>Create</a>
+        <a href="{{ export_url }}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Export</a>
     {% endif %}
 </h1>
 
@@ -26,15 +27,11 @@
                     </div>
                 </div>
                 <div class="extra content">
-                    <a>
-
-                        {#              {{ group.users.count }}Users#}
-                    </a>
                     <a href="{{item.get_absolute_update_url}}">
                         <i class=""></i>
                         Update
                     </a>
-                    </a>
+
                     <a href="{{item.get_absolute_delete_url}}">
                         <i class=""></i>
                         Delete

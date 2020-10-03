@@ -1,3 +1,4 @@
+# app/catalog/utils.py
 from logging import CRITICAL, ERROR
 from smtplib import SMTPException
 from django.conf import settings
