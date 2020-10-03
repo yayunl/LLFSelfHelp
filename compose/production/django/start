@@ -1,13 +1,23 @@
 #!/bin/bash
+# stackoverflow: how to force migrations
+# https://stackoverflow.com/questions/43880426/how-to-force-migrations-to-a-db-if-some-tables-already-exist-in-django/43881920
 
 set -o errexit
 set -o pipefail
 set -o nounset
 
-
 python /app/manage.py collectstatic --noinput
+
+python /app/manage.py migrate --fake users zero
+python /app/manage.py migrate --fake catalog zero
+
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+
+
 python /app/manage.py makemigrations users
 python /app/manage.py makemigrations catalog
-python /app/manage.py migrate
+
+python /app/manage.py migrate --fake-initial
 
 exec /usr/local/bin/gunicorn suorganizer.wsgi --bind 0.0.0.0:8000 --chdir=/app
