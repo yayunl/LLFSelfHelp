@@ -57,6 +57,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_name(self):
         return self.slug
 
+    @property
+    def group_name(self):
+        group = self.group.name
+        return group
+
     def get_absolute_url(self):
         """
         Used in urls and detail template.

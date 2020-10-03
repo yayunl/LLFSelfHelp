@@ -34,13 +34,14 @@ import django_tables2, os
 
 # Project imports
 from catalog.decorators import class_login_required, require_authenticated_permission
-from catalog.utils import MailContextViewMixin, staff_or_supervisor_required, supervisor_required, UserPassesTestMixinCustom
+from catalog.utils import (MailContextViewMixin, UserPassesTestMixinCustom,
+                           staff_or_supervisor_required, supervisor_required, export_data)
 from catalog.tasks import send_mail_async
 from .models import User, Profile
 from .utils import ProfileGetObjectMixin, UserGetObjectMixin, SERMON_GROUP
 from .tables import UserTable, UserFilter
 from .forms import UserForm, ProfileForm, RegistrationForm, ResendActivationEmailForm, LoginForm
-from .resources import UserResource
+from .resources import UserResource, UserResourceAdmin
 
 
 # Create your views here.
@@ -278,15 +279,68 @@ class ResendActivationEmail(MailContextViewMixin, View):
         return redirect(self.success_url)
 
 
-# Export the users to excel
+# Export the users
 @login_required()
 @staff_or_supervisor_required
 def user_export(request):
-    person_resource = UserResource()
-    dataset = person_resource.export()
-    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="LLF contacts.xls"'
-    return response
+    """
+    Only a subset of the fields are allowed to be exported. Excluded fields are defined in UserResource.
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        # Get selected option from form
+        file_format = request.POST['file-format']
+        resource = UserResource()
+        dataset = resource.export()
+        resp = export_data(file_format, dataset,
+                           filename='members_data')
+        return resp
+    return render(request, 'helpers/export.html', {'export_url': reverse_lazy('user_export'),
+                                                   'data_category': 'Users'})
+
+
+@login_required()
+@supervisor_required
+def user_export_admin_view(request):
+    """
+    Admin view can export all fields.
+    :param request:
+    :return:
+    """
+    if request.method == 'POST':
+        # Get selected option from form
+        file_format = request.POST['file-format']
+        resource = UserResourceAdmin()
+        dataset = resource.export()
+        resp = export_data(file_format, dataset,
+                           filename='members_data_admin_view')
+        return resp
+    return render(request, 'helpers/export.html', {'export_url': reverse_lazy('user_export_admin_view'),
+                                                   'data_category': 'Users'})
+
+
+# Import
+@login_required()
+@supervisor_required
+def file_upload(request):
+    if request.method == 'POST' and request.FILES['external-file']:
+        myfile = request.FILES['external-file']
+        # remove existing file
+        fullname = os.path.join(settings.MEDIA_ROOT, myfile.name)
+        if os.path.exists(fullname):
+            os.remove(fullname)
+        fs = FileSystemStorage()
+        filename = fs.save(myfile.name, myfile)
+        uploaded_file_url = fs.url(filename)
+        print(uploaded_file_url)
+        management.call_command('loaddata', fullname, verbosity=0)
+
+        return render(request, 'users/simple_upload.html', {
+            'uploaded_file_url': uploaded_file_url
+        })
+    return render(request, 'users/simple_upload.html')
+
 
 
 # Import users from excel
@@ -337,33 +391,6 @@ def user_export(request):
 #     return render(request, 'users/simple_upload.html')
 
 
-# Import json files
-@login_required()
-@supervisor_required
-def file_upload(request):
-    if request.method == 'POST' and request.FILES['external-file']:
-        myfile = request.FILES['external-file']
-        # remove existing file
-        fullname = os.path.join(settings.MEDIA_ROOT, myfile.name)
-        if os.path.exists(fullname):
-            os.remove(fullname)
-        fs = FileSystemStorage()
-        filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = fs.url(filename)
-        print(uploaded_file_url)
-        management.call_command('loaddata', fullname, verbosity=0)
 
-        return render(request, 'users/simple_upload.html', {
-            'uploaded_file_url': uploaded_file_url
-        })
-    return render(request, 'users/simple_upload.html')
-
-
-# @login_required()
-# @supervisor_required
-# def file_download(request):
-#     if request.method == 'GET':
-#         management.call_command('dumpdata users.user --indent 4')
-#     return render(request, 'users/simple_upload.html')
 
 

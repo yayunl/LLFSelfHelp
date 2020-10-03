@@ -1,14 +1,55 @@
 {% extends parent_template|default:"catalog/base_catalog.html" %}
 
 {% block content %}
-    <h1>Links
         {% if user.is_superuser %}
-            <a href="{% url 'user_import' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Import Json files</a>
-            <a href="" class="btn btn-default" role="button"><i class="cloud upload icon"></i>Export Json files</a>
+{#            <a href="{% url 'user_import' %}" class="btn btn-default" role="button"><i class="cloud download icon"></i>Import user data</a>#}
+{#            <a href="{% url 'user_export' %}" class="btn btn-default" role="button"><i class="cloud upload icon"></i>Export Json files</a>#}
+            <h3>Export Data</h3>
+            <h4>Export users (admin)</h4>
+            <p>Export all fields.</p>
+            <form method="post" enctype="multipart/form-data" action="{% url 'user_export_admin_view' %}">
+                {% csrf_token %}
+                <p>Please select format of file.</p>
+                <select name="file-format" class="form-control my-3">
+                    <option selected>Choose format...</option>
+                    <option>CSV</option>
+                    <option>JSON</option>
+                    <option>XLS (Excel)</option>
+                  </select>
+                <button class="btn btn-primary" type="submit">Export</button>
+              </form>
+
+
+            <h4>Export groups</h4>
+
+            <form method="post" enctype="multipart/form-data" action="{% url 'group_export' %}">
+                {% csrf_token %}
+                <p>Please select format of file.</p>
+                <select name="file-format" class="form-control my-3">
+                    <option selected>Choose format...</option>
+                    <option>CSV</option>
+                    <option>JSON</option>
+                    <option>XLS (Excel)</option>
+                </select>
+                <button class="btn btn-primary" type="submit">Export</button>
+            </form>
+
+            <h4>Export categories</h4>
+            <form method="post" enctype="multipart/form-data" action="{% url 'category_export' %}">
+                {% csrf_token %}
+                <p>Please select format of file.</p>
+                <select name="file-format" class="form-control my-3">
+                    <option selected>Choose format...</option>
+                    <option>CSV</option>
+                    <option>JSON</option>
+                    <option>XLS (Excel)</option>
+                </select>
+                <button class="btn btn-primary" type="submit">Export</button>
+            </form>
+            <a href="{% url 'home' %}">Return Home View</a>
+
+
         {% endif %}
 
-    </h1>
 
 {% endblock %}
-
-

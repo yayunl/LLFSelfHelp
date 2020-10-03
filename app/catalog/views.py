@@ -20,8 +20,9 @@ from tablib import Dataset
 from .models import Group, Service, Category, ServicesOfWeek
 from .tables import ServiceTable, ServiceFilter
 from .forms import ServiceForm, GroupForm, CategoryForm, ServicesOfWeekForm, ServiceFormSet
-from .resources import ServiceResource
-from .utils import service_dates, str2date, UserPassesTestMixinCustom, is_staff_or_supervisor, is_supervisor #, handle_uploaded_schedules
+from .resources import ServiceResource, GroupResource, CategoryResource
+from .utils import (service_dates, str2date, UserPassesTestMixinCustom,
+                    is_staff_or_supervisor, is_supervisor, export_data)
 from .tasks import send_prep_reminder, send_service_reminder, send_birthday_reminder, send_coordinator_of_week_reminder
 
 from users.models import User
@@ -481,42 +482,77 @@ def load_services(request):
 @login_required()
 @is_supervisor
 def admin_page(request):
-    return render(request,
-                  'catalog/admin_page.html')
+    return render(request, 'catalog/admin_page.html')
 
 
-# Export services to excel
+# Export services
 @login_required()
 @is_staff_or_supervisor
 def service_export(request):
-    resource = ServiceResource()
-    dataset = resource.export()
-    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="LLF service schedule.xls"'
-    return response
-
-
-# Import services from excel
-@login_required()
-@is_supervisor
-def service_import(request):
-
     if request.method == 'POST':
+        # Get selected option from form
+        file_format = request.POST['file-format']
         resource = ServiceResource()
-        dataset = Dataset()
-        loaded_file = request.FILES['external-file']
+        dataset = resource.export()
+        resp = export_data(file_format, dataset,
+                           filename='service_data')
+        return resp
+    return render(request, 'helpers/export.html', {'export_url': reverse_lazy('service_export'),
+                                                   'data_category': 'Services'})
 
-        imported_data = dataset.load(loaded_file.read())
-        #todo: reopen this function later once figuring out how to install pandas
-        # handle_uploaded_schedules(imported_data, resource)
 
-        # imported_data.headers = ['service_date', 'leader_of_week', 'setup_group', 'food_pickup', 'fruit_dessert',\
-        #                          'dish_clean', 'child_care', 'newcomer_welcome', 'birthday_celebrate', 'worship', 'bible_study',
-        #                          'first visit', 'birthday', 'lunar birthday', 'Habits']
+# Export group
+@login_required()
+@is_staff_or_supervisor
+def export_group_data(request):
+    if request.method == 'POST':
+        # Get selected option from form
+        file_format = request.POST['file-format']
+        resource = GroupResource()
+        dataset = resource.export()
+        resp = export_data(file_format, dataset,
+                           filename='group_data')
+        return resp
+    return render(request, 'helpers/export.html')
 
-        # convert_first_visit = lambda drow: dt.datetime(1899,12,30)+dt.timedelta(days=int(drow[11])) if drow[11] else None
 
-    return render(request, 'catalog/simple_upload.html')
+# Export category
+@login_required()
+@is_staff_or_supervisor
+def export_category_data(request):
+    if request.method == 'POST':
+        # Get selected option from form
+        file_format = request.POST['file-format']
+        resource = CategoryResource()
+        dataset = resource.export()
+        # Invoke export_data function
+        resp = export_data(file_format, dataset,
+                           filename='category_data')
+        return resp
+    return render(request, 'helpers/export.html')
+
+
+# # Import services from excel
+# @login_required()
+# @is_supervisor
+# def service_import(request):
+#
+#     if request.method == 'POST':
+#         resource = ServiceResource()
+#         dataset = Dataset()
+#         loaded_file = request.FILES['external-file']
+#
+#         imported_data = dataset.load(loaded_file.read())
+#         # todo: reopen this function later once figuring out how to install pandas
+#         # handle_uploaded_schedules(imported_data, resource)
+#
+#         # imported_data.headers = ['service_date', 'leader_of_week', 'setup_group', 'food_pickup', 'fruit_dessert',\
+#         #                          'dish_clean', 'child_care', 'newcomer_welcome', 'birthday_celebrate', 'worship', 'bible_study',
+#         #                          'first visit', 'birthday', 'lunar birthday', 'Habits']
+#
+#         # convert_first_visit = lambda drow: dt.datetime(1899,12,30)+dt.timedelta(days=int(drow[11])) if drow[11] else None
+#
+#     return render(request, 'catalog/simple_upload.html')
 
 
 

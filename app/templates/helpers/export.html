@@ -1,0 +1,22 @@
+{% extends parent_template|default:"catalog/base_catalog.html" %}
+
+
+{% block title %}
+Export data
+{% endblock %}
+
+{% block content %}
+    <h3>Export {{ data_category }} Data</h3>
+
+    <form method="post" enctype="multipart/form-data" action="{{ export_url }}">
+        {% csrf_token %}
+        <p>Please select format of file.</p>
+        <select name="file-format" class="form-control my-3">
+            <option selected>Choose format...</option>
+            <option>Excel</option>
+            <option>JSON</option>
+        </select>
+        <button class="btn btn-primary" type="submit">Export</button>
+      </form>
+      <a href="{% url 'home' %}">Return Home View</a>
+{% endblock %}

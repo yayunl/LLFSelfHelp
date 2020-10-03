@@ -1,4 +1,3 @@
-
 from logging import CRITICAL, ERROR
 from smtplib import SMTPException
 from django.conf import settings
@@ -14,6 +13,8 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.urls import reverse_lazy
+
+from django.http import HttpResponse
 
 from django.core.mail import EmailMessage, send_mail, BadHeaderError
 from crispy_forms.layout import LayoutObject, TEMPLATE_PACK
@@ -384,3 +385,28 @@ def supervisor_required(view_func):
 class UserPassesTestMixinCustom(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_staff or self.request.user.is_superuser
+
+
+# Export helper function
+def export_data(file_format, dataset, filename):
+    """
+    Export data to external files in a given format.
+    :param file_format:
+    :param dataset:
+    :param filename:
+    :return:
+    """
+    response = None
+    if file_format == 'CSV':
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.csv"'
+
+    elif file_format == 'JSON':
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.json"'
+
+    elif file_format == 'Excel':
+        response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.xls"'
+
+    return response

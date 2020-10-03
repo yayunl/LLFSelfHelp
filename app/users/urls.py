@@ -10,7 +10,7 @@ from .views import UserListView, UserDetailView,  UserCreateView, UserDeleteView
 from .views import ProfileDetailView, ProfileUpdateView
 from .views import ResendActivationEmail, ActivateAccount
 # from django.contrib.auth.decorators import login_required
-from .views import user_export,   file_upload #user_import
+from .views import user_export, user_export_admin_view, file_upload #user_import
 
 user_urls = [
     # url patterns: /user/list/, /user/create/, /user/<slug>/detail, ...,
@@ -20,8 +20,9 @@ user_urls = [
     path('<slug>/delete', UserDeleteView.as_view(), name='user_delete'),
     path('<slug>/update', UserUpdateView.as_view(), name='user_update'),
     path('export', user_export, name='user_export'),
-    # path('import', user_import, name='user_import'),
     path('import', file_upload, name='user_import'),
+    path('export_admin', user_export_admin_view, name='user_export_admin_view')
+
 ]
 
 _password_urls = [

@@ -156,7 +156,7 @@ REMINDER_RECIPIENTS_EMAIL = os.environ.get('REMINDER_RECIPIENTS_EMAIL')
 # Login redirect
 LOGIN_URL = reverse_lazy('login')
 # Redirect on a successful login to the home page
-LOGIN_REDIRECT_URL = reverse_lazy('catalog_index')
+LOGIN_REDIRECT_URL = reverse_lazy('home')
 # Logout
 LOGOUT_URL = reverse_lazy('logout')
 
