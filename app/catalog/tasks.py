@@ -2,11 +2,11 @@ from celery import task
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from datetime import datetime as dt
-import os
+import os, datetime
 
 # project imports
 from catalog.models import Service, Group
-from catalog.utils import service_dates, str2date
+from catalog.utils import service_dates, str2date, date2str
 from users.models import User
 from users.utils import SERMON_GROUP
 
@@ -167,20 +167,28 @@ def send_birthday_reminder():
     Send birthday celebration reminder to servants who are in charge of this service.
     :return:
     """
+    birthday_of_day_users = None
+
     sender_email = os.environ.get('EMAIL_HOST_USER')
     _, following_service_date_str, _, _ = service_dates()
 
     birthday_celebration_service = Service.objects.filter(categories__name='庆生').first()
-    birthday_of_day_users = User.objects.filter(birthday__day='24').all()
+    birthday_of_month_users = User.objects.filter(birthday__month=date2str(datetime.datetime.now()).split('-')[-2]).all()
+
+    if birthday_of_month_users:
+        birthday_of_day_users = [user for user in birthday_of_month_users
+                                 if date2str(user.birthday).split('-')[-1] == date2str(datetime.datetime.now()).split('-')[-1]]
 
     if not birthday_of_day_users:
         return "No birthday of the day is found."
 
     # Get coordinators' emails
-    coord_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
+    # coord_emails = [user.email for user in User.objects.filter(is_staff=True).all()]
+
     # Get servants' emails
     servant_emails = [servant.email for servant in birthday_celebration_service.servants.all()]
-    unique_emails = set(servant_emails + coord_emails)
+    # unique_emails = set(servant_emails + coord_emails)
+    unique_emails = set(servant_emails)
     recipient_emails_str = ';'.join(list(unique_emails))
     recipient_emails = unique_emails
 
